@@ -1,0 +1,5 @@
+astropy
+ipython
+toml
+synphot==0.3
+pytest
