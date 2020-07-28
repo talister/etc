@@ -1,0 +1,13 @@
+[site]
+name = "BPL"
+altitude = 17
+latitude = 34.5
+longitude = -119.86
+
+[atmosphere]
+condition = "foggy"
+
+[telescope]
+name = "BPL 1-m"
+size = 1.0
+size_units = "m"

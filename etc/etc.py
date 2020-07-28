@@ -7,6 +7,7 @@ except ImportError:
     import importlib_resources as pkg_resources
 
 from . import data
+from .models import Site, Telescope, Instrument
 
 
 class ETC(object):
@@ -24,5 +25,15 @@ class ETC(object):
             self.create_components_from_config(component_config)
 
     def create_components_from_config(self, config):
+        class_mapping = {'site' : Site, 'telescope' : Telescope, 'instrument' : Instrument }
         for component, component_config in config.items():
-            self.components.append(component)
+            class_name = class_mapping.get(component.lower(), None)
+            if class_name:
+#                print(class_name, component_config)
+                output_component = class_name(**component_config)
+                self.components.append(output_component)
+
+    def __repr__(self):
+        prefixstr = '<' + self.__class__.__name__ + ' '
+        compstr = "->".join([repr(x) for x in self.components])
+        return f'{prefixstr}{compstr}>'

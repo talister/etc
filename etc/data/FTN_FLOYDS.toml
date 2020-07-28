@@ -1,4 +1,5 @@
 [site]
+name = "Maui, HI"
 altitude = 3065
 altitude_units = "m"
 transmission = "${CDBS_PATH}/atmos/LBL_FTN_A12_t0_s0_w050_R0100000_T.fits"
