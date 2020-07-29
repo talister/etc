@@ -3,6 +3,7 @@ name = "BPL"
 altitude = 17
 latitude = 34.5
 longitude = -119.86
+transmission = 0.90
 
 [atmosphere]
 condition = "foggy"

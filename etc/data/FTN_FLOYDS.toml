@@ -2,7 +2,7 @@
 name = "Maui, HI"
 altitude = 3065
 altitude_units = "m"
-transmission = "${CDBS_PATH}/atmos/LBL_FTN_A12_t0_s0_w050_R0100000_T.fits"
+transmission = "${CDBS_PATH}/atmos/FTN_a12_pwv035.fits"
 [site.sky_mag]
     U = 22.0
     B = 22.7
