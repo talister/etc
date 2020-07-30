@@ -1,13 +1,43 @@
+import os
+
+import numpy as np
 from astropy import units as u
+from synphot import units, SourceSpectrum, SpectralElement, specio
+from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 
 class Site:
     """Model for a site location and the atmosphere above it"""
 
     def __init__(self, name=None, altitude=None, latitude= None, longitude=None, **kwargs):
         self.name = name if name is not None else "Undefined"
-        self.altitude = altitude * u.m
+        self.altitude = altitude * u.m if altitude is not None else altitude
         self.latitude = latitude
         self.longitude = longitude
+        if 'transmission' in kwargs:
+            modelclass = Empirical1D
+            try:
+                transmission = float(kwargs['transmission'])
+                wavelengths = np.arange(300, 1501, 200) * u.nm
+                throughput = len(wavelengths) * [transmission,]
+                header = {}
+            except ValueError:
+                sky_file = os.path.expandvars(kwargs['transmission'])
+                header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
+            self.transmission = SpectralElement(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=True, meta={'header': header})
+
+    def __mul__(self, other):
+
+        newcls = self
+        newcls.transmission = self.transmission.__mul__(other)
+        return newcls
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        newcls = self
+        newcls.transmission = self.transmission.__truediv__(other)
+        return newcls
 
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
