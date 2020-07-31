@@ -23,6 +23,7 @@ class TestTelescope:
         assert tel.size == 2 * u.m
         assert tel.area == 2.574 * u.m * u.m
         assert tel.num_mirrors == 3
+        assert tel.reflectivity == 0.91
 
     def test_initialize2(self):
         test_config_file = toml.load(os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml")))
@@ -32,3 +33,4 @@ class TestTelescope:
         assert tel.size == 1 * u.m
         assert tel.area == 0.625 * u.m * u.m
         assert tel.num_mirrors == 2
+        assert tel.reflectivity == 0.8

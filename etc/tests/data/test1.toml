@@ -13,3 +13,4 @@ name = "BPL 1-m"
 size = 1.0
 size_units = "m"
 area = 0.625
+reflectivity = 0.8
