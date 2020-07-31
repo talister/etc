@@ -53,19 +53,21 @@ class Telescope:
         self.area_unit = u.m * u.m
         self.area = area * self.area_unit
         self.num_mirrors = num_mirrors
-        self.reflectivity = 0.91    # Default value based on average of bare Al over 300-1200nm
-        if 'reflectivity' in kwargs:
-            modelclass = Empirical1D
-            try:
-                reflectivity = float(kwargs['reflectivity'])
-#                wavelengths = np.arange(300, 1501, 200) * u.nm
-#                throughput = len(wavelengths) * [reflectivity,]
-#                header = {}
-            except ValueError:
-                mirror_file = os.path.expandvars(kwargs['reflectivity'])
-                header, wavelengths, throughput = specio.read_spec(mirror_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit='%')
-#            self.reflectivity = SpectralElement(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=True, meta={'header': header})
-            self.reflectivity = reflectivity
+
+        modelclass = Empirical1D
+        reflectivity = kwargs.get('reflectivity',  0.91)    # Default value based on average of bare Al over 300-1200nm
+        try:
+            reflectivity = float(reflectivity)
+            wavelengths = np.arange(300, 1501, 200) * u.nm
+            refl = len(wavelengths) * [reflectivity,]
+            header = {}
+        except ValueError:
+            mirror_file = os.path.expandvars(kwargs['reflectivity'])
+            print(mirror_file)
+            header, wavelengths, refl = specio.read_ascii_spec(mirror_file, wave_unit=u.nm, flux_unit='%')
+
+        self.reflectivity = SpectralElement(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
+
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
 
