@@ -66,7 +66,11 @@ class Telescope:
             print(mirror_file)
             header, wavelengths, refl = specio.read_ascii_spec(mirror_file, wave_unit=u.nm, flux_unit='%')
 
-        self.reflectivity = SpectralElement(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
+        mirror_se = SpectralElement(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
+        # Assume all mirrors are the same reflectivity and multiply together
+        self.reflectivity = mirror_se
+        for x in range(0, self.num_mirrors-1):
+            self.reflectivity *= mirror_se
 
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)

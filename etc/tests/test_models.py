@@ -23,7 +23,7 @@ class TestTelescope:
         assert tel.size == 2 * u.m
         assert tel.area == 2.574 * u.m * u.m
         assert tel.num_mirrors == 3
-        assert tel.reflectivity.tpeak() == 0.91
+        assert tel.reflectivity.tpeak() == 0.91**3
 
     def test_initialize2(self):
         test_config_file = toml.load(os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml")))
@@ -33,7 +33,7 @@ class TestTelescope:
         assert tel.size == 1 * u.m
         assert tel.area == 0.625 * u.m * u.m
         assert tel.num_mirrors == 2
-        assert tel.reflectivity.tpeak() == 0.8
+        assert tel.reflectivity.tpeak() == 0.8 * 0.8
 
     def test_reflectivity_file(self):
         test_config = { 'name' : "BPL 1-m",
@@ -47,4 +47,4 @@ class TestTelescope:
         assert tel.size == 1 * u.m
         assert tel.area == 0.625 * u.m * u.m
         assert tel.num_mirrors == 2
-        assert tel.reflectivity.tpeak() == 0.92
+        assert tel.reflectivity.tpeak() == 0.92**2
