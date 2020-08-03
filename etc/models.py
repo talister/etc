@@ -5,6 +5,8 @@ from astropy import units as u
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 
+__all__ = ['Site', 'Telescope', 'Instrument']
+
 class Site:
     """Model for a site location and the atmosphere above it"""
 
@@ -23,10 +25,11 @@ class Site:
             except ValueError:
                 sky_file = os.path.expandvars(kwargs['transmission'])
                 header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
-            self.transmission = SpectralElement(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=True, meta={'header': header})
+            self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=True, meta={'header': header})
 
     def __mul__(self, other):
-
+        if isinstance(other, Telescope):
+            other = other.reflectivity
         newcls = self
         newcls.transmission = self.transmission.__mul__(other)
         return newcls
@@ -71,6 +74,19 @@ class Telescope:
         self.reflectivity = mirror_se
         for x in range(0, self.num_mirrors-1):
             self.reflectivity *= mirror_se
+
+    def __mul__(self, other):
+        newcls = self
+        newcls.reflectivity = self.reflectivity.__mul__(other)
+        return newcls
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        newcls = self
+        newcls.reflectivity = self.reflectivity.__truediv__(other)
+        return newcls
 
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
