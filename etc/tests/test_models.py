@@ -48,3 +48,62 @@ class TestTelescope:
         assert tel.area == 0.625 * u.m * u.m
         assert tel.num_mirrors == 2
         assert tel.reflectivity.tpeak() == 0.92**2
+
+
+class TestInstrument:
+
+    def test_initialize_defaults(self):
+        inst = Instrument()
+
+        assert inst.name == "Undefined"
+        assert inst.inst_type == "IMAGER"
+
+    def test_initialize_bad_insttype(self):
+        inst = Instrument(inst_type="Wibble")
+
+        assert inst.name == "Undefined"
+        assert inst.inst_type == "IMAGER"
+
+    def test_initialize_spectrograph(self):
+        inst = Instrument(name="FLOYDS", inst_type="Spectrograph")
+
+        assert inst.name == "FLOYDS"
+        assert inst.inst_type == "SPECTROGRAPH"
+
+    def test_trans_default(self):
+        inst = Instrument()
+
+        assert inst.num_mirrors == 0
+        assert inst.num_lenses == 1
+        assert inst.num_ar_coatings == 2
+
+        assert inst.transmission.tpeak() == 0.88209
+
+    def test_trans_modify_optics(self):
+        optics_options = { 'inst_lens_trans' : 0.85,
+                           'inst_ar_coating_refl' : 0.95
+                         }
+        inst = Instrument(**optics_options)
+
+
+        assert inst.num_mirrors == 0
+        assert inst.num_lenses == 1
+        assert inst.num_ar_coatings == 2
+
+        assert inst.transmission.tpeak() == 0.767125
+
+    def test_trans_spectrograph(self):
+
+        optics_options = {  'num_ar_coatings' : 6,    # Air-glass interfaces: prism (2 sides), field flattener (4 sides)
+                            'num_inst_lenses' : 3,    # Fused silica prism (two passes) and CCD window
+                            'num_inst_mirrors': 4     # Mirrors:  Collimator, Fold, Camera, Grating
+                         }
+        inst = Instrument(name="FLOYDS", inst_type="SPECTROGRAPH", **optics_options)
+
+        assert inst.name == "FLOYDS"
+        assert inst.inst_type == "SPECTROGRAPH"
+        assert inst.num_mirrors == 4
+        assert inst.num_lenses == 3
+        assert inst.num_ar_coatings == 6
+
+        assert inst.transmission.tpeak() == 0.6659793414426959

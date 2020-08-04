@@ -96,8 +96,48 @@ class Telescope:
 
 
 class Instrument:
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, inst_type="IMAGER", **kwargs):
+        _ins_types = ["IMAGER", "SPECTROGRAPH"]
         self.name = name if name is not None else "Undefined"
+        self.inst_type = inst_type.upper() if inst_type.upper() in _ins_types else "IMAGER"
+
+        # Defaults assume a "standard" imager with a single lens, 2 AR coatings
+        # on the front and back surfaces and no mirrors
+        self.num_ar_coatings = kwargs.get('num_ar_coatings', 2)
+        self.num_lenses = kwargs.get('num_inst_lenses', 1)
+        self.num_mirrors = kwargs.get('num_inst_mirrors', 0)
+
+        # Fused silica (for the prism) and fused quartz (for the CCD window)
+        # turn out to have the same transmission...
+        self.lens_trans = kwargs.get('inst_lens_trans', 0.9)
+
+        self.mirror_refl = kwargs.get('inst_mirror_refl', 0.9925)
+        # Transmission/Reflection values of optical elements coating
+        self.ar_coating = kwargs.get('inst_ar_coating_refl', 0.99)
+
+        transmission = self._compute_transmission()
+        wavelengths = np.arange(300, 1501, 200) * u.nm
+        trans = len(wavelengths) * [transmission,]
+        header = {}
+        self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
+
+    def _compute_transmission(self):
+        """This calculates the optical transmission of the instrument from lenses,
+        mirrors and AR coatings. Assumes no/little wavelength dependence which
+        is true for typical fused silica or quartz over most of optical/NIR regime
+        see e.g.https://www.newport.com/n/optical-materials"""
+
+
+        # Air-glass interfaces:
+        throughput = self.ar_coating**self.num_ar_coatings
+        # Transmissive optical elements
+        throughput *= self.lens_trans**self.num_lenses
+        # Reflective optical elements (Mirrors):
+        throughput *= self.mirror_refl**self.num_mirrors
+
+        return throughput
+
+
 
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
