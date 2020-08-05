@@ -30,6 +30,8 @@ class Site:
     def __mul__(self, other):
         if isinstance(other, Telescope):
             other = other.reflectivity
+        if isinstance(other, Instrument):
+            other = other.transmission
         newcls = self
         newcls.transmission = self.transmission.__mul__(other)
         return newcls
@@ -69,11 +71,30 @@ class Telescope:
             print(mirror_file)
             header, wavelengths, refl = specio.read_ascii_spec(mirror_file, wave_unit=u.nm, flux_unit='%')
 
-        mirror_se = SpectralElement(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
+        mirror_se = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
         # Assume all mirrors are the same reflectivity and multiply together
         self.reflectivity = mirror_se
         for x in range(0, self.num_mirrors-1):
             self.reflectivity *= mirror_se
+
+    def tpeak(self, wavelengths=None):
+        """Calculate :ref:`peak bandpass throughput <synphot-formula-tpeak>`.
+
+        Parameters
+        ----------
+        wavelengths : array-like, `~astropy.units.quantity.Quantity`, or `None`
+            Wavelength values for sampling.
+            If not a Quantity, assumed to be in Angstrom.
+            If `None`, ``self.waveset`` is used.
+
+        Returns
+        -------
+        tpeak : `~astropy.units.quantity.Quantity`
+            Peak bandpass throughput.
+
+        """
+        x = self.reflectivity._validate_wavelengths(wavelengths)
+        return self.reflectivity(x).max()
 
     def __mul__(self, other):
         newcls = self
