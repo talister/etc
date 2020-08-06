@@ -3,6 +3,7 @@ import os
 
 import toml
 from astropy import units as u
+from synphot.spectrum import SpectralElement
 
 from etc.models import *
 
@@ -76,6 +77,7 @@ class TestInstrument:
         assert inst.num_mirrors == 0
         assert inst.num_lenses == 1
         assert inst.num_ar_coatings == 2
+        assert inst.filterlist == []
 
         assert inst.transmission.tpeak() == 0.88209
 
@@ -107,3 +109,26 @@ class TestInstrument:
         assert inst.num_ar_coatings == 6
 
         assert inst.transmission.tpeak() == 0.6659793414426959
+
+    def test_filterset(self):
+
+        optics_options = {  'filterlist' : ['u', 'g', 'r', 'i', 'z'],
+
+                         }
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['u', 'g', 'r', 'i', 'z']
+        assert len(inst.filterset) == 5
+        assert isinstance(inst.filterset['g'], SpectralElement)
+
+    def test_filterset_primenotation(self):
+
+        optics_options = {  'filterlist' : ['up', 'gp', 'rp', 'ip', 'zs'],
+
+                         }
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['up', 'gp', 'rp', 'ip', 'zs']
+        assert len(inst.filterset) == 5
+        assert isinstance(inst.filterset['gp'], SpectralElement)
+        assert isinstance(inst.filterset['zs'], SpectralElement)

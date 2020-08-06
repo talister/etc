@@ -1,11 +1,30 @@
 import os
+import sys
+from collections import OrderedDict
+import warnings
+
+try:
+    if sys.version_info >= (3, 9):
+        # This exists in 3.8 but a different API
+        import importlib.resources as pkg_resources
+    else:
+        raise ImportError
+except ImportError:
+    # Try backported to PY<37 `importlib_resources`.
+    import importlib_resources as pkg_resources
 
 import numpy as np
 from astropy import units as u
+from astropy.utils.exceptions import AstropyUserWarning
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 
+from .config import Conf
+
 __all__ = ['Site', 'Telescope', 'Instrument']
+
+class ETCError(Exception):
+    pass
 
 class Site:
     """Model for a site location and the atmosphere above it"""
@@ -68,7 +87,6 @@ class Telescope:
             header = {}
         except ValueError:
             mirror_file = os.path.expandvars(kwargs['reflectivity'])
-            print(mirror_file)
             header, wavelengths, refl = specio.read_ascii_spec(mirror_file, wave_unit=u.nm, flux_unit='%')
 
         mirror_se = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
@@ -142,12 +160,43 @@ class Instrument:
         header = {}
         self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
 
+        self.filterlist = kwargs.get('filterlist', [])
+        self.filterset = OrderedDict()
+        for filtername in self.filterlist:
+            if filtername not in self.filterset:
+                self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
+
+    def set_bandpass_from_filter(self, filtername):
+
+        filtername = filtername.lower()
+
+        if len(filtername) == 2 and filtername[1] == 'p':
+            filtername = filtername[0]
+
+        mapping = { 'u' : Conf.lco_u_file,
+                    'g' : Conf.lco_g_file,
+                    'r' : Conf.lco_r_file,
+                    'i' : Conf.lco_i_file,
+                    'z' : Conf.lco_zs_file,
+                    'zs' : Conf.lco_zs_file
+                  }
+        filename = mapping.get(filtername, None)
+        if filename is None:
+            raise ETCError('Filter name {0} is invalid.'.format(filtername))
+        file_path = pkg_resources.files('etc.data').joinpath(filename())
+        warnings.simplefilter('ignore', category = AstropyUserWarning)
+        header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+        header['filename'] = filename
+        header['descrip'] = filename.description
+        meta = {'header': header, 'expr': filtername}
+
+        return SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, meta=meta)
+
     def _compute_transmission(self):
         """This calculates the optical transmission of the instrument from lenses,
         mirrors and AR coatings. Assumes no/little wavelength dependence which
         is true for typical fused silica or quartz over most of optical/NIR regime
-        see e.g.https://www.newport.com/n/optical-materials"""
-
+        see e.g. https://www.newport.com/n/optical-materials"""
 
         # Air-glass interfaces:
         throughput = self.ar_coating**self.num_ar_coatings
@@ -157,8 +206,6 @@ class Instrument:
         throughput *= self.mirror_refl**self.num_mirrors
 
         return throughput
-
-
 
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
