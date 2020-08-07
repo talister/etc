@@ -1,8 +1,11 @@
 import pytest
 import os
+import warnings
 
 import toml
 from astropy import units as u
+warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
+from astropy.tests.helper import assert_quantity_allclose
 from synphot.spectrum import SpectralElement
 
 from etc.models import *
@@ -49,7 +52,6 @@ class TestTelescope:
         assert tel.area == 0.625 * u.m * u.m
         assert tel.num_mirrors == 2
         assert tel.tpeak() == 0.92**2
-
 
 class TestInstrument:
 
@@ -113,7 +115,6 @@ class TestInstrument:
     def test_filterset(self):
 
         optics_options = {  'filterlist' : ['u', 'g', 'r', 'i', 'z'],
-
                          }
         inst = Instrument(**optics_options)
 
@@ -124,7 +125,6 @@ class TestInstrument:
     def test_filterset_primenotation(self):
 
         optics_options = {  'filterlist' : ['up', 'gp', 'rp', 'ip', 'zs'],
-
                          }
         inst = Instrument(**optics_options)
 
@@ -132,3 +132,27 @@ class TestInstrument:
         assert len(inst.filterset) == 5
         assert isinstance(inst.filterset['gp'], SpectralElement)
         assert isinstance(inst.filterset['zs'], SpectralElement)
+
+    def test_throughput(self):
+
+        optics_options = { 'filterlist' : ['r',] }
+
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['r', ]
+        assert len(inst.filterset) == 1
+        assert isinstance(inst.filterset['r'], SpectralElement)
+        assert isinstance(inst.throughput('r'), SpectralElement)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), u.Quantity(0.78725846), 1e-5)
+
+    def test_throughput_new_ccd_qe(self):
+
+        optics_options = { 'filterlist' : ['r',], 'ccd'  : 0.45 }
+
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['r', ]
+        assert len(inst.filterset) == 1
+        assert isinstance(inst.filterset['r'], SpectralElement)
+        assert isinstance(inst.throughput('r'), SpectralElement)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), u.Quantity(0.78725846/2.0), 1e-5)

@@ -166,6 +166,8 @@ class Instrument:
             if filtername not in self.filterset:
                 self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
 
+        self.ccd = kwargs.get('ccd', 0.9)
+
     def set_bandpass_from_filter(self, filtername):
 
         filtername = filtername.lower()
@@ -191,6 +193,14 @@ class Instrument:
         meta = {'header': header, 'expr': filtername}
 
         return SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, meta=meta)
+
+    def throughput(self, filtername):
+        """Returns the total throughput of optics+filter/grating+CCD"""
+
+        if filtername not in self.filterlist or filtername not in self.filterset:
+            raise ETCError('Filter name {0} is invalid.'.format(filtername))
+
+        return self.filterset[filtername] * self.transmission * self.ccd
 
     def _compute_transmission(self):
         """This calculates the optical transmission of the instrument from lenses,
