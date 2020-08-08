@@ -1,7 +1,8 @@
 import os
 import sys
-from collections import OrderedDict
+import numbers
 import warnings
+from collections import OrderedDict
 
 try:
     if sys.version_info >= (3, 9):
@@ -166,7 +167,16 @@ class Instrument:
             if filtername not in self.filterset:
                 self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
 
-        self.ccd = kwargs.get('ccd', 0.9)
+        ccd_qe = kwargs.get('ccd', 0.9)
+        if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
+            header, wavelengths, throughput = specio.read_ascii_spec(ccd_qe, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+            if throughput.mean() > 1.0:
+                throughput /= 100.0
+                header['notes'] = 'Divided by 100.0 to convert from percentage'
+            header['filename'] = ccd_qe
+            self.ccd = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+        else:
+            self.ccd = ccd_qe
 
     def set_bandpass_from_filter(self, filtername):
 

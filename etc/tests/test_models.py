@@ -6,7 +6,7 @@ import toml
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
-from synphot.spectrum import SpectralElement
+from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum
 
 from etc.models import *
 
@@ -143,7 +143,7 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), u.Quantity(0.78725846), 1e-5)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846, 1e-5)
 
     def test_throughput_new_ccd_qe(self):
 
@@ -155,4 +155,31 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), u.Quantity(0.78725846/2.0), 1e-5)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846/2.0, 1e-5)
+
+    def test_throughput_ccd_qe_quantity(self):
+
+        optics_options = { 'filterlist' : ['r',], 'ccd'  : u.Quantity(0.45, u.dimensionless_unscaled) }
+
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['r', ]
+        assert len(inst.filterset) == 1
+        assert isinstance(inst.filterset['r'], SpectralElement)
+        assert isinstance(inst.throughput('r'), SpectralElement)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846/2.0, 1e-5)
+
+    def test_throughput_ccd_qe_file(self):
+
+        optics_options = { 'filterlist' : ['r',],
+                           'ccd'  : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_ccd_qe.dat"))
+                         }
+
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['r', ]
+        assert len(inst.filterset) == 1
+        assert isinstance(inst.filterset['r'], SpectralElement)
+        assert isinstance(inst.throughput('r'), SpectralElement)
+        assert isinstance(inst.ccd, BaseUnitlessSpectrum)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.857044, 1e-5)

@@ -1,0 +1,12 @@
+# From https://www.apo.nmsu.edu/arc35m/Instruments/ARCTIC/#3p5
+# Wavelength[nm] QE[%]
+300     65
+350 	75
+400 	85
+500 	98
+550 	99
+600 	98
+700 	95
+800 	84
+900 	50
+1000 	12
