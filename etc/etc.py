@@ -1,7 +1,11 @@
-
+import sys
 import toml
 try:
-    import importlib.resources as pkg_resources
+    if sys.version_info >= (3, 9):
+        # This exists in 3.8 but a different API
+        import importlib.resources as pkg_resources
+    else:
+        raise ImportError
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     import importlib_resources as pkg_resources
