@@ -133,6 +133,20 @@ class TestInstrument:
         assert isinstance(inst.filterset['gp'], SpectralElement)
         assert isinstance(inst.filterset['zs'], SpectralElement)
 
+    def test_filterset_mixedcase(self):
+
+        optics_options = { 'filterlist' : ['r', 'R'],
+                         }
+
+        inst = Instrument(**optics_options)
+
+        assert inst.filterlist == ['r', 'R']
+        assert len(inst.filterset) == 2
+        assert isinstance(inst.filterset['r'], SpectralElement)
+        assert isinstance(inst.filterset['R'], SpectralElement)
+        assert inst.filterset['r'].meta['header']['descrip'] != inst.filterset['R'].meta['header']['descrip']
+        assert inst.filterset['r'].meta['expr'] != inst.filterset['R'].meta['expr']
+
     def test_throughput(self):
 
         optics_options = { 'filterlist' : ['r',] }

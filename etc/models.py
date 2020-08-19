@@ -198,8 +198,10 @@ class Instrument:
 
 
     def set_bandpass_from_filter(self, filtername):
-
-        filtername = filtername.lower()
+        """Loads the specified <filtername> from the transmission profile file
+        which is mapped via the etc.config.Conf() items.
+        Returns a SpectralElement instance for the filter profile
+        """
 
         if len(filtername) == 2 and filtername[1] == 'p':
             filtername = filtername[0]
@@ -210,17 +212,17 @@ class Instrument:
                     'i' : Conf.lco_i_file,
                     'z' : Conf.lco_zs_file,
                     'zs' : Conf.lco_zs_file,
-                    'c2' : Conf.lco_c2_file,
-                    'c3' : Conf.lco_c3_file,
-                    'oh' : Conf.lco_oh_file,
-                    'cn' : Conf.lco_cn_file,
-                    'nh2': Conf.lco_nh2_file,
-                    'cr' : Conf.lco_cr_file,
-                    'u' : Conf.lco_U_file,
-                    'b' : Conf.lco_B_file,
-                    'v' : Conf.lco_V_file,
-                    'r' : Conf.lco_R_file,
-                    'i' : Conf.lco_I_file,
+                    'C2' : Conf.lco_c2_file,
+                    'C3' : Conf.lco_c3_file,
+                    'OH' : Conf.lco_oh_file,
+                    'CN' : Conf.lco_cn_file,
+                    'NH2': Conf.lco_nh2_file,
+                    'CR' : Conf.lco_cr_file,
+                    'U' : Conf.lco_U_file,
+                    'B' : Conf.lco_B_file,
+                    'V' : Conf.lco_V_file,
+                    'R' : Conf.lco_R_file,
+                    'I' : Conf.lco_I_file,
 
                   }
         filename = mapping.get(filtername, None)
