@@ -16,6 +16,7 @@ except ImportError:
 
 import numpy as np
 from astropy import units as u
+from astropy.table import Table
 from astropy.utils.exceptions import AstropyUserWarning
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
@@ -87,8 +88,10 @@ class Telescope:
             refl = len(wavelengths) * [reflectivity,]
             header = {}
         except ValueError:
-            mirror_file = os.path.expandvars(kwargs['reflectivity'])
-            header, wavelengths, refl = specio.read_ascii_spec(mirror_file, wave_unit=u.nm, flux_unit='%')
+            file_path = os.path.expandvars(kwargs['reflectivity'])
+            if not os.path.exists(file_path):
+                file_path = pkg_resources.files('etc.data').joinpath(kwargs['reflectivity'])
+            header, wavelengths, refl = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit='%')
 
         mirror_se = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
         # Assume all mirrors are the same reflectivity and multiply together
@@ -181,6 +184,19 @@ class Instrument:
         else:
             self.ccd = ccd_qe
 
+    def _read_lco_filter_csv(self, csv_filter):
+        """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
+        file with header and data)
+        Returns an empty header dictionary and the wavelength and trensmission columns"""
+
+        table = Table.read(csv_filter, format='ascii.csv', header_start=0, data_start=64)
+        table.rename_column('ILDIALCT', 'Wavelength')
+        table.rename_column('ilab_v1', 'Trans_measured')
+        table.rename_column('FITS/CSV file dialect', 'Trans_filtered')
+
+        return {}, table['Wavelength'], table['Trans_measured']
+
+
     def set_bandpass_from_filter(self, filtername):
 
         filtername = filtername.lower()
@@ -193,14 +209,29 @@ class Instrument:
                     'r' : Conf.lco_r_file,
                     'i' : Conf.lco_i_file,
                     'z' : Conf.lco_zs_file,
-                    'zs' : Conf.lco_zs_file
+                    'zs' : Conf.lco_zs_file,
+                    'c2' : Conf.lco_c2_file,
+                    'c3' : Conf.lco_c3_file,
+                    'oh' : Conf.lco_oh_file,
+                    'cn' : Conf.lco_cn_file,
+                    'nh2': Conf.lco_nh2_file,
+                    'cr' : Conf.lco_cr_file,
+                    'u' : Conf.lco_U_file,
+                    'b' : Conf.lco_B_file,
+                    'v' : Conf.lco_V_file,
+                    'r' : Conf.lco_R_file,
+                    'i' : Conf.lco_I_file,
+
                   }
         filename = mapping.get(filtername, None)
         if filename is None:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
-        file_path = pkg_resources.files('etc.data').joinpath(filename())
-        warnings.simplefilter('ignore', category = AstropyUserWarning)
-        header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+        file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
+        if 'LCO_' in filename().upper() and '.csv' in filename().lower():
+            header, wavelengths, throughput  = self._read_lco_filter_csv(file_path)
+        else:
+            warnings.simplefilter('ignore', category = AstropyUserWarning)
+            header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
         header['filename'] = filename
         header['descrip'] = filename.description
         meta = {'header': header, 'expr': filtername}
