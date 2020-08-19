@@ -58,7 +58,7 @@ class ETC(object):
         insts = [x for x in self.components if isinstance(x, Instrument)]
         return insts[0] if len(insts) == 1 else None
 
-    def _do_plot(self, waves, thru, title='', left=300*u.nm, right=1200*u.nm, bottom=0.0, top=None):
+    def _do_plot(self, waves, thru, filterlist=[], filterset=None, title='', left=300*u.nm, right=1200*u.nm, bottom=0.0, top=None):
         """Plot worker.
 
         Parameters
@@ -78,6 +78,11 @@ class ETC(object):
 
         fig, ax = plt.subplots()
         ax.plot(waves, thru)
+
+        # Plot filters
+        for filtername in filterlist:
+            filter_wave, filter_trans = filterset[filtername]._get_arrays(waves)
+            filt_plot = ax.plot(filter_wave.to(self._internal_wave_unit), filter_trans*thru, linestyle='--', linewidth=1, label=filtername)
 
         # Custom wavelength limits
         if left is not None:
@@ -113,13 +118,17 @@ class ETC(object):
 
         # Turn on minorticks on both axes
         ax.minorticks_on()
+        ax.legend()
 
         plt.draw()
 
-    def plot(self, **kwargs):
+    def plot(self, filterlist=[], **kwargs):
         self._create_combined()
         waves, trans = self.combined._get_arrays(None)
-        self._do_plot(waves.to(self._internal_wave_unit), trans, **kwargs)
+        filterset = None
+        if len(filterlist) > 0 and set(filterlist).issubset(set(self.instrument.filterlist)):
+            filterset = self.instrument.filterset
+        self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
 
     def _create_combined(self):
         if self.combined is None:
