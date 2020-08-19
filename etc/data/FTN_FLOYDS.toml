@@ -2,6 +2,8 @@
 name = "Maui, HI"
 altitude = 3065
 altitude_units = "m"
+latitude = +20.7069
+longitude = -156.258
 transmission = "${CDBS_PATH}/atmos/FTN_a12_pwv035.fits"
 [site.sky_mag]
     U = 22.0
@@ -21,7 +23,7 @@ name = "FTN"
 size = 2.0
 area = 2.574
 num_mirrors = 3
-mirror_reflectivity = "photometrics/data/Protected_Al_mirror.dat"
+reflectivity = "Protected_Al_mirror.dat"
 
 [instrument]
 name = "FLOYDS"
