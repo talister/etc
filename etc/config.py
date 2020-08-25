@@ -32,6 +32,30 @@ class Conf(ConfigNamespace):
     wht_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_R', 'WHT/PFIP Harris R')
     wht_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_I', 'WHT/PFIP Harris I')
 
+    mapping = { 'u' : lco_u_file,
+                'g' : lco_g_file,
+                'r' : lco_r_file,
+                'i' : lco_i_file,
+                'z' : lco_zs_file,
+                'zs' : lco_zs_file,
+                'C2' : lco_c2_file,
+                'C3' : lco_c3_file,
+                'OH' : lco_oh_file,
+                'CN' : lco_cn_file,
+                'NH2': lco_nh2_file,
+                'CR' : lco_cr_file,
+                'U' : lco_U_file,
+                'B' : lco_B_file,
+                'V' : lco_V_file,
+                'R' : lco_R_file,
+                'I' : lco_I_file,
+                'WHT_U' : wht_U_file,
+                'WHT_B' : wht_B_file,
+                'WHT_V' : wht_V_file,
+                'WHT_R' : wht_R_file,
+                'WHT_I' : wht_I_file,
+              }
+
     # STANDARD STARS
     vega_file = ConfigItem(
         'http://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits', 'Vega')

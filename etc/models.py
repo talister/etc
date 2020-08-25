@@ -21,7 +21,7 @@ from astropy.utils.exceptions import AstropyUserWarning
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 
-from .config import Conf
+from .config import conf
 
 __all__ = ['Site', 'Telescope', 'Instrument']
 
@@ -212,43 +212,23 @@ class Instrument:
         if len(filtername) == 2 and filtername[1] == 'p':
             filtername = filtername[0]
 
-        mapping = { 'u' : Conf.lco_u_file,
-                    'g' : Conf.lco_g_file,
-                    'r' : Conf.lco_r_file,
-                    'i' : Conf.lco_i_file,
-                    'z' : Conf.lco_zs_file,
-                    'zs' : Conf.lco_zs_file,
-                    'C2' : Conf.lco_c2_file,
-                    'C3' : Conf.lco_c3_file,
-                    'OH' : Conf.lco_oh_file,
-                    'CN' : Conf.lco_cn_file,
-                    'NH2': Conf.lco_nh2_file,
-                    'CR' : Conf.lco_cr_file,
-                    'U' : Conf.lco_U_file,
-                    'B' : Conf.lco_B_file,
-                    'V' : Conf.lco_V_file,
-                    'R' : Conf.lco_R_file,
-                    'I' : Conf.lco_I_file,
-                    'WHT_U' : Conf.wht_U_file,
-                    'WHT_B' : Conf.wht_B_file,
-                    'WHT_V' : Conf.wht_V_file,
-                    'WHT_R' : Conf.wht_R_file,
-                    'WHT_I' : Conf.wht_I_file,
-                  }
-        filename = mapping.get(filtername, None)
+        filename =  conf.mapping.get(filtername, None)
         if filename is None:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
         if 'LCO_' in filename().upper() and '.csv' in filename().lower():
             file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
-            print("Reading LCO iLab format")
+            source = "LCO iLab format"
             header, wavelengths, throughput  = self._read_lco_filter_csv(file_path)
         elif 'http://svo' in filename().lower():
-            print("Reading from SVO filter service")
+            source = "SVO filter service"
             header, wavelengths, throughput = specio.read_remote_spec(filename(), wave_unit=u.AA, flux_unit=units.THROUGHPUT)
         else:
+            source = "local file"
             file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
             warnings.simplefilter('ignore', category = AstropyUserWarning)
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+        print("Reading from {} for {}".format(source, filtername))
+
         header['filename'] = filename
         header['descrip'] = filename.description
         meta = {'header': header, 'expr': filtername}
