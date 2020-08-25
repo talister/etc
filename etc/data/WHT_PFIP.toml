@@ -1,0 +1,40 @@
+# Config file for emulating the ING SIGNAL program
+[site]
+name = "La Palma, Spain"
+altitude = 3065
+altitude_units = "m"
+latitude = +25.7069
+longitude = -17.0
+transmission = 0.87
+[site.sky_mag]
+    U = 22.0
+    B = 22.7
+    V = 21.9
+    R = 21.0
+    I = 20.0
+    Z = 18.8
+    gp = 21.9
+    rp = 20.8
+    ip = 19.8
+    zp = 19.2
+    w = 20.6
+
+[telescope]
+name = "WHT"
+size = 4.2
+area = 12.47
+num_mirrors = 1
+reflectivity = 0.85
+
+[instrument]
+name = "WHTWFC"
+inst_type = "Imager"
+num_ar_coatings = 0
+num_inst_mirrors = 0
+num_inst_lenses = 1
+inst_lens_trans = 0.7 # Hardwire to match final Empirical/theoretical of 0.7
+fwhm = 1.0
+fwhm_units = "arcsec"
+filterlist = ['WHT_U','WHT_B', 'WHT_V','WHT_R', 'WHT_I']
+ccd = 0.8
+

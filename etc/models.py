@@ -227,10 +227,13 @@ class Instrument:
                     'U' : Conf.lco_U_file,
                     'B' : Conf.lco_B_file,
                     'V' : Conf.lco_V_file,
-                    'WHT_V' : Conf.wht_V_file,
                     'R' : Conf.lco_R_file,
                     'I' : Conf.lco_I_file,
-
+                    'WHT_U' : Conf.wht_U_file,
+                    'WHT_B' : Conf.wht_B_file,
+                    'WHT_V' : Conf.wht_V_file,
+                    'WHT_R' : Conf.wht_R_file,
+                    'WHT_I' : Conf.wht_I_file,
                   }
         filename = mapping.get(filtername, None)
         if filename is None:
