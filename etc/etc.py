@@ -1,3 +1,4 @@
+import os
 import sys
 import toml
 try:
@@ -11,14 +12,21 @@ except ImportError:
     import importlib_resources as pkg_resources
 
 from astropy import units as u
+from synphot import SourceSpectrum, SpectralElement, units
+from synphot.models import Empirical1D
+from synphot.observation import Observation
 
 from . import data
 from .models import Site, Telescope, Instrument
+from .config import conf
 
 
 class ETC(object):
 
     _internal_wave_unit = u.nm
+    _sun_raw = SourceSpectrum.from_file(os.path.expandvars(conf.sun_file))
+    _vega = SourceSpectrum.from_file(os.path.expandvars(conf.vega_file))
+    _V_band = SpectralElement.from_filter('johnson_v')
 
     def __init__(self, components=None, config_file=None):
         PRESET_MODELS = toml.loads(pkg_resources.read_text(data, "FTN_FLOYDS.toml"))
@@ -57,6 +65,22 @@ class ETC(object):
     def instrument(self):
         insts = [x for x in self.components if isinstance(x, Instrument)]
         return insts[0] if len(insts) == 1 else None
+
+    def exptime_from_ccd_snr(self, snr, V_mag, filtername):
+
+        sun = self._vega.normalize(V_mag * units.VEGAMAG, self._V_band, vegaspec=self._vega)
+
+        source_spec = sun
+        self._create_combined()
+        waves, thru = self.combined._get_arrays(None)
+        filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(waves)
+        spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
+
+        # get the synphot observation object
+        synphot_obs = Observation(source_spec, spec_elements, force='taper')
+
+        countrate = synphot_obs.countrate(area=self.telescope.area)
+        print(countrate)
 
     def _do_plot(self, waves, thru, filterlist=[], filterset=None, title='', left=300*u.nm, right=1200*u.nm, bottom=0.0, top=None):
         """Plot worker.
@@ -126,6 +150,9 @@ class ETC(object):
         self._create_combined()
         waves, trans = self.combined._get_arrays(None)
         filterset = None
+        # Handle single filter string case
+        if isinstance(filterlist, str):
+            filterlist = [filterlist,]
         if len(filterlist) > 0 and set(filterlist).issubset(set(self.instrument.filterlist)):
             filterset = self.instrument.filterset
         self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
