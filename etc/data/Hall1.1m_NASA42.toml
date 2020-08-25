@@ -1,0 +1,25 @@
+[site]
+name = "Lowell Observatory"
+altitude = 2206
+altitude_units = "m"
+latitude = +35.09653
+longitude = -111.535
+transmission = "${CDBS_PATH}/atmos/Lowell_a12_pwv080.fits"
+
+[telescope]
+name = 'Hall 42"/1.1m'
+size = 1.04
+area = 0.69481756
+num_mirrors = 2
+reflectivity = "Protected_Al_mirror.dat"
+
+[instrument]
+name = "NASA42"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 1
+fwhm = 1.3
+fwhm_units = "arcsec"
+filterlist = ['OH','C2','NH2','CN','C3','CR','B','V','R','gp','rp','ip','zs']
+ccd = "comp/E2V_CCD231BI_CCD_qe.dat"
+
