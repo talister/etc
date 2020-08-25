@@ -159,7 +159,7 @@ class ETC(object):
 
     def _create_combined(self):
         if self.combined is None:
-            self.combined = self.site.transmission * self.telescope.reflectivity * self.instrument.transmission * self.instrument.ccd
+            self.combined = self.site.transmission * self.telescope.reflectivity * self.instrument.transmission * self.instrument.ccd_qe
 
     def __repr__(self):
         prefixstr = '<' + self.__class__.__name__ + ' '

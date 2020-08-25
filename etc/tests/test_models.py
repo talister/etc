@@ -161,7 +161,7 @@ class TestInstrument:
 
     def test_throughput_new_ccd_qe(self):
 
-        optics_options = { 'filterlist' : ['r',], 'ccd'  : 0.45 }
+        optics_options = { 'filterlist' : ['r',], 'ccd_qe'  : 0.45 }
 
         inst = Instrument(**optics_options)
 
@@ -173,7 +173,7 @@ class TestInstrument:
 
     def test_throughput_ccd_qe_quantity(self):
 
-        optics_options = { 'filterlist' : ['r',], 'ccd'  : u.Quantity(0.45, u.dimensionless_unscaled) }
+        optics_options = { 'filterlist' : ['r',], 'ccd_qe'  : u.Quantity(0.45, u.dimensionless_unscaled) }
 
         inst = Instrument(**optics_options)
 
@@ -186,7 +186,7 @@ class TestInstrument:
     def test_throughput_ccd_qe_file(self):
 
         optics_options = { 'filterlist' : ['r',],
-                           'ccd'  : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_ccd_qe.dat"))
+                           'ccd_qe'  : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_ccd_qe.dat"))
                          }
 
         inst = Instrument(**optics_options)
@@ -195,5 +195,5 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert isinstance(inst.ccd, BaseUnitlessSpectrum)
+        assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
         assert_quantity_allclose(inst.throughput('r').tpeak(), 0.857044, 1e-5)

@@ -174,7 +174,7 @@ class Instrument:
             if filtername not in self.filterset:
                 self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
 
-        ccd_qe = kwargs.get('ccd', 0.9)
+        ccd_qe = kwargs.get('ccd_qe', 0.9)
         if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
             file_path = os.path.expandvars(ccd_qe)
             if not os.path.exists(file_path):
@@ -184,9 +184,9 @@ class Instrument:
                 throughput /= 100.0
                 header['notes'] = 'Divided by 100.0 to convert from percentage'
             header['filename'] = ccd_qe
-            self.ccd = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+            self.ccd_qe = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
         else:
-            self.ccd = ccd_qe
+            self.ccd_qe = ccd_qe
 
     def _read_lco_filter_csv(self, csv_filter):
         """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
@@ -241,7 +241,7 @@ class Instrument:
         if filtername not in self.filterlist or filtername not in self.filterset:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
 
-        return self.filterset[filtername] * self.transmission * self.ccd
+        return self.filterset[filtername] * self.transmission * self.ccd_qe
 
     def _compute_transmission(self):
         """This calculates the optical transmission of the instrument from lenses,

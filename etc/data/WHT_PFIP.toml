@@ -36,5 +36,5 @@ inst_lens_trans = 0.7 # Hardwire to match final Empirical/theoretical of 0.7
 fwhm = 1.0
 fwhm_units = "arcsec"
 filterlist = ['WHT_U','WHT_B', 'WHT_V','WHT_R', 'WHT_I']
-ccd = 0.8
+ccd_qe = 0.80
 
