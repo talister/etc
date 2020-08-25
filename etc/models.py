@@ -16,7 +16,7 @@ except ImportError:
 
 import numpy as np
 from astropy import units as u
-from astropy.table import Table
+from astropy.table import QTable
 from astropy.utils.exceptions import AstropyUserWarning
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
@@ -40,13 +40,17 @@ class Site:
             modelclass = Empirical1D
             try:
                 transmission = float(kwargs['transmission'])
-                wavelengths = np.arange(300, 1501, 200) * u.nm
+                wavelengths = np.arange(300, 1501, 1) * u.nm
                 throughput = len(wavelengths) * [transmission,]
                 header = {}
             except ValueError:
                 sky_file = os.path.expandvars(kwargs['transmission'])
-                header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
-            self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=True, meta={'header': header})
+                try:
+                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
+                except KeyError:
+                    # ESO-SM01 format; different column name for transmission and micron vs nm
+                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
+            self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
     def __mul__(self, other):
         if isinstance(other, Telescope):
@@ -84,7 +88,7 @@ class Telescope:
         reflectivity = kwargs.get('reflectivity',  0.91)    # Default value based on average of bare Al over 300-1200nm
         try:
             reflectivity = float(reflectivity)
-            wavelengths = np.arange(300, 1501, 200) * u.nm
+            wavelengths = np.arange(300, 1501, 1) * u.nm
             refl = len(wavelengths) * [reflectivity,]
             header = {}
         except ValueError:
@@ -159,7 +163,7 @@ class Instrument:
         self.ar_coating = kwargs.get('inst_ar_coating_refl', 0.99)
 
         transmission = self._compute_transmission()
-        wavelengths = np.arange(300, 1501, 200) * u.nm
+        wavelengths = np.arange(300, 1501, 1) * u.nm
         trans = len(wavelengths) * [transmission,]
         header = {}
         self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
@@ -189,9 +193,11 @@ class Instrument:
         file with header and data)
         Returns an empty header dictionary and the wavelength and trensmission columns"""
 
-        table = Table.read(csv_filter, format='ascii.csv', header_start=0, data_start=64)
+        table = QTable.read(csv_filter, format='ascii.csv', header_start=0, data_start=64)
         table.rename_column('ILDIALCT', 'Wavelength')
+        table['Wavelength'].unit = u.nm
         table.rename_column('ilab_v1', 'Trans_measured')
+        table['Trans_measured'].unit = u.dimensionless_unscaled
         table.rename_column('FITS/CSV file dialect', 'Trans_filtered')
 
         return {}, table['Wavelength'], table['Trans_measured']
@@ -221,6 +227,7 @@ class Instrument:
                     'U' : Conf.lco_U_file,
                     'B' : Conf.lco_B_file,
                     'V' : Conf.lco_V_file,
+                    'WHT_V' : Conf.wht_V_file,
                     'R' : Conf.lco_R_file,
                     'I' : Conf.lco_I_file,
 
@@ -228,10 +235,15 @@ class Instrument:
         filename = mapping.get(filtername, None)
         if filename is None:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
-        file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
         if 'LCO_' in filename().upper() and '.csv' in filename().lower():
+            file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
+            print("Reading LCO iLab format")
             header, wavelengths, throughput  = self._read_lco_filter_csv(file_path)
+        elif 'http://svo' in filename().lower():
+            print("Reading from SVO filter service")
+            header, wavelengths, throughput = specio.read_remote_spec(filename(), wave_unit=u.AA, flux_unit=units.THROUGHPUT)
         else:
+            file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
             warnings.simplefilter('ignore', category = AstropyUserWarning)
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
         header['filename'] = filename
