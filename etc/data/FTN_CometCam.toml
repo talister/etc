@@ -34,4 +34,6 @@ fwhm = 1.3
 fwhm_units = "arcsec"
 filterlist = ['OH','C2','NH2','CN','C3','CR','B','V','R','gp','rp','ip','zs']
 ccd_qe = "comp/Kodak_KAF16803_CCD_qe.dat"
+ccd_readnoise = 13.5 # electrons
+ccd_gain = 1.4 # electrons/ADU
 

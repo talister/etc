@@ -33,4 +33,5 @@ num_inst_surfaces = 6
 fwhm = 1.3
 fwhm_units = "arcsec"
 ccd_qe = "comp/lco/FLOYDS_CCD_qe.dat"
-
+ccd_readnoise = 3.7 # electrons
+ccd_gain = 2.0 # electrons/ADU

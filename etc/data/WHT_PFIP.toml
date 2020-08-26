@@ -37,4 +37,5 @@ fwhm = 1.0
 fwhm_units = "arcsec"
 filterlist = ['WHT_U','WHT_B', 'WHT_V','WHT_R', 'WHT_I']
 ccd_qe = 0.80
-
+ccd_readnoise = 4.0 # electrons
+ccd_gain = 0.9 # electrons/ADU

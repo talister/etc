@@ -197,3 +197,18 @@ class TestInstrument:
         assert isinstance(inst.throughput('r'), SpectralElement)
         assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
         assert_quantity_allclose(inst.throughput('r').tpeak(), 0.857044, 1e-5)
+
+    def test_ccd_parameters(self):
+        expected_gain = 0.9 * (u.electron / u.adu)
+        expected_noise = 4.0 * (u.electron / u.pix)
+
+        ccd_options = { 'ccd_readnoise' : 4.0,
+                        'ccd_gain' : 0.9,
+                        'ccd_qe'  : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_ccd_qe.dat"))
+                      }
+
+        inst = Instrument(**ccd_options)
+
+        assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
+        assert_quantity_allclose(inst.ccd_gain, expected_gain)
+        assert_quantity_allclose(inst.ccd_readnoise, expected_noise)

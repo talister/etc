@@ -21,5 +21,7 @@ num_inst_lenses = 1
 fwhm = 1.3
 fwhm_units = "arcsec"
 filterlist = ['OH','C2','NH2','CN','C3','CR','B','V','R','gp','rp','ip','zs']
-ccd = "comp/E2V_CCD231BI_CCD_qe.dat"
+ccd_qe = "comp/E2V_CCD231BI_CCD_qe.dat"
+ccd_readnoise = 4.5 # electrons
+ccd_gain = 3.8 # electrons/ADU
 

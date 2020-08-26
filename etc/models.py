@@ -187,6 +187,9 @@ class Instrument:
             self.ccd_qe = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
         else:
             self.ccd_qe = ccd_qe
+        self.ccd_gain = kwargs.get('ccd_gain', 1) * (u.electron / u.adu)
+        self.ccd_readnoise = kwargs.get('ccd_readnoise', 0) * (u.electron / u.pix)
+
 
     def _read_lco_filter_csv(self, csv_filter):
         """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
