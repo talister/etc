@@ -143,6 +143,8 @@ class Telescope:
 
 
 class Instrument:
+    adc_error = np.sqrt(0.289) * (u.adu / u.pixel)
+
     def __init__(self, name=None, inst_type="IMAGER", **kwargs):
         _ins_types = ["IMAGER", "SPECTROGRAPH"]
         self.name = name if name is not None else "Undefined"
@@ -178,7 +180,7 @@ class Instrument:
         if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
             file_path = os.path.expandvars(ccd_qe)
             if not os.path.exists(file_path):
-                file_path = pkg_resources.files('etc.data').joinpath(ccd_qe)
+                file_path = str(pkg_resources.files('etc.data').joinpath(ccd_qe))
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
             if throughput.mean() > 1.0:
                 throughput /= 100.0
