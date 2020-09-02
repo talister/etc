@@ -212,3 +212,118 @@ class TestInstrument:
         assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
         assert_quantity_allclose(inst.ccd_gain, expected_gain)
         assert_quantity_allclose(inst.ccd_readnoise, expected_noise)
+
+    def test_ccdpixsize_default(self):
+        expected_value = 17.5 * u.micron
+
+        inst_options = { 'ccd_pixsize' : 17.5 }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_pixsize, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixsize)
+
+    def test_ccdpixsize_goodunits(self):
+        expected_value = 13.5 * u.micron
+
+        inst_options = { 'ccd_pixsize' : 0.0135,
+                         'ccd_pixsize_units' : "mm"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_pixsize, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixsize)
+
+    def test_ccdpixsize_goodunits2(self):
+        expected_value = 13.5 * u.micron
+
+        inst_options = { 'ccd_pixsize' : 13.5e-6,
+                         'ccd_pixsize_units' : "m"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_pixsize, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixsize)
+
+    def test_ccdpixsize_badunits(self):
+        expected_value = 13.5 * u.micron
+
+        inst_options = { 'ccd_pixsize' : 13.5,
+                         'ccd_pixsize_units' : "wibble"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_pixsize, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixsize)
+
+
+    def test_focalscale_default(self):
+        expected_value = 17.5 * (u.arcsec/u.mm)
+
+        inst_options = { 'focal_scale' : 17.5 }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.focal_scale)
+
+    def test_focalscale_goodunits(self):
+        expected_value = 1.75 * (u.arcsec/u.cm)
+
+        inst_options = { 'focal_scale' : 1.75,
+                         'focal_scale_units' : "arcsec/cm"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.focal_scale)
+
+    def test_focalscale_badunits(self):
+        expected_value = 17.5 * (u.arcsec/u.mm)
+
+        inst_options = { 'focal_scale' : 17.5,
+                         'focal_scale_units' : "wibble/cm"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.focal_scale)
+
+    def test_ccdpixscale(self):
+        expected_value = 0.23625 * u.arcsec
+
+        inst_options = { 'focal_scale' : 17.5,
+                         'ccd_pixsize' : 13.5}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixscale)
+
+    def test_ccdpixscale_goodunits(self):
+        expected_value = 0.23625 * u.arcsec
+
+        inst_options = { 'focal_scale' : 175,
+                         'focal_scale_units' : "arcsec/cm",
+                         'ccd_pixsize' : 0.0135,
+                         'ccd_pixsize_units' : "mm"}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixscale)
+
+    def test_ccdpixscale_badunits(self):
+        expected_value = 0.23625 * u.arcsec
+
+        inst_options = {
+                         'ccd_pixsize' : 13.5,
+                         'ccd_pixsize_units' : "wibble",
+                         'focal_scale' : 17.5,
+                         'focal_scale_units' : "more/wibble"
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixscale)

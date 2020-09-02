@@ -51,6 +51,39 @@ class Site:
                     # ESO-SM01 format; different column name for transmission and micron vs nm
                     header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
             self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+        if 'sky_mag' in kwargs:
+            self.sky_mags = kwargs['sky_mag']
+
+    def sky_spectrum(self, filtername='V'):
+        waveset = np.arange(3000,12001,1) * u.AA
+        sky_flux = np.empty(len(waveset))
+        sky_flux.fill(self._photon_rate(filtername))
+        sky_flux = u.Quantity(sky_flux, unit=units.PHOTLAM)
+        sky = SourceSpectrum(Empirical1D, points=waveset, lookup_table=sky_flux)
+
+        return sky
+
+    def _photon_rate(self, filtername='V'):
+        """Calculates the photon rate in photons/s/cm^2/AA for mag=0 for the
+        passed [filtername] (defaults to V)"""
+
+        flux_janskys = {'U': 1810, 'B': 4260, 'V' : 3640, 'R' : 3080, 'I' : 2550, 'Z' : 2200,
+                    'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
+        flux_mag0_Jy = flux_janskys[filtername] * u.Jy
+        wavelength = self._map_filter_to_wavelength(filtername)
+        m_0 = flux_mag0_Jy.to(u.photon / u.cm**2 / u.s / u.angstrom, equivalencies=u.spectral_density(wavelength))
+
+        return m_0
+
+    def _map_filter_to_wavelength(self, filtername='V'):
+        """Maps the given [filtername] (defaults to 'V' for Bessell-V') to a wavelength
+        which is returned as an AstroPy Quantity in angstroms"""
+
+        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'R' : 6500, 'I' : 8200, 'Z' : 9500,
+                        'gp' : 4810, 'rp' : 6170, 'ip' : 7520, 'zp' : 8660, 'w' : 6080}
+        wavelength = filter_cwave[filtername] * u.angstrom
+
+        return wavelength
 
     def __mul__(self, other):
         if isinstance(other, Telescope):
@@ -191,7 +224,28 @@ class Instrument:
             self.ccd_qe = ccd_qe
         self.ccd_gain = kwargs.get('ccd_gain', 1) * (u.electron / u.adu)
         self.ccd_readnoise = kwargs.get('ccd_readnoise', 0) * (u.electron / u.pix)
+        ccd_pixsize = kwargs.get('ccd_pixsize', 0)
+        try:
+            ccd_pixsize_units = u.Unit(kwargs.get('ccd_pixsize_units', 'micron'))
+        except ValueError:
+            ccd_pixsize_units = u.micron
+        self.ccd_pixsize = (ccd_pixsize * ccd_pixsize_units).to(u.micron)
 
+        fwhm = kwargs.get('fwhm', 1)
+        try:
+            fwhm_units = u.Unit(kwargs.get('fwhm_units', 'arcsec'))
+        except ValueError:
+            fwhm_units = u.arcsec
+        self.fwhm = fwhm * fwhm_units
+
+        focal_scale = kwargs.get('focal_scale', 0)
+        try:
+            focal_scale_units = u.Unit(kwargs.get('focal_scale_units', 'arcsec/mm'))
+        except ValueError:
+            focal_scale_units = u.arcsec/u.mm
+        self.focal_scale = focal_scale * focal_scale_units
+        if self.ccd_pixsize !=0 and self.focal_scale != 0:
+            self.ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.ccd_pixsize.to(u.mm)
 
     def _read_lco_filter_csv(self, csv_filter):
         """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
