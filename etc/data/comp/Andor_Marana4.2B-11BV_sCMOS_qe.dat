@@ -1,0 +1,30 @@
+# Wavelength[nm] QE[0..1.0]
+# QE curve for Andor Marana 4.2B-11 sCMOS sensor (Gpixel Gsense 400 BSI?) with BV coating
+# From Andor website: https://andor.oxinst.com/assets/uploads/products/andor/documents/andor-marana-scmos-specifications.pdf
+# (Gpixel site: https://www.gpixel.com/products/area-scan-en/gsense400bsi-11-%CE%BCm-4mp-rolling-shutter-image-sensor/)
+200     0.19
+225     0.79
+250     0.50
+275     0.28
+300     0.34
+325     0.39
+350     0.42
+400     0.63
+450     0.84
+500     0.92
+550     0.94
+600     0.93
+650     0.90
+700     0.83
+750     0.75
+800     0.61
+825     0.53
+850     0.48
+860     0.52
+875     0.36
+900     0.33
+940     0.23
+960     0.25
+1000    0.15
+1050    0.03
+1100    0.01
