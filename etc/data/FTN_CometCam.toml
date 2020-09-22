@@ -23,7 +23,7 @@ name = "FTN"
 size = 2.0
 area = 2.574
 num_mirrors = 3
-reflectivity = "Protected_Al_mirror.dat"
+reflectivity = "comp/Protected_Al_mirror.dat"
 
 [instrument]
 name = "CometCam"

@@ -11,7 +11,7 @@ name = 'Hall 42"/1.1m'
 size = 1.04
 area = 0.69481756
 num_mirrors = 2
-reflectivity = "Protected_Al_mirror.dat"
+reflectivity = "comp/Protected_Al_mirror.dat"
 
 [instrument]
 name = "NASA42"
