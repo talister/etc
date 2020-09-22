@@ -1,6 +1,6 @@
 # Wavelength[nm] QE[0..1]
-# QE curve for Gpixel GSENSE6060 BSI (Back Illuminted) 6134x6134x10um CMOS
-# From  https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=53&cut=1
+# QE curve for Gpixel GSENSE6060 BSI (Back Illuminated) 6134x6134x10um CMOS sensor
+# From QHY6060 website: https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=53&cut=1
 200     0.09
 220     0.14
 230     0.22

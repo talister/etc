@@ -1,5 +1,6 @@
 # Wavelength[nm] QE[0..1.0]
-# QE curve for Sony IMX455ALK-K (Industry grade) CMOS sensor (from QHY600 website)
+# QE curve for Sony IMX455ALK-K (Industry/K grade) 9576x6388x3.76um CMOS sensor
+# From QHY600 website: https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=53&cut=1
 400     0.54
 425     0.69
 450     0.79

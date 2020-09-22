@@ -1,5 +1,6 @@
-# QE curve for SBIG STX-16803 (Kodak/On Semi KAF-16803) CCD kbXX
 # Wavelength(nm) QE(0..1.0)
+# QE curve for SBIG STX-16803 (Kodak/On Semi KAF-16803) 4096x4096x9um CCD
+# LCO "Red SBIG" (kb05, kb69-79)
 350.0   0.24
 375.0   0.375
 400.0   0.41

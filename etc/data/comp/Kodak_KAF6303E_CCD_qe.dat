@@ -1,4 +1,8 @@
-# Wavelength[nm] QuantumEfficiency[0..1]
+# Wavelength[nm] QE[0..1]
+# QE curve for SBIG STX-6303E (Kodak/On Semi KAF-6303) 3072x2048x9um CCD
+# From LCO Imaging Lab
+# (Also compared to datasheet copy: https://www.onsemi.com/pub/Collateral/KAF-6303-D.PDF)
+# LCO "0.4m SBIG" kb80-99, kb23-30, kb55-56)
 400.000	0.300
 406.260	0.317
 409.733	0.326

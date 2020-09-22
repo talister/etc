@@ -1,6 +1,6 @@
 # Wavelength[nm] QE[0..1.0]
-# *Relative* QE curve for Sony IMX411 (Industry grade) CMOS sensor (from QHY411 website:
-# https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=49&cut=1)
+# *Relative* QE curve for Sony IMX411 (Industry grade) 14304x10748x3.76um CMOS sensor
+# From QHY411 website: https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=49&cut=1
 # A rough absolute scaling could be achieved through info in
 # https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=23&id=261
 # which indicates an absolute QE of 94.5% at OIII (500.7nm) and 74% at Ha (656.7nm)
