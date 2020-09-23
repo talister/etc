@@ -17,9 +17,11 @@ except ImportError:
 import numpy as np
 from astropy import units as u
 from astropy.table import QTable
+from astropy.io.ascii import InconsistentTableError
 from astropy.utils.exceptions import AstropyUserWarning
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
+from synphot.observation import Observation
 
 from .config import conf
 
@@ -34,8 +36,8 @@ class Site:
     def __init__(self, name=None, altitude=None, latitude= None, longitude=None, **kwargs):
         self.name = name if name is not None else "Undefined"
         self.altitude = altitude * u.m if altitude is not None else altitude
-        self.latitude = latitude
-        self.longitude = longitude
+        self.latitude = latitude * u.deg if latitude is not None else latitude
+        self.longitude = longitude * u.deg if longitude is not None else longitude
         if 'transmission' in kwargs:
             modelclass = Empirical1D
             try:
@@ -50,6 +52,9 @@ class Site:
                 except KeyError:
                     # ESO-SM01 format; different column name for transmission and micron vs nm
                     header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
+                except InconsistentTableError:
+                    # ASCII format ?
+                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
             self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
         if 'sky_mag' in kwargs:
             self.sky_mags = kwargs['sky_mag']
@@ -62,6 +67,45 @@ class Site:
         sky = SourceSpectrum(Empirical1D, points=waveset, lookup_table=sky_flux)
 
         return sky
+
+    def rebin_transmission(self, wavenew):
+        """Rebins a potentially higher resolution atmospheric transmission
+        spectrum to a new wavelength grid <wavenew>.
+        Returns a new BaseUnitlessSpectrum constructed from the new passed
+        wavelength grid and the resampled transmission"""
+
+        wave = self.transmission.waveset
+        specin = self.transmission(wave)
+        # Have to pretend transmission is in a flux unit to make a SourceSpectrum
+        # so drop here and put back at the end
+        orig_unit = specin.unit
+        spec = SourceSpectrum(Empirical1D, points=wave, lookup_table=specin.value)
+        f = np.ones(len(wave))
+        filt = SpectralElement(Empirical1D, points=wave, lookup_table=f)
+        obs = Observation(spec, filt, binset=wavenew, force='taper')
+
+        new_trans = SpectralElement(Empirical1D, points=wavenew, lookup_table=obs.binflux.value * orig_unit)
+
+        return new_trans
+
+    def tpeak(self, wavelengths=None):
+        """Calculate peak atmospheric transmission`.
+
+        Parameters
+        ----------
+        wavelengths : array-like, `~astropy.units.quantity.Quantity`, or `None`
+            Wavelength values for sampling.
+            If not a Quantity, assumed to be in Angstrom.
+            If `None`, ``self.waveset`` is used.
+
+        Returns
+        -------
+        tpeak : `~astropy.units.quantity.Quantity`
+            Peak atmospheric transmission.
+
+        """
+        x = self.transmission._validate_wavelengths(wavelengths)
+        return self.transmission(x).max()
 
     def _photon_rate(self, filtername='V'):
         """Calculates the photon rate in photons/s/cm^2/AA for mag=0 for the

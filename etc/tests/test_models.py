@@ -10,6 +10,63 @@ from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum
 
 from etc.models import *
 
+class TestSite:
+
+    def test_initialize_defaults(self):
+
+        site = Site()
+
+        assert site.name == "Undefined"
+        assert site.altitude == None
+        assert site.latitude == None
+        assert site.longitude == None
+
+    def test_initialize1(self):
+        site = Site(name="Maui", altitude=3055.0, latitude=20.7, longitude=-156.2)
+
+        assert site.name == "Maui"
+        assert site.altitude == 3055 * u.m
+        assert site.latitude == 20.7 * u.deg
+        assert site.longitude == -156.2 * u.deg
+
+    def test_initialize2(self):
+        test_config_file = toml.load(os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml")))
+        site = Site(**test_config_file['site'])
+
+        assert site.name == "BPL"
+        assert site.altitude == 17 * u.m
+        assert site.latitude == 34.5 * u.deg
+        assert site.longitude == -119.86 * u.deg
+        assert site.tpeak() == 0.9
+
+    def test_transmission_file(self):
+        test_config = { 'name' : "BPL",
+                        'altitude' : 7,
+                        'latitude' : 34.5,
+                        'longitude' : -119.86,
+                        'transmission' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_atmos.dat"))
+                      }
+        site = Site(**test_config)
+
+        assert site.name == "BPL"
+        assert site.altitude == 7 * u.m
+        assert site.latitude == 34.5 * u.deg
+        assert site.longitude == -119.86 * u.deg
+        assert site.tpeak() == 0.975
+
+    def test_rebin_transmission(self):
+        test_config = { 'name' : "BPL",
+                        'altitude' : 7,
+                        'latitude' : 34.5,
+                        'longitude' : -119.86,
+                        'transmission' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_atmos.dat"))
+                      }
+        site = Site(**test_config)
+        new_waves = u.Quantity([300,600,900,1200], u.nm)
+
+        new_trans = site.rebin_transmission(new_waves)
+        assert isinstance(new_trans, SpectralElement)
+
 class TestTelescope:
 
     def test_initialize_defaults(self):
