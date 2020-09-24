@@ -384,3 +384,122 @@ class TestInstrument:
 
         assert isinstance(inst.focal_scale, u.Quantity)
         assert_quantity_allclose(expected_value, inst.ccd_pixscale)
+
+    def test_ccdfov_square_defaults(self):
+        expected_value = (483.84*u.arcsec, 483.84*u.arcsec)
+
+        inst_options =  {
+                          'ccd_pixsize' : 13.5,
+                          'focal_scale' : 17.5,
+                          'ccd_xpixels' : 2048,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov())
+
+    def test_ccdfov_square_arcmin(self):
+        expected_value = (483.84/60.*u.arcmin, 483.84/60.0*u.arcmin)
+
+        inst_options =  {
+                          'ccd_pixsize' : 13.5,
+                          'focal_scale' : 17.5,
+                          'ccd_xpixels' : 2048,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        fov = inst.ccd_fov(u.arcmin)
+        assert isinstance(fov[0], u.Quantity)
+        assert isinstance(fov[1], u.Quantity)
+        assert_quantity_allclose(expected_value, fov)
+
+    def test_ccdfov_square_badunits(self):
+        expected_value = (483.84/60.*u.arcmin, 483.84/60.0*u.arcmin)
+
+        inst_options =  {
+                          'ccd_pixsize' : 13.5,
+                          'focal_scale' : 17.5,
+                          'ccd_xpixels' : 2048,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        with pytest.raises(Exception) as execinfo:
+            fov = inst.ccd_fov(u.m)
+
+    def test_ccdfov_square_mm(self):
+        expected_value = (483.84*u.arcsec, 483.84*u.arcsec)
+
+        inst_options =  {
+                          'ccd_pixsize' : 0.0135,
+                          'ccd_pixsize_units' : "mm",
+                          'focal_scale' : 17.5,
+                          'ccd_xpixels' : 2048,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov())
+
+    def test_ccdfov_square_mm_cm(self):
+        expected_value = (483.84*u.arcsec, 483.84*u.arcsec)
+
+        inst_options =  {
+                          'ccd_pixsize' : 0.0135,
+                          'ccd_pixsize_units' : "mm",
+                          'focal_scale' : 175,
+                          'focal_scale_units' : "arcsec/cm",
+                          'ccd_xpixels' : 2048,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov())
+
+    def test_ccdfov_rect_defaults(self):
+        expected_value = (1754*u.arcsec, 1169.3*u.arcsec)
+
+        inst_options =  {
+                          'ccd_pixsize' : 9,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 63.44,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 3072,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov(), rtol=1e-1)
+
+    def test_ccdfov_rect_arcmin(self):
+        expected_value = (29.2*u.arcmin, 19.5*u.arcmin)
+
+        inst_options =  {
+                          'ccd_pixsize' : 9,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 63.44,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 3072,
+                          'ccd_ypixels' : 2048,
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov(u.arcmin), rtol=1e-1)

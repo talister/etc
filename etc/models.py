@@ -274,6 +274,8 @@ class Instrument:
         except ValueError:
             ccd_pixsize_units = u.micron
         self.ccd_pixsize = (ccd_pixsize * ccd_pixsize_units).to(u.micron)
+        self.ccd_xpixels = kwargs.get('ccd_xpixels', 0)
+        self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
 
         fwhm = kwargs.get('fwhm', 1)
         try:
@@ -290,6 +292,18 @@ class Instrument:
         self.focal_scale = focal_scale * focal_scale_units
         if self.ccd_pixsize !=0 and self.focal_scale != 0:
             self.ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.ccd_pixsize.to(u.mm)
+
+    def ccd_fov(self, fov_units=u.arcsec):
+        """Computes the CCD's field of view and returns a tuple of Quantity's
+        Uses `self.ccd_pixsize`, `self.focal_scale` and `self.ccd_x/ypixels`
+        to compute the size"""
+
+        xsize=ysize=0*u.arcsec
+        if self.ccd_pixsize is not None and self.focal_scale is not None and\
+            self.ccd_xpixels is not None and self.ccd_ypixels is not None:
+            xsize = self.ccd_xpixels * self.ccd_pixsize * self.focal_scale
+            ysize = self.ccd_ypixels * self.ccd_pixsize * self.focal_scale
+        return xsize.decompose().to(fov_units), ysize.decompose().to(fov_units)
 
     def _read_lco_filter_csv(self, csv_filter):
         """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
