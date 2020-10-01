@@ -1,0 +1,28 @@
+# Wavelength[nm] Transmission[0..1.0]
+# Optical transmission for Schott N-BAK2 crown glass (25mm thickness)
+# From: https://shop.schott.com/advanced_optics/Products/Optical-Glass/Optical-Glass/Barium-Crown/N-BAK2/c/optical-glass/glass-N-BAK2
+300 	0.100
+310 	0.400
+320 	0.700
+334 	0.910
+350 	0.971
+365 	0.986
+370 	0.989
+380 	0.990
+390 	0.992
+400 	0.993
+405 	0.993
+420 	0.993
+436 	0.992
+460 	0.992
+500 	0.994
+546 	0.995
+580 	0.995
+620 	0.994
+660 	0.995
+700 	0.996
+1060 	0.997
+1530 	0.984
+1970 	0.850
+2325 	0.630
+2500 	0.500

@@ -1,0 +1,33 @@
+# Wavelength[nm] Transmission[0..1.0]
+# Optical transmission for Schott N-FK5 crown glass (10mm thickness)
+# From: https://shop.schott.com/advanced_optics/Products/Optical-Glass/Optical-Glass/Fluorine-Crown/N-FK5/c/optical-glass/glass-N-FK5
+250 	0.000
+260 	0.000
+270 	0.020
+280 	0.180
+290 	0.500
+300 	0.760
+310 	0.890
+320 	0.950
+334 	0.977
+350 	0.988
+365 	0.992
+370 	0.992
+380 	0.991
+390 	0.994
+400 	0.994
+405 	0.994
+420 	0.993
+436 	0.992
+460 	0.990
+500 	0.989
+546 	0.991
+580 	0.991
+620 	0.990
+660 	0.991
+700 	0.995
+1060 	0.998
+1530 	0.965
+1970 	0.930
+2325 	0.630
+2500 	0.380
