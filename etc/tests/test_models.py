@@ -84,7 +84,7 @@ class TestTelescope:
         assert tel.size == 2 * u.m
         assert tel.area == 2.574 * u.m * u.m
         assert tel.num_mirrors == 3
-        assert tel.tpeak() == 0.91**3
+        assert tel.tpeak() == 0.85**3
 
     def test_initialize2(self):
         test_config_file = toml.load(os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml")))
@@ -138,7 +138,7 @@ class TestInstrument:
         assert inst.num_ar_coatings == 2
         assert inst.filterlist == []
 
-        assert inst.transmission.tpeak() == 0.88209
+        assert inst.transmission.tpeak() == 0.911493 # 0.93 (lens) * 0.99^2 (AR)
 
     def test_trans_modify_optics(self):
         optics_options = { 'inst_lens_trans' : 0.85,
@@ -151,7 +151,7 @@ class TestInstrument:
         assert inst.num_lenses == 1
         assert inst.num_ar_coatings == 2
 
-        assert inst.transmission.tpeak() == 0.767125
+        assert_quantity_allclose(inst.transmission.tpeak(), 0.767125, 1e-5)
 
     def test_trans_spectrograph(self):
 
@@ -167,7 +167,7 @@ class TestInstrument:
         assert inst.num_lenses == 3
         assert inst.num_ar_coatings == 6
 
-        assert inst.transmission.tpeak() == 0.6659793414426959
+        assert_quantity_allclose(inst.transmission.tpeak(), 0.73482187, 1e-5)
 
     def test_filterset(self):
 
@@ -214,7 +214,8 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846, 1e-5)
+        # 0.93 (lens) * 0.99^2 (AR) * 0.99165802 (filter) * 0.9 (CCD)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.81350041, 1e-5)
 
     def test_throughput_new_ccd_qe(self):
 
@@ -226,7 +227,7 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846/2.0, 1e-5)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.81350041/2.0, 1e-5)
 
     def test_throughput_ccd_qe_quantity(self):
 
@@ -238,7 +239,7 @@ class TestInstrument:
         assert len(inst.filterset) == 1
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.78725846/2.0, 1e-5)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.81350041/2.0, 1e-5)
 
     def test_throughput_ccd_qe_file(self):
 
@@ -253,7 +254,7 @@ class TestInstrument:
         assert isinstance(inst.filterset['r'], SpectralElement)
         assert isinstance(inst.throughput('r'), SpectralElement)
         assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
-        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.857044, 1e-5)
+        assert_quantity_allclose(inst.throughput('r').tpeak(), 0.8856121333333334, 1e-5)
 
     def test_ccd_parameters(self):
         expected_gain = 0.9 * (u.electron / u.adu)

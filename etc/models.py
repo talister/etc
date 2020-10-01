@@ -162,7 +162,8 @@ class Telescope:
         self.num_mirrors = num_mirrors
 
         modelclass = Empirical1D
-        reflectivity = kwargs.get('reflectivity',  0.91)    # Default value based on average of bare Al over 300-1200nm
+        # Default value based on average of coated Al over 300-1200nm and also matches SIGNAL
+        reflectivity = kwargs.get('reflectivity',  0.85)
         try:
             reflectivity = float(reflectivity)
             wavelengths = np.arange(300, 1501, 1) * u.nm
@@ -235,7 +236,7 @@ class Instrument:
 
         # Fused silica (for the prism) and fused quartz (for the CCD window)
         # turn out to have the same transmission...
-        self.lens_trans = kwargs.get('inst_lens_trans', 0.9)
+        self.lens_trans = kwargs.get('inst_lens_trans', 0.93)
 
         self.mirror_refl = kwargs.get('inst_mirror_refl', 0.9925)
         # Transmission/Reflection values of optical elements coating
