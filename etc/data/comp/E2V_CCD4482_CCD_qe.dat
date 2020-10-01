@@ -1,0 +1,22 @@
+# Wavelength[nm] QE[0..1.0]
+# QE curve for e2v CCD44-82 4096x4096x15um CCD
+# From http://www.ctio.noao.edu/soar/sites/default/files/images/Instruments/E2V_CCD-44-82_QEcurve.png
+# Hand digitized by TAL 2020/09/29
+300 0.40
+350 0.55
+400 0.80
+450 0.88
+500 0.90
+550 0.87
+600 0.85
+650 0.82
+700 0.755
+750 0.67
+800 0.56
+850 0.43
+900 0.31
+950 0.20
+1000 0.08
+1050 0.0
+1100 0.0
+1200 0.0
