@@ -14,3 +14,20 @@ size = 1.0
 size_units = "m"
 area = 0.625
 reflectivity = 0.8
+
+[instrument]
+name = "Sinistro"
+inst_type = "Imager"
+num_ar_coatings = 0
+num_inst_mirrors = 0
+num_inst_lenses = 3         # All Corning 7980 Fused Silica
+inst_lens_trans = 0.99
+fwhm = 3.0
+fwhm_units = "arcsec"
+filterlist = ['U', 'B', 'V', 'R', 'I']
+focal_scale = 25.9
+focal_scale_units = "arcsec/mm"
+ccd_qe = 0.82
+ccd_readnoise = 15.0 # electrons
+ccd_gain = 1.0 # electrons/ADU
+ccd_pixsize = 15.0 # microns
