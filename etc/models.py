@@ -58,6 +58,12 @@ class Site:
             self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
         if 'sky_mag' in kwargs:
             self.sky_mags = kwargs['sky_mag']
+        else:
+            file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(conf.sky_brightness_file))
+            self.sky_mags_table = self._read_skybrightness_file(file_path)
+            self.sky_mags = []
+            if self.sky_mags_table:
+                self.sky_mags = dict(zip(self.sky_mags_table.colnames, self.sky_mags_table[0]))
 
     def sky_spectrum(self, filtername='V'):
         waveset = np.arange(3000,12001,1) * u.AA
@@ -128,6 +134,17 @@ class Site:
         wavelength = filter_cwave[filtername] * u.angstrom
 
         return wavelength
+
+    def _read_skybrightness_file(self, sky_file):
+        table = None
+        try:
+            table = QTable.read(sky_file, format='ascii.commented_header')
+        except FileNotFoundError:
+            print("Cannot find", sky_file)
+        except:
+            raise
+
+        return table
 
     def __mul__(self, other):
         if isinstance(other, Telescope):

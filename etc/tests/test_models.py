@@ -67,6 +67,13 @@ class TestSite:
         new_trans = site.rebin_transmission(new_waves)
         assert isinstance(new_trans, SpectralElement)
 
+    def test_sky_brightness(self):
+        expected_sky_mags = {'Days_from_New_Moon' : 0, 'U' : 22.0, 'B' : 22.7, 'V' : 21.8, 'R' : 20.9, 'I' : 19.9}
+
+        site = Site()
+
+        assert expected_sky_mags == site.sky_mags
+
 class TestTelescope:
 
     def test_initialize_defaults(self):
