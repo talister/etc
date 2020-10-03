@@ -32,6 +32,19 @@ class Conf(ConfigNamespace):
     wht_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_R', 'WHT/PFIP Harris R')
     wht_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_I', 'WHT/PFIP Harris I')
 
+    ctio_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_U', 'CTIO/SOI Bessell U')
+    ctio_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_B', 'CTIO/SOI Bessell B')
+    ctio_V_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_V', 'CTIO/SOI Bessell V')
+    ctio_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_R', 'CTIO/SOI Bessell R')
+    ctio_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_I', 'CTIO/SOI Bessell I')
+
+    ctio_u_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_u', 'CTIO/SOI SDSS u')
+    ctio_g_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_g', 'CTIO/SOI SDSS g')
+    ctio_r_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_r', 'CTIO/SOI SDSS r')
+    ctio_i_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_i', 'CTIO/SOI SDSS i')
+    ctio_z_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_z', 'CTIO/SOI SDSS z')
+    ctio_CN_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.CN', 'CTIO/SOI CN')
+
     mapping = { 'u' : lco_u_file,
                 'g' : lco_g_file,
                 'r' : lco_r_file,
@@ -49,11 +62,22 @@ class Conf(ConfigNamespace):
                 'V' : lco_V_file,
                 'R' : lco_R_file,
                 'I' : lco_I_file,
-                'WHT_U' : wht_U_file,
-                'WHT_B' : wht_B_file,
-                'WHT_V' : wht_V_file,
-                'WHT_R' : wht_R_file,
-                'WHT_I' : wht_I_file,
+                'WHT::U' : wht_U_file,
+                'WHT::B' : wht_B_file,
+                'WHT::V' : wht_V_file,
+                'WHT::R' : wht_R_file,
+                'WHT::I' : wht_I_file,
+                'CTIO::U' : ctio_U_file,
+                'CTIO::B' : ctio_B_file,
+                'CTIO::V' : ctio_V_file,
+                'CTIO::R' : ctio_R_file,
+                'CTIO::I' : ctio_I_file,
+                'CTIO::u' : ctio_u_file,
+                'CTIO::g' : ctio_g_file,
+                'CTIO::r' : ctio_r_file,
+                'CTIO::i' : ctio_i_file,
+                'CTIO::z' : ctio_z_file,
+                'CTIO::CN' : ctio_CN_file,
               }
 
     # STANDARD STARS

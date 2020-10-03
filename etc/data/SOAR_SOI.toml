@@ -1,0 +1,47 @@
+[site]
+name = "Cerro Pachon"
+altitude = 2000
+altitude_units = "m"
+latitude = -30.237892
+longitude = -70.733642
+#transmission = 0.8806432284180642 # V 1.5
+#transmission = 0.9033166182711088 # V 1.2
+transmission = 0.911003404557099 # V 1.1
+#transmission = 0.9053155916484847 # R
+#transmission = "${CDBS_PATH}/atmos/skytable_LaSilla_z1.5_pwv3.5_no_moon.fits"
+[site.sky_mag]
+# From http://www.ctio.noao.edu/site/pachon_sky/ Section 5
+    U = 22.08
+    B = 22.81
+    V = 21.79
+    R = 21.19
+    I = 19.85
+
+[telescope]
+name = "SOAR"
+size = 4.1
+area =  12.51 #372361     # m^2 Based on M1=4100mm, central obstruction 936.5mm diameters
+num_mirrors = 3
+reflectivity = 0.85 #"comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "SOI"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 6                                         # cemented triplet, 2 singlets, dewar window
+num_ar_coatings = 4
+inst_lens_trans = 0.95                                    # Average combination of 0.99 (BAK2/FK5) & 0.935 (silica/CaF2)
+inst_ar_coating_refl = 0.99                                 # solgel
+fwhm = 1.2                                                  #
+fwhm_units = "arcsec"
+focal_scale = 5.12                                          # from http://www.ctio.noao.edu/soar/content/optical-data-soar-telescope-and-instruments
+focal_scale_units = "arcsec/mm"
+filterlist = ['CTIO::U','CTIO::B','CTIO::V','CTIO::R','CTIO::I','CTIO::u','CTIO::g','CTIO::r','CTIO::i','CTIO::z','CTIO::CN']
+ccd_qe = "comp/E2V_CCD4482_CCD_qe.dat"
+ccd_readnoise = 4.4                                         # electrons
+ccd_gain = 2.0                                              # electrons/ADU
+ccd_xpixels = 4096
+ccd_ypixels = 4096
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 0.0005
+ccd_darkcurrent_units = "ph/pixel/s"
