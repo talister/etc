@@ -35,7 +35,10 @@ class ETC(object):
         if config_file is None and len(self.components) == 0:
             component_config = PRESET_MODELS
         elif config_file is not None:
-            component_config = toml.load(config_file)
+            if type(config_file) == dict:
+                component_config = config_file
+            else:
+                component_config = toml.load(config_file)
         else:
             component_config = {}
         if len(component_config) > 0:

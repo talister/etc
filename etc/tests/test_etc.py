@@ -5,36 +5,66 @@ import warnings
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
+from synphot import units
 
 from etc import etc
 
+class TestETC:
+    def test_initialize(self):
+        test_etc = etc.ETC()
 
-def test_initialize():
-    test_etc = etc.ETC()
+        assert '<ETC [Site(Maui, HI)]->[Telescope(FTN)]->[Instrument(FLOYDS)]>' == repr(test_etc)
 
-    assert '<ETC [Site(Maui, HI)]->[Telescope(FTN)]->[Instrument(FLOYDS)]>' == repr(test_etc)
+    def test_initialize_specified_components(self):
+        test_etc = etc.ETC(components=['sky', 'earth', 'underground cavern'])
 
-def test_initialize_specified_components():
-    test_etc = etc.ETC(components=['sky', 'earth', 'underground cavern'])
+        assert "<ETC 'sky'->'earth'->'underground cavern'>" == repr(test_etc)
 
-    assert "<ETC 'sky'->'earth'->'underground cavern'>" == repr(test_etc)
+    def test_initialize_from_dict(self):
 
-def test_initialize_config_file():
-     test_config_file = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml"))
-     test_etc = etc.ETC(config_file=test_config_file)
-     assert '<ETC [Site(BPL)]->[Telescope(BPL 1-m)]->[Instrument(Sinistro)]>' == repr(test_etc)
+        config_dict = { 'site' : {  'name': 'La Palma, Spain',
+                                    'transmission' : 0.8709635899560807
+                                 },
+                        'telescope' : { 'name' : 'WHT 4.2m',
+                                        'size': 4.2,
+                                        'area': 12.47,
+                                        'num_mirrors': 1,
+                                        'reflectivity': 0.85},
+                        'instrument' : { 'name' : 'WHT PFIP',
+                                         'num_ar_coatings': 0,
+                                         'num_inst_mirrors': 0,
+                                         'num_inst_lenses': 1,
+                                         'inst_lens_trans': 0.7,
+                                         'fwhm': 1.0,
+                                         'focal_scale': 17.5,
+                                         'focal_scale_units': 'arcsec/mm',
+                                         'ccd_qe': 0.8,
+                                         'ccd_readnoise': 4.0,
+                                         'ccd_gain': 0.9,
+                                         'ccd_pixsize': 13.5
+                                        }
+                        }
 
-     assert test_etc.site.name == "BPL"
-     assert test_etc.telescope.name == "BPL 1-m"
-     assert test_etc.instrument.name == "Sinistro"
+        test_etc = etc.ETC(config_dict)
 
-def test_properties():
-    test_etc = etc.ETC()
+        assert "<ETC [Site(La Palma, Spain)]->[Telescope(WHT 4.2m)]->[Instrument(WHT PFIP)]>" == repr(test_etc)
 
-    assert test_etc.site.name == "Maui, HI"
-    assert test_etc.site.altitude == 3065 * u.m
-    assert test_etc.telescope.name == "FTN"
-    assert test_etc.instrument.name == "FLOYDS"
+    def test_initialize_config_file(self):
+         test_config_file = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test1.toml"))
+         test_etc = etc.ETC(config_file=test_config_file)
+         assert '<ETC [Site(BPL)]->[Telescope(BPL 1-m)]->[Instrument(Sinistro)]>' == repr(test_etc)
+
+         assert test_etc.site.name == "BPL"
+         assert test_etc.telescope.name == "BPL 1-m"
+         assert test_etc.instrument.name == "Sinistro"
+
+    def test_properties(self):
+        test_etc = etc.ETC()
+
+        assert test_etc.site.name == "Maui, HI"
+        assert test_etc.site.altitude == 3065 * u.m
+        assert test_etc.telescope.name == "FTN"
+        assert test_etc.instrument.name == "FLOYDS"
 
 class TestComputeSNR:
     @pytest.fixture(autouse=True)
