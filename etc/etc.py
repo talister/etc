@@ -18,7 +18,7 @@ from synphot.models import Empirical1D
 from synphot.observation import Observation
 
 from . import data
-from .models import Site, Telescope, Instrument
+from .models import Site, Telescope, Instrument, ETCError
 from .config import conf
 
 
@@ -93,6 +93,9 @@ class ETC(object):
         """Calculate the SNR in a given exposure time <exp_time> for a given <V_mag>
         """
 
+        if filtername not in self.instrument.filterlist:
+            raise ETCError('Filter name {0} is invalid.'.format(filtername))
+
         try:
             exp_time = exp_time.to(u.s)
         except AttributeError:
@@ -127,38 +130,47 @@ class ETC(object):
             print("Specific rate given")
             sky_countrate = background_rate / pixel_area / obs_filter.equivwidth()
         else:
-            if sky_mag is not None:
-                # Compute countrate from given sky magnitude.
-                # XXX need to refactor photons_from_source() to do this also
-                sky_filtername = filtername
-                if '::' in filtername:
-                    sky_filtername = filtername.split('::')[1]
-                sky = self.site.sky_spectrum(sky_filtername)
-                print("  Original sky=" ,sky(sky.avgwave()))
-                sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
-                print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
-                self._create_combined()
-                waves, thru = self.combined._get_arrays(None)
-                filter_waves, filter_trans = obs_filter._get_arrays(waves)
-                print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
-                spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
+            # Obtain sky value based on flux at mag=0 for given filter
+            sky_filtername = filtername
+            if '::' in filtername:
+                sky_filtername = filtername.split('::')[1]
+            sky = self.site.sky_spectrum(sky_filtername)
+            print("  Original sky=" ,sky(sky.avgwave()))
+            if sky_mag is None:
+                # Try and obtain sky magnitude from Site. This should probably
+                # move into sky_spectrum()
+                sky_mag = self.site.sky_mags.get(sky_filtername, None)
+                print("Determined new sky magnitude  of ", sky_mag)
+                if sky_mag is None:
+                    raise ETCError('Could not determine a valid sky magnitude for filter: {0}'.format(sky_filtername))
 
-                # get the synphot observation object
-                sky_obs = Observation(sky2, spec_elements, force='taper')
+            # Compute countrate from given sky magnitude.
+            # XXX need to refactor photons_from_source() to do this also
+            sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
+            print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
+            self._create_combined()
+            waves, thru = self.combined._get_arrays(None)
+            filter_waves, filter_trans = obs_filter._get_arrays(waves)
+            print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
+            spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
 
-                sky_countrate = sky_obs.countrate(area=self.telescope.area)
-                # Actually a count rate per arcsec^2 as the original magnitude is
-                # also per sq. arcsec. Also set to photons/s to match signal from object
-                sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
-                print("Sky (photons/AA/arcsec^2)=", sky_countrate, sky_countrate/obs_filter.equivwidth())
-                sky_per_pixel = sky_countrate * pixel_area
-                sky_per_pixel /= u.pixel
-                print("Sky (photons/pixel)=", sky_per_pixel)
-                background_rate = sky_per_pixel
+            # get the synphot observation object
+            sky_obs = Observation(sky2, spec_elements, force='taper')
+
+            sky_countrate = sky_obs.countrate(area=self.telescope.area)
+            # Actually a count rate per arcsec^2 as the original magnitude is
+            # also per sq. arcsec. Also set to photons/s to match signal from object
+            sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
+            print("Sky (photons/AA/arcsec^2)=", sky_countrate, sky_countrate/obs_filter.equivwidth())
+            sky_per_pixel = sky_countrate * pixel_area
+            sky_per_pixel /= u.pixel
+            print("Sky (photons/pixel)=", sky_per_pixel)
+            background_rate = sky_per_pixel
 
         if npix == 1*u.pixel:
             # Calculate new value based on area of FWHM and pixelscale
-            # IRAF `ccdtime` uses this definition
+            # IRAF `ccdtime` uses this definition. Pass in a suitable
+            # value for npix into this method to emulate this.
     #        npix = 1.4*(fwhm / pixel_scale)**2
             npix = np.pi*(fwhm / pixel_scale)**2
             npix = int(round(npix.value)) * u.pixel

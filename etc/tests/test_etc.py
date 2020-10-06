@@ -8,6 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from synphot import units
 
 from etc import etc
+from etc.models import ETCError
 
 class TestETC:
     def test_initialize(self):
@@ -189,6 +190,16 @@ class TestCCDSNR:
         snr = test_etc.ccd_snr(1, 15, 'V')
 
         assert_quantity_allclose(expected_snr, snr, rtol=1e-5)
+
+    def test_LCO_1m_1s_bad_filter(self):
+
+        test_etc = etc.ETC(self.test_config_file)
+
+        with pytest.raises(Exception) as execinfo:
+            snr = test_etc.ccd_snr(1, 15, 'Vibble')
+
+        assert execinfo.type == ETCError
+        assert execinfo.value.args[0] == "Filter name Vibble is invalid."
 
     def test_LCO_1m_1s_V15(self):
         expected_snr = 10.4210644
