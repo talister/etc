@@ -1,11 +1,11 @@
 # Config file for emulating the ING SIGNAL program
 [site]
 name = "La Palma, Spain"
-altitude = 3065
+altitude = 2345.4   # 2332 to ground level + 13.4m to rot center http://www.ing.iac.es/Astronomy/telescopes/wht/whtcoord.html
 altitude_units = "m"
-latitude = +25.7069
-longitude = -17.0
-transmission = 0.8709635899560807
+latitude = +28.761
+longitude = -17.882
+transmission = 0.8709635899560807   # 0.15 mag/airmass at airmass=1
 [site.sky_mag]
     U = 22.0
     B = 22.7
