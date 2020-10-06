@@ -71,16 +71,15 @@ class ETC(object):
         return insts[0] if len(insts) == 1 else None
 
     def photons_from_source(self, V_mag, filtername):
-        sun = self._vega.normalize(V_mag * units.VEGAMAG, self._V_band, vegaspec=self._vega)
+        source_spec = self._vega.normalize(V_mag * units.VEGAMAG, self._V_band, vegaspec=self._vega)
 
-        source_spec = sun
         self._create_combined()
-        waves, thru = self.combined._get_arrays(None)
-        filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(waves)
+        filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
+        waves, thru = self.combined._get_arrays(filter_waves)
         spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
 
         # get the synphot observation object
-        synphot_obs = Observation(source_spec, spec_elements, force='taper')
+        synphot_obs = Observation(source_spec, spec_elements)
 
         countrate = synphot_obs.countrate(area=self.telescope.area)
 
@@ -100,7 +99,11 @@ class ETC(object):
             exp_time = exp_time * u.s
 
         # Get countrate per second for this magnitude in the filter
-        countrate = self.photons_from_source(V_mag, filtername)
+        # Check first if we weren't given a rate directly
+        try:
+            countrate = V_mag.to(u.photon / u.s)
+        except (AttributeError, u.UnitConversionError):
+            countrate = self.photons_from_source(V_mag, filtername)
 
         # define countrate to be in photons/sec, which can be treated as the
         # same as (photo)electrons for CCDs but are not technically convertible in
@@ -113,38 +116,46 @@ class ETC(object):
         readnoise_sq = readnoise.value**2 * (u.photon/u.pixel)
         gain_err = self._get_shotnoise(self.instrument.ccd_gain * self.instrument.adc_error)
         print("Readnoise=", readnoise, readnoise_sq, gain_err)
-        if sky_mag is not None:
-            # Compute countrate from given sky magnitude.
-            # XXX need to refactor photons_from_source() to do this also
-            sky_filtername = filtername
-            if '::' in filtername:
-                sky_filtername = filtername.split('::')[1]
-            sky = self.site.sky_spectrum(sky_filtername)
-            print("  Original sky=" ,sky(sky.avgwave()))
-            sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
-            print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
-            self._create_combined()
-            waves, thru = self.combined._get_arrays(None)
-            obs_filter = self.instrument.filterset[filtername]
-            filter_waves, filter_trans = obs_filter._get_arrays(waves)
-            print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
-            spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
-
-            # get the synphot observation object
-            sky_obs = Observation(sky2, spec_elements, force='taper')
-
-            sky_countrate = sky_obs.countrate(area=self.telescope.area)
-            # Actually a count rate per arcsec^2 as the original magnitude is
-            # also per sq. arcsec. Also set to photons/s to match signal from object
-            sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
-            print("Sky (photons/AA/arcsec^2)=", sky_countrate, sky_countrate/obs_filter.equivwidth())
-            sky_per_pixel = sky_countrate * self.instrument.ccd_pixscale * self.instrument.ccd_pixscale
-            sky_per_pixel /= u.pixel
-            print("Sky (photons/pixel)=", sky_per_pixel)
-            background_rate = sky_per_pixel
 
         fwhm = self.instrument.fwhm
         pixel_scale = self.instrument.ccd_pixscale
+        pixel_area = pixel_scale * pixel_scale
+
+        obs_filter = self.instrument.filterset[filtername]
+
+        if background_rate > 0:
+            print("Specific rate given")
+            sky_countrate = background_rate / pixel_area / obs_filter.equivwidth()
+        else:
+            if sky_mag is not None:
+                # Compute countrate from given sky magnitude.
+                # XXX need to refactor photons_from_source() to do this also
+                sky_filtername = filtername
+                if '::' in filtername:
+                    sky_filtername = filtername.split('::')[1]
+                sky = self.site.sky_spectrum(sky_filtername)
+                print("  Original sky=" ,sky(sky.avgwave()))
+                sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
+                print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
+                self._create_combined()
+                waves, thru = self.combined._get_arrays(None)
+                filter_waves, filter_trans = obs_filter._get_arrays(waves)
+                print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
+                spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
+
+                # get the synphot observation object
+                sky_obs = Observation(sky2, spec_elements, force='taper')
+
+                sky_countrate = sky_obs.countrate(area=self.telescope.area)
+                # Actually a count rate per arcsec^2 as the original magnitude is
+                # also per sq. arcsec. Also set to photons/s to match signal from object
+                sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
+                print("Sky (photons/AA/arcsec^2)=", sky_countrate, sky_countrate/obs_filter.equivwidth())
+                sky_per_pixel = sky_countrate * pixel_area
+                sky_per_pixel /= u.pixel
+                print("Sky (photons/pixel)=", sky_per_pixel)
+                background_rate = sky_per_pixel
+
         if npix == 1*u.pixel:
             # Calculate new value based on area of FWHM and pixelscale
             # IRAF `ccdtime` uses this definition
@@ -160,7 +171,7 @@ class ETC(object):
         print("Noise(Star)=", np.sqrt(sobj2))
         print("Noise( CCD)=", noise_ccd)
         ssky2 = background_rate * exp_time
-        peak = sobj2/1.14/fwhm/fwhm*pixel_scale*pixel_scale
+        peak = sobj2/1.14/fwhm/fwhm*pixel_area
 
 
         print('Detected photons            from object =', sobj2, \
