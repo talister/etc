@@ -210,7 +210,60 @@ class TestCCDSNR:
 
         assert_quantity_allclose(expected_snr, snr, rtol=1e-5)
 
-    def test_specific_flux_rates(self):
+    def test_LCO_1m_1s_R15(self):
+        expected_snr = 10.815680017464334
+
+        test_etc = etc.ETC(self.test_config_file)
+
+        snr = test_etc.ccd_snr(1, 15, 'R', sky_mag=21.0)
+
+        assert_quantity_allclose(expected_snr, snr, rtol=1e-5)
+
+    def test_WHT_1s_B15(self):
+
+        # Note Harris B filter used in SIGNAL is very much different from a
+        # regular Johnson/Bessell B filter and the flux (in Jy) for mag=0
+        # is also very different from that in SVO for the same filter
+        # (4086 Jy vs 3856.92) see:
+        # http://svo2.cab.inta-csic.es/theory/fps/index.php?id=WHT/PFIP.Har_B&&mode=browse&gname=WHT&gname2=PFIP#filter
+        # Also very different to the 3925.77 Jy given by SVO for a Generic Bessel B see:
+        # http://svo2.cab.inta-csic.es/theory/fps/index.php?id=Generic/Bessell.B&&mode=browse&gname=Generic&gname2=Bessell#filter
+        # Value below from a recompile using 3857.0 Jy
+        expected_snr = 203.09965515
+
+        extin = 0.25 # mag/airmass (from SIGNAL)
+        airmass = 1.5
+        self.WHT_config['site']['transmission'] = 10.**(-0.4*extin*airmass)
+        self.WHT_config['instrument']['filterlist'] = ['WHT::B',]
+        self.WHT_config['instrument']['inst_lens_trans'] = 0.80 * 0.9
+        self.WHT_config['instrument']['ccd_qe'] = 0.82
+
+        test_etc = etc.ETC(self.WHT_config)
+
+        snr = test_etc.ccd_snr(1, 15, 'WHT::B', sky_mag=22.7)
+
+        assert_quantity_allclose(self.WHT_config['site']['transmission'], 0.707945764)
+        assert_quantity_allclose(expected_snr, snr, rtol=3e-3)
+
+    def test_WHT_5s_R15(self):
+        # Also a mismatch for R although not as severe. Default is 3080 Jy;
+        # Value below from a recompile using 3857.0 Jy
+        expected_snr = 476.35858154
+
+        extin = 0.09 # mag/airmass (from SIGNAL)
+        airmass = 1.2
+        self.WHT_config['site']['transmission'] = 10.**(-0.4*extin*airmass)
+        self.WHT_config['instrument']['filterlist'] = ['WHT::R',]
+        self.WHT_config['instrument']['inst_lens_trans'] = 1.0 * 0.7
+        self.WHT_config['instrument']['ccd_qe'] = 0.74
+
+        test_etc = etc.ETC(self.WHT_config)
+
+        snr = test_etc.ccd_snr(5, 15, 'WHT::R', sky_mag=21.0)
+
+        assert_quantity_allclose(expected_snr, snr, rtol=3e-3)
+
+    def test_WHT_V_specific_flux_rates(self):
         expected_snr = 168.05989075
 
         # For V=20, values from customized SIGNAL
@@ -220,3 +273,20 @@ class TestCCDSNR:
         test_etc = etc.ETC(self.WHT_config)
 
         snr = test_etc.ccd_snr(100, V_flux, 'WHT::V', background_rate=sky_rate)
+
+    def test_WHT_R_specific_flux_rates(self):
+        expected_snr = 168.05989075
+
+        # For R=20, values from customized SIGNAL
+        R_flux = 486.03009033 * (u.photon/u.s)
+        sky_rate = 10.79959011 * (u.photon/u.pixel/u.s)
+        extin = 0.09 # mag/airmass (from SIGNAL)
+        airmass = 1.2
+
+        self.WHT_config['site']['transmission'] = 10.**(-0.4*extin*airmass)
+        self.WHT_config['instrument']['filterlist'] = ['WHT::R',]
+        self.WHT_config['instrument']['ccd_qe'] = 0.74
+
+        test_etc = etc.ETC(self.WHT_config)
+
+        snr = test_etc.ccd_snr(100, R_flux, 'WHT::R', background_rate=sky_rate)

@@ -70,8 +70,41 @@ class ETC(object):
         insts = [x for x in self.components if isinstance(x, Instrument)]
         return insts[0] if len(insts) == 1 else None
 
-    def photons_from_source(self, V_mag, filtername):
-        source_spec = self._vega.normalize(V_mag * units.VEGAMAG, self._V_band, vegaspec=self._vega)
+    def _convert_filtername(self, filtername):
+        """Converts system+filter name (e.g. 'WHT::B' to a bare filter name
+        which is returned"""
+
+        new_filtername = filtername
+        if '::' in filtername:
+            new_filtername = filtername.split('::')[1]
+        return new_filtername
+
+    def _map_filter_to_standard(self, filtername):
+        """Maps a passed <filtername> to a standard Johnson/Cousins/Bessell
+        filter profile. Returns a SpectralElement, defaulting to V"""
+
+        band_mapping = {'U' : 'johnson_u',
+                        'B' : 'johnson_b',
+                        'V' : 'johnson_v',
+                        'R' : 'cousins_r',
+                        'Rc': 'cousins_r',
+                        'I' : 'cousins_i',
+                        'Ic': 'cousins_i',
+                        'J' : 'bessel_j',
+                        'H' : 'bessel_h',
+                        'K' : 'bessel_k'
+                       }
+        band_name = band_mapping.get(self._convert_filtername(filtername), 'johnson_v')
+        band = SpectralElement.from_filter(band_name)
+
+        return band
+
+    def photons_from_source(self, mag, filtername):
+        print("photons_from_source:", filtername)
+        standard_filter = self._convert_filtername(filtername)
+        band = self._map_filter_to_standard(standard_filter)
+        print(band.meta.get('expr', 'Unknown'))
+        source_spec = self._vega.normalize(mag * units.VEGAMAG, band, vegaspec=self._vega)
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
@@ -131,18 +164,19 @@ class ETC(object):
             sky_countrate = background_rate / pixel_area / obs_filter.equivwidth()
         else:
             # Obtain sky value based on flux at mag=0 for given filter
-            sky_filtername = filtername
-            if '::' in filtername:
-                sky_filtername = filtername.split('::')[1]
+            sky_filtername = self._convert_filtername(filtername)
             sky = self.site.sky_spectrum(sky_filtername)
             print("  Original sky=" ,sky(sky.avgwave()))
+            prefix = "Using"
             if sky_mag is None:
                 # Try and obtain sky magnitude from Site. This should probably
                 # move into sky_spectrum()
                 sky_mag = self.site.sky_mags.get(sky_filtername, None)
-                print("Determined new sky magnitude  of ", sky_mag)
+                prefix = "Determined new"
                 if sky_mag is None:
                     raise ETCError('Could not determine a valid sky magnitude for filter: {0}'.format(sky_filtername))
+
+            print("{} sky magnitude of {:.2f}".format(prefix, sky_mag))
 
             # Compute countrate from given sky magnitude.
             # XXX need to refactor photons_from_source() to do this also
