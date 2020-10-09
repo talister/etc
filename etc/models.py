@@ -113,6 +113,20 @@ class Site:
         x = self.transmission._validate_wavelengths(wavelengths)
         return self.transmission(x).max()
 
+    def _extinction_to_transmission(self, extinction, airmass=1.0):
+        """Transform a passed extinction coefficient into a fractional transmission"""
+
+        transmission = 10**(-0.4*extinction * airmass)
+
+        return transmission
+
+    def _transmission_to_extinction(self, transmission, airmass=1.0):
+        """Transform a passed fractional transmission into an extinction coefficient"""
+
+        extinct = np.log10(transmission) / (-0.4 * airmass)
+
+        return extinct
+
     def _photon_rate(self, filtername='V'):
         """Calculates the photon rate in photons/s/cm^2/AA for mag=0 for the
         passed [filtername] (defaults to V)"""
@@ -251,7 +265,7 @@ class Instrument:
         self.num_lenses = kwargs.get('num_inst_lenses', 1)
         self.num_mirrors = kwargs.get('num_inst_mirrors', 0)
 
-        # Fused silica (for the prism) and fused quartz (for the CCD window)
+        # Fused silica (common lens material) and fused quartz (common for CCD windows)
         # turn out to have the same transmission...
         self.lens_trans = kwargs.get('inst_lens_trans', 0.93)
 

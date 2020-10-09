@@ -74,6 +74,71 @@ class TestSite:
 
         assert expected_sky_mags == site.sky_mags
 
+    def test_extinction_to_transmission(self):
+        expected_transmission = 0.9
+
+        site = Site()
+        extinction = 0.114393726402
+
+        transmission = site._extinction_to_transmission(extinction)
+
+        assert_quantity_allclose(expected_transmission, transmission)
+
+    def test_extinction_to_transmission_B_a1p5(self):
+        expected_transmission = 0.707945764
+
+        site = Site()
+        extinction = 0.25
+        airmass = 1.5
+
+        transmission = site._extinction_to_transmission(extinction, airmass)
+
+        assert_quantity_allclose(expected_transmission, transmission)
+
+    def test_extinction_to_transmission_Z_a2p0(self):
+        expected_transmission = 0.9120108393559098
+
+        site = Site()
+        extinction = 0.05
+        airmass = 2.0
+
+        transmission = site._extinction_to_transmission(extinction, airmass)
+
+        assert_quantity_allclose(expected_transmission, transmission)
+
+    def test_transmission_to_extinction(self):
+        expected_extinct = 0.114393726402
+
+        site = Site()
+        transmission = 0.9
+
+        extinct = site._transmission_to_extinction(transmission)
+
+        assert_quantity_allclose(expected_extinct, extinct)
+
+    def test_transmission_to_extinction_B_a1p5(self):
+        expected_extinct = 0.25
+
+        site = Site()
+        transmission = 0.707945764
+        airmass = 1.5
+
+        extinct = site._transmission_to_extinction(transmission, airmass)
+
+        assert_quantity_allclose(expected_extinct, extinct)
+
+    def test_transmission_to_extinction_Z_a2p0(self):
+        expected_extinct = 0.05
+
+        site = Site()
+        transmission = 0.9120108393559098
+        airmass = 2.0
+
+        extinct = site._transmission_to_extinction(transmission, airmass)
+
+        assert_quantity_allclose(expected_extinct, extinct)
+
+
 class TestTelescope:
 
     def test_initialize_defaults(self):
