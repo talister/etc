@@ -129,9 +129,13 @@ class Site:
 
     def _photon_rate(self, filtername='V'):
         """Calculates the photon rate in photons/s/cm^2/AA for mag=0 for the
-        passed [filtername] (defaults to V)"""
+        passed [filtername] (defaults to V)
+        Values originally from SIGNAL and hence Bessell (1979 PASP 91, 589), now
+        updated to Bessell, Castelli & Plez (1998 A&A 333, 231) and Fukugita et al. 1996
+        for SDSS/PanSTARRS
+        """
 
-        flux_janskys = {'U': 1810, 'B': 4260, 'V' : 3640, 'R' : 3080, 'I' : 2550, 'Z' : 2200,
+        flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'R' : 3064, 'I' : 2416, 'Z' : 2200,
                     'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
         flux_mag0_Jy = flux_janskys[filtername] * u.Jy
         wavelength = self._map_filter_to_wavelength(filtername)
