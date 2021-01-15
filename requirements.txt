@@ -1,5 +1,7 @@
 astropy
+jedi==0.17.2
 ipython
 toml
 synphot==0.3
 pytest
+matplotlib
