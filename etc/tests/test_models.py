@@ -576,3 +576,107 @@ class TestInstrument:
         assert isinstance(inst.ccd_fov()[0], u.Quantity)
         assert isinstance(inst.ccd_fov()[1], u.Quantity)
         assert_quantity_allclose(expected_value, inst.ccd_fov(u.arcmin), rtol=1e-1)
+
+    def test_vignette_imager(self):
+        expected_vign = 1.0
+
+        inst_options = {
+                         'inst_type' : 'imager',
+
+                       }
+
+        inst = Instrument(**inst_options)
+
+        vign = inst.slit_vignette()
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm2_slit1(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 2.0,
+                         'slit_width' : 1.0,
+                       }
+
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.434
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1_slit1(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.0,
+                         'slit_width' : 1.0,
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.763
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1_slit2(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.0,
+                         'slit_width' : 2.00,
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.9733
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1pt6_slit2(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.6 * u.arcsec,
+                         'slit_width' : 2.00 * u.arcsec
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.86125
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1_slit2point31(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.0,
+                         'slit_width' : 2.31
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 1.0
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm2pt0_slit1pt2(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 2.0 * u.arcsec,
+                         'slit_width' : 1.20 * u.arcsec
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.5208
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)

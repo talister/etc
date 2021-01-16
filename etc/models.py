@@ -318,7 +318,11 @@ class Instrument:
             fwhm_units = u.Unit(kwargs.get('fwhm_units', 'arcsec'))
         except ValueError:
             fwhm_units = u.arcsec
-        self.fwhm = fwhm * fwhm_units
+        try:
+            # Already a Quantity
+            self.fwhm = fwhm.to(u.arcsec)
+        except AttributeError:
+            self.fwhm = fwhm * fwhm_units
 
         focal_scale = kwargs.get('focal_scale', 0)
         try:
@@ -328,6 +332,10 @@ class Instrument:
         self.focal_scale = focal_scale * focal_scale_units
         if self.ccd_pixsize !=0 and self.focal_scale != 0:
             self.ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.ccd_pixsize.to(u.mm)
+
+    @property
+    def is_imager(self):
+        return True if self.inst_type == 'IMAGER' else False
 
     def ccd_fov(self, fov_units=u.arcsec):
         """Computes the CCD's field of view and returns a tuple of Quantity's
@@ -390,6 +398,44 @@ class Instrument:
         meta = {'header': header, 'expr': filtername}
 
         return SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, meta=meta)
+
+    def slit_vignette(self, slit_width=1*u.arcsec):
+        """Compute the fraction of light entering the slit of width <slit_width>
+        for an object described by a FWHM of <self.fwhm>
+        In the case of imaging mode, 1.0 is always returned.
+
+        The code is taken from the IAC/Chris Benn's SIGNAL code (`slitvign` routine):
+        http://www.ing.iac.es/Astronomy/instruments/signal/help.html
+        http://www.ing.iac.es/Astronomy/instruments/signal/signal_code.html
+        which in turn is an approximation (<5% error) to the numerical simulation
+        from the `light_in_slit` code (http://www.ing.iac.es/~crb/misc/lightinslit.f)
+        Assuming a Gaussian/Normal distribution and ignoring differential refraction,
+        this can also be calculated analytically as:
+            Phi(n) - Phi(-n)
+        where Phi(x) is the normal function cumulative distribution function (e.g.
+        `scipy.stats.norm.cdf()`  and `n` is the slit width sigma/2 (since the
+        distribution is symmetric about 0).
+        """
+
+        vign = 1.0
+
+        if self.is_imager is False:
+            # Spectroscopy
+            try:
+                ratio = slit_width.to(u.arcsec) / self.fwhm.to(u.arcsec)
+            except AttributeError:
+                ratio = slit_width / self.fwhm.value
+
+            if ratio < 0.76:
+                vign = 0.868*ratio
+            if 0.76 <= ratio < 1.40:
+                vign = 0.37+0.393*ratio
+            if 1.40 <= ratio < 2.30:
+                vign = 1.00-0.089*(2.3-ratio)
+            if ratio >= 2.3:
+                vign = 1.0
+
+        return vign
 
     def throughput(self, filtername):
         """Returns the total throughput of optics+filter/grating+CCD"""
