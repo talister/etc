@@ -380,6 +380,9 @@ class Instrument:
             file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename()))
             warnings.simplefilter('ignore', category = AstropyUserWarning)
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+            if throughput.mean() > 1.0:
+                throughput /= 100.0
+                header['notes'] = 'Divided by 100.0 to convert from percentage'
         print("Reading from {} for {}".format(source, filtername))
 
         header['filename'] = filename
