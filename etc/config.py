@@ -45,6 +45,15 @@ class Conf(ConfigNamespace):
     ctio_z_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.sdss_z', 'CTIO/SOI SDSS z')
     ctio_CN_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.CN', 'CTIO/SOI CN')
 
+    soar_goodman_600l_file = ConfigItem('comp/soar/Goodman_600l_grating.dat', 'SOAR Goodman 600lines/mm grating order=1')
+
+    optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
+    optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
+    optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
+    optics_FK5_file = ConfigItem("comp/optics/FK5_glass.dat", "FK5 crown glass")
+    optics_LAL7_file = ConfigItem("comp/optics/LAL7_glass.dat", "LAL7 glass")
+    optics_UVFS_file = ConfigItem("comp/optics/UVFusedSilica.dat", "UV Fused Silica")
+
     mapping = { 'u' : lco_u_file,
                 'g' : lco_g_file,
                 'r' : lco_r_file,
@@ -78,6 +87,13 @@ class Conf(ConfigNamespace):
                 'CTIO::i' : ctio_i_file,
                 'CTIO::z' : ctio_z_file,
                 'CTIO::CN' : ctio_CN_file,
+                'SOAR:600l/mm' : soar_goodman_600l_file,
+                'NaCl' : optics_NaCl_file,
+                'UVFS' : optics_UVFS_file,
+                'CaF2' : optics_CaF2_file,
+                'BAK2' : optics_BAK2_file,
+                'FK5'  : optics_FK5_file,
+                'LAL7'  : optics_LAL7_file,
               }
 
     # STANDARD STARS
