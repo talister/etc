@@ -51,6 +51,7 @@ class Conf(ConfigNamespace):
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
     optics_FK5_file = ConfigItem("comp/optics/FK5_glass.dat", "FK5 crown glass")
+    optics_FK58_file = ConfigItem("comp/optics/FK58_glass.dat", "FK58 crown glass")
     optics_LAL7_file = ConfigItem("comp/optics/LAL7_glass.dat", "LAL7 glass")
     optics_UVFS_file = ConfigItem("comp/optics/UVFusedSilica.dat", "UV Fused Silica")
 
@@ -93,6 +94,7 @@ class Conf(ConfigNamespace):
                 'CaF2' : optics_CaF2_file,
                 'BAK2' : optics_BAK2_file,
                 'FK5'  : optics_FK5_file,
+                'FK58'  : optics_FK58_file,
                 'LAL7'  : optics_LAL7_file,
               }
 
