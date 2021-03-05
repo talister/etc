@@ -1,0 +1,15 @@
+#Wavelength (nm)	%Transmission
+# (Alleged) CCD QE for ESO CCD40 (EFOSC2)
+# From: https://www.eso.org/observing/etc/bin/simu/calibdisp?FILE.LOCATION=comp%2Fdet%2Fccd40.dat
+0.1 100
+1 100
+5 100
+10 100
+50 100
+500 100
+1000 100
+5000 100
+10000 100
+20000 100
+50000 100
+100000 100

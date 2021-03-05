@@ -1,0 +1,24 @@
+# Optics transmission for ESO EFOSC2
+# From http://www.eso.org/sci/facilities/lasilla/instruments/efosc/doc/manual/EFOSC2manual_v3.6.pdf Figure 2
+# Online calib db gives essentially same: https://www.eso.org/observing/etc/bin/simu/calibdisp?FILE.LOCATION=ins%2Fefosc2%2Ffilt%2Finstrument_optics.dat
+# Ten elements (doublet, doublet, doublet, triplet, singlet) of Schott FK54 (http://articles.adsabs.harvard.edu/pdf/1984Msngr..38....9B)
+# Wave(nm) Transmission(%)
+250      0.0
+300      0.0
+320      8.0
+340     50.0
+360     70.0
+380     76.0
+400     80.0
+450     80.0
+500     81.0
+550     80.0
+600     79.0
+650     78.0
+700     78.0
+750     76.25
+800     76.0
+850     76.0
+900     75.0
+950     74.75
+1000    74.5
