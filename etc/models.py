@@ -24,11 +24,10 @@ from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 from synphot.observation import Observation
 
 from .config import conf
+from .utils import ETCError, read_element
 
 __all__ = ['Site', 'Telescope', 'Instrument']
 
-class ETCError(Exception):
-    pass
 
 class Site:
     """Model for a site location and the atmosphere above it"""
