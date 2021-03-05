@@ -1,0 +1,34 @@
+[site]
+name = "Ali, Tibet"
+altitude = 5100
+altitude_units = "m"
+latitude = +32.317
+longitude = +80.017
+transmission = "${CDBS_PATH}/atmos/Ali_a12_pwv015.fits"
+[site.sky_mag]
+    V = 22.07
+
+[telescope]
+name = "Ali PW1000"
+size = 1.0
+area = 0.6119       # m^2 Based on M1=1000mm, M2=470mm diameters
+num_mirrors = 3
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "QHY6060"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 2
+inst_ar_coating_refl = 0.995                                # from 0.5% reflectance AR coating figure on https://planewave.com/product/cdk24-ota/
+fwhm = 1.17                                                 # Median seeing from Liu et al. 2019
+fwhm_units = "arcsec"
+focal_scale = 34.3775                                       # 29.089 microns/arcsec->arcsec/mm
+focal_scale_units = "arcsec/mm"
+filterlist = ['B','V','R','I','gp','rp','ip','zs']
+ccd_qe = "comp/Gpixel_GSENSE6060BSI_CMOS_qe.dat"
+ccd_readnoise = 4.7                                         # electrons
+ccd_gain = 7.35                                             # electrons/ADU (Low gain channel, assuming 120k e-/16384 ADU (14bit ADC)
+ccd_pixsize = 10.0                                          # microns
+ccd_darkcurrent = 0.2
+ccd_darkcurrent_units = "electron/pixel/s"
