@@ -45,7 +45,8 @@ class Site:
                 throughput = len(wavelengths) * [transmission,]
                 header = {}
             except ValueError:
-                sky_file = os.path.expandvars(kwargs['transmission'])
+                # XXX Replace with read_element()?
+                sky_file = str(pkg_resources.files('etc.data').joinpath(os.path.expandvars(kwargs['transmission'])))
                 try:
                     header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
                 except KeyError:

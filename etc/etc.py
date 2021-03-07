@@ -1,6 +1,7 @@
 import os
 import sys
 import toml
+import warnings
 try:
     if sys.version_info >= (3, 9):
         # This exists in 3.8 but a different API
@@ -13,6 +14,8 @@ except ImportError:
 
 import numpy as np
 from astropy import units as u
+from astropy.utils.exceptions import AstropyUserWarning
+
 from synphot import SourceSpectrum, SpectralElement, units
 from synphot.models import Empirical1D
 from synphot.observation import Observation
@@ -20,6 +23,7 @@ from synphot.observation import Observation
 from . import data
 from .models import Site, Telescope, Instrument, ETCError
 from .config import conf
+from .utils import sptype_to_pickles_standard
 
 
 class ETC(object):
@@ -28,6 +32,7 @@ class ETC(object):
     _sun_raw = SourceSpectrum.from_file(os.path.expandvars(conf.sun_file))
     _vega = SourceSpectrum.from_file(os.path.expandvars(conf.vega_file))
     _V_band = SpectralElement.from_filter('johnson_v')
+    _B_band = SpectralElement.from_filter('johnson_b')
 
     def __init__(self, config_file=None, components=None):
         PRESET_MODELS = toml.loads(pkg_resources.read_text(data, "FTN_FLOYDS.toml"))
@@ -99,12 +104,27 @@ class ETC(object):
 
         return band
 
-    def photons_from_source(self, mag, filtername):
+    def pickles_to_source_spec(self, sp_type):
+        """Returns a SourceSpectrum from the passed <sp_type> if it is found
+        in the Pickles atlas, otherwise None is returned"""
+
+        source_spec = None
+        filename = sptype_to_pickles_standard(sp_type)
+        if filename:
+            filepath = os.path.expandvars(os.path.join('$CDBS_PATH', 'calspec', 'pickles', filename))
+            source_spec = SourceSpectrum.from_file(filepath)
+        return source_spec
+
+    def photons_from_source(self, mag, filtername, source_spec=None):
         print("photons_from_source:", filtername)
         standard_filter = self._convert_filtername(filtername)
         band = self._map_filter_to_standard(standard_filter)
-        print(band.meta.get('expr', 'Unknown'))
-        source_spec = self._vega.normalize(mag * units.VEGAMAG, band, vegaspec=self._vega)
+        print(band.meta.get('expr', 'Unknown'), type(source_spec))
+        source_spec = source_spec or self._vega
+        if type(source_spec) != SourceSpectrum:
+            raise ETCError('Invalid sourcespec; must be a SourceSpectrum')
+
+        source_spec_norm = source_spec.normalize(mag * units.VEGAMAG, band, vegaspec=self._vega)
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
@@ -112,7 +132,7 @@ class ETC(object):
         spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
 
         # get the synphot observation object
-        synphot_obs = Observation(source_spec, spec_elements)
+        synphot_obs = Observation(source_spec_norm, spec_elements)
 
         countrate = synphot_obs.countrate(area=self.telescope.area)
 
@@ -180,7 +200,7 @@ class ETC(object):
 
             # Compute countrate from given sky magnitude.
             # XXX need to refactor photons_from_source() to do this also
-            sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
+            sky2 = sky.normalize(sky_mag*units.VEGAMAG, obs_filter, vegaspec=self._vega)
             print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
             self._create_combined()
             waves, thru = self.combined._get_arrays(None)
@@ -189,6 +209,7 @@ class ETC(object):
             spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
 
             # get the synphot observation object
+            warnings.simplefilter('ignore', category = AstropyUserWarning)
             sky_obs = Observation(sky2, spec_elements, force='taper')
 
             sky_countrate = sky_obs.countrate(area=self.telescope.area)
@@ -200,6 +221,10 @@ class ETC(object):
             sky_per_pixel /= u.pixel
             print("Sky (photons/pixel)=", sky_per_pixel)
             background_rate = sky_per_pixel
+
+
+        # For spectrographs, calculate fraction of light passing through slit
+        vign = self.instrument.slit_vignette()
 
         if npix == 1*u.pixel:
             # Calculate new value based on area of FWHM and pixelscale
@@ -287,7 +312,8 @@ class ETC(object):
             spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
 
             # get the synphot observation object
-            sky_obs = Observation(sky2, spec_elements, force='taper')
+            with warnings.simplefilter('ignore', category = AstropyUserWarning):
+                sky_obs = Observation(sky2, spec_elements)
 
             sky_countrate = sky_obs.countrate(area=self.telescope.area)
             # Actually a count rate per arcsec^2 as the original magnitude is
@@ -430,14 +456,18 @@ class ETC(object):
         plt.draw()
 
     def plot(self, filterlist=[], **kwargs):
-        """Plot combined system
+        """Plot combined system throughput and filters. By default (if
+        `filterlist=[]`) then all instrument filters are plotted. To plot
+        specific filters, set `filterlist` to a string of the filtername or
+        a list of filternames. To disable filter plotting completely, set
+        `filterlist=None`
 
         Parameters
         ----------
         waves, thru : `~astropy.units.quantity.Quantity`
             Wavelength and throughput to plot.
 
-        filterlist : list or str
+        filterlist : list, str or None
             Filter name(s) to plot
 
         kwargs
@@ -450,6 +480,10 @@ class ETC(object):
         # Handle single filter string case
         if isinstance(filterlist, str):
             filterlist = [filterlist,]
+        elif filterlist == []:
+            filterlist = self.instrument.filterlist
+        elif filterlist is None:
+            filterlist = []
         if len(filterlist) > 0 and set(filterlist).issubset(set(self.instrument.filterlist)):
             filterset = self.instrument.filterset
         self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
