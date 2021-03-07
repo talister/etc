@@ -1,0 +1,43 @@
+[site]
+name = "La Silla"
+altitude = 2335
+altitude_units = "m"
+latitude = -29.25428694
+longitude = -70.73459528
+transmission = "comp/eso/LaSilla_atmos_z1.2_pwv7.50.dat"
+[site.sky_mag]
+# From https://www.eso.org/gen-fac/pubs/astclim/lasilla/l-vanzi-poster/sld011.htm
+    U = 21.9
+    B = 22.7
+    V = 21.9
+    R = 21.1
+    I = 19.9
+
+[telescope]
+name = "MPG/ESO 2.2m"
+size = 2.2
+area = 1.031916 # m^2 Based on M1=2200mm, central obstruction 844mm diameters (http://www.eso.org/sci/facilities/lasilla/telescopes/national/2p2/overview.html)
+num_mirrors = 2
+reflectivity = "comp/eso/nttM1.dat"
+
+[instrument]
+name = "WFI"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 6                                         # two triplets
+num_ar_coatings = 2
+inst_lens_trans = 0.95                                    # Average combination of 0.99 (BAK2/FK5) & 0.935 (silica/CaF2)
+inst_ar_coating_refl = 0.99                                 #
+fwhm = 0.8                                                  #
+fwhm_units = "arcsec"
+focal_scale = 15.87432203                                   # from 11.7"/mm (uncorrected) times 8.005/5.9 (f8.005->f/5.9 with corrector)
+focal_scale_units = "arcsec/mm"
+filterlist = ['ESO::U', 'ESO::B', 'ESO::V', 'ESO::Rc', 'ESO::I']
+ccd_qe = "comp/eso/ESO_WFI_CCD50.dat"
+ccd_readnoise = 4.5                                         # electrons
+ccd_gain = 2.0                                              # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 4096
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 0.0005
+ccd_darkcurrent_units = "ph/pixel/s"

@@ -47,6 +47,12 @@ class Conf(ConfigNamespace):
 
     soar_goodman_600l_file = ConfigItem('comp/soar/Goodman_600l_grating.dat', 'SOAR Goodman 600lines/mm grating order=1')
 
+    eso_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0877', 'ESO/WFI U')
+    eso_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0878', 'ESO/WFI B')
+    eso_V_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0843', 'ESO/WFI V')
+    eso_Rc_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0844', 'ESO/WFI Rc')
+    eso_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0879', 'ESO/WFI I')
+
     optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
@@ -89,6 +95,11 @@ class Conf(ConfigNamespace):
                 'CTIO::z' : ctio_z_file,
                 'CTIO::CN' : ctio_CN_file,
                 'SOAR:600l/mm' : soar_goodman_600l_file,
+                'ESO::U' : eso_U_file,
+                'ESO::B' : eso_B_file,
+                'ESO::V' : eso_V_file,
+                'ESO::Rc' : eso_Rc_file,
+                'ESO::I' : eso_I_file,
                 'NaCl' : optics_NaCl_file,
                 'UVFS' : optics_UVFS_file,
                 'CaF2' : optics_CaF2_file,
