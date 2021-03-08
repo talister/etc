@@ -115,15 +115,21 @@ class ETC(object):
             source_spec = SourceSpectrum.from_file(filepath)
         return source_spec
 
-    def photons_from_source(self, mag, filtername, source_spec=None):
+    def photons_from_source(self, mag, mag_filter, filtername, source_spec=None, force_overlap='taper'):
+        """Computes the photons coming from the source given by [source_spec] (Vega
+        is assumed if not given) of the given <mag> in <mag_filter> (e.g. for "V=20",
+        mag=20, mag_filter='V') when observed through the instrument's filter
+        given by <filtername>
+        """
         print("photons_from_source:", filtername)
         standard_filter = self._convert_filtername(filtername)
-        band = self._map_filter_to_standard(standard_filter)
+        band = self._map_filter_to_standard(mag_filter)
         print(band.meta.get('expr', 'Unknown'), type(source_spec))
         source_spec = source_spec or self._vega
         if type(source_spec) != SourceSpectrum:
             raise ETCError('Invalid sourcespec; must be a SourceSpectrum')
 
+        # XXX Todo: allow support for AB mags here
         source_spec_norm = source_spec.normalize(mag * units.VEGAMAG, band, vegaspec=self._vega)
 
         self._create_combined()
@@ -132,13 +138,13 @@ class ETC(object):
         spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
 
         # get the synphot observation object
-        synphot_obs = Observation(source_spec_norm, spec_elements)
+        synphot_obs = Observation(source_spec_norm, spec_elements, force=force_overlap)
 
         countrate = synphot_obs.countrate(area=self.telescope.area)
 
         return countrate
 
-    def ccd_snr(self, exp_time, V_mag, filtername, npix=1 * u.pixel,
+    def ccd_snr(self, exp_time, V_mag, filtername, source_spec=None, npix=1 * u.pixel,
                          n_background=np.inf * u.pixel,
                          background_rate=0 * (u.ph / u.pixel / u.s),
                          sky_mag=None,
@@ -159,7 +165,7 @@ class ETC(object):
         try:
             countrate = V_mag.to(u.photon / u.s)
         except (AttributeError, u.UnitConversionError):
-            countrate = self.photons_from_source(V_mag, filtername)
+            countrate = self.photons_from_source(V_mag, 'V', filtername, source_spec=source_spec)
 
         # define countrate to be in photons/sec, which can be treated as the
         # same as (photo)electrons for CCDs but are not technically convertible in
@@ -196,11 +202,14 @@ class ETC(object):
                 if sky_mag is None:
                     raise ETCError('Could not determine a valid sky magnitude for filter: {0}'.format(sky_filtername))
 
-            print("{} sky magnitude of {:.2f}".format(prefix, sky_mag))
+            print("{} sky magnitude of {:.2f} for {} band".format(prefix, sky_mag, sky_filtername))
 
             # Compute countrate from given sky magnitude.
             # XXX need to refactor photons_from_source() to do this also
-            sky2 = sky.normalize(sky_mag*units.VEGAMAG, obs_filter, vegaspec=self._vega)
+            sky_filter = self._map_filter_to_standard(sky_filtername)
+            print("sky_filter",sky_filter.meta.get('expr', 'Unknown'), type(sky))
+
+            sky2 = sky.normalize(sky_mag*units.VEGAMAG, sky_filter, vegaspec=self._vega)
             print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
             self._create_combined()
             waves, thru = self.combined._get_arrays(None)
