@@ -28,6 +28,7 @@ num_inst_lenses = 7                                         # two triplets plus 
 num_ar_coatings = 2
 inst_lens_trans = 0.94                                    # Average combination of 0.99 (BAK2/FK5) & 0.935 (silica/CaF2)
 inst_ar_coating_refl = 0.90                                 #
+trans_components = "comp/eso/ESO_WFI_optics.dat,comp/eso/ESO_WFI_fudge.dat"
 fwhm = 0.8                                                  #
 fwhm_units = "arcsec"
 focal_scale = 15.864406779661016                            # from 11.7"/mm (uncorrected) times 8/5.9 (f8->f/5.9 with corrector)

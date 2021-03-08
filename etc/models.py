@@ -277,9 +277,18 @@ class Instrument:
         # Transmission/Reflection values of optical elements coating
         self.ar_coating = kwargs.get('inst_ar_coating_refl', 0.99)
 
-        transmission = self._compute_transmission()
+        trans_components = kwargs.get('trans_components',  None)
         wavelengths = np.arange(300, 1501, 1) * u.nm
-        trans = len(wavelengths) * [transmission,]
+        if trans_components:
+            trans = len(wavelengths) * [1.0,]
+            for comp_name in trans_components.split(","):
+                print(comp_name)
+                element = read_element(comp_name)
+                trans *= element(wavelengths)
+        else:
+            print("Computing transmission from elements")
+            transmission = self._compute_transmission()
+            trans = len(wavelengths) * [transmission,]
         header = {}
         self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
 
