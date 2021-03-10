@@ -47,6 +47,13 @@ class Conf(ConfigNamespace):
 
     soar_goodman_600l_file = ConfigItem('comp/soar/Goodman_600l_grating.dat', 'SOAR Goodman 600lines/mm grating order=1')
 
+    lsst_u_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_u.dat', 'LSST u')
+    lsst_g_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_g.dat', 'LSST g')
+    lsst_r_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_r.dat', 'LSST r')
+    lsst_i_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_i.dat', 'LSST i')
+    lsst_z_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_z.dat', 'LSST z')
+    lsst_y_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_y.dat', 'LSST y')
+
     eso_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0877', 'ESO/WFI U')
     eso_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0878', 'ESO/WFI B')
     eso_V_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0843', 'ESO/WFI V')
@@ -100,6 +107,12 @@ class Conf(ConfigNamespace):
                 'ESO::V' : eso_V_file,
                 'ESO::Rc' : eso_Rc_file,
                 'ESO::I' : eso_I_file,
+                'LSST::u' : lsst_u_file,
+                'LSST::g' : lsst_g_file,
+                'LSST::r' : lsst_r_file,
+                'LSST::i' : lsst_i_file,
+                'LSST::z' : lsst_z_file,
+                'LSST::y' : lsst_y_file,
                 'NaCl' : optics_NaCl_file,
                 'UVFS' : optics_UVFS_file,
                 'CaF2' : optics_CaF2_file,
