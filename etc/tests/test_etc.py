@@ -1,6 +1,7 @@
 import pytest
 import os
 import warnings
+from copy import deepcopy
 
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
@@ -147,11 +148,53 @@ class TestPhotonsFromSource:
 
         test_etc = etc.ETC(self.WHT_config)
 
-        countrate = test_etc.photons_from_source(V_mag, 'WHT::V')
+        countrate = test_etc.photons_from_source(V_mag, 'V', 'WHT::V')
 
         # Can't get a very exact match as we are using as actual filter transmission
         # not exactly represented by the equivalent width above but it's within 0.27%
         assert_quantity_allclose(expected_countrate, countrate, rtol=3e-3)
+
+    def test_bad_sourcespec(self):
+
+        test_etc = etc.ETC(self.WHT_config)
+
+        with pytest.raises(Exception) as execinfo:
+            countrate = test_etc.photons_from_source(15, 'V', 'WHT::V', 3631*u.Jy)
+
+        assert execinfo.type == ETCError
+        assert execinfo.value.args[0] == "Invalid sourcespec; must be a SourceSpectrum"
+
+    def test_sky_spectrum_V(self):
+
+        # Value from SIGNAL using default V band m_0=3640 Jy but effective bandwidth=855.18 AA
+        # from import of SVO WHT/PFIP.Har_V filter profile as a SpectralElement and equivwidth()
+        expected_countrate = 76.738514 * (u.ct/u.s)
+
+        test_etc = etc.ETC(self.WHT_config)
+
+        sky_spec = test_etc.site.sky_spectrum('V')
+        countrate = test_etc.photons_from_source(21.9, 'V', 'WHT::V', sky_spec)
+
+        assert_quantity_allclose(expected_countrate, countrate, rtol=9e-04)
+
+    def test_sky_spectrum_B(self):
+
+        WHT_config = deepcopy(self.WHT_config)
+        WHT_config['site']['transmission'] = 0.7943282347242815
+        WHT_config['instrument']['filterlist'] = ['WHT::B']
+        WHT_config['instrument']['ccd_qe'] = 0.82
+        WHT_config['instrument']['inst_lens_trans'] = 0.8 * 0.9
+
+        print(WHT_config)
+        test_etc = etc.ETC(WHT_config)
+
+        expected_countrate = 39.4130738 * (u.ct/u.s)
+
+        sky_spec = test_etc.site.sky_spectrum('B')
+        countrate = test_etc.photons_from_source(22.7, 'B', 'WHT::B', sky_spec)
+
+        assert_quantity_allclose(expected_countrate, countrate, rtol=9e-4)
+
 
 class TestCCDSNR:
     @pytest.fixture(autouse=True)
