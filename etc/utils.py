@@ -37,7 +37,9 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
         header, wavelengths, throughput = specio.read_remote_spec(filename, wave_unit=u.AA, flux_unit=units.THROUGHPUT)
     else:
         source = "local file"
-        file_path = str(pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename)))
+        file_path = os.path.expandvars(filename)
+        if not os.path.exists(file_path):
+            file_path = str(pkg_resources.files('etc.data').joinpath(filename))
         warnings.simplefilter('ignore', category = AstropyUserWarning)
         if filename.lower().endswith('fits') or filename.lower().endswith('fit'):
             try:

@@ -136,7 +136,8 @@ class Site:
         """
 
         flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'R' : 3064, 'I' : 2416, 'Z' : 2200,
-                    'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
+                    'u' : 3631, 'g': 3631, 'r': 3631, 'i': 3631, 'z': 3631,
+                    'up' : 3631, 'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
         flux_mag0_Jy = flux_janskys[filtername] * u.Jy
         wavelength = self._map_filter_to_wavelength(filtername)
         m_0 = flux_mag0_Jy.to(u.photon / u.cm**2 / u.s / u.angstrom, equivalencies=u.spectral_density(wavelength))
@@ -148,6 +149,7 @@ class Site:
         which is returned as an AstroPy Quantity in angstroms"""
 
         filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'R' : 6500, 'I' : 8200, 'Z' : 9500,
+                        'u' : 3675, 'g' : 4763, 'rp' : 6204, 'ip' : 7523, 'zp' : 8660, 'z' : 9724,
                         'gp' : 4810, 'rp' : 6170, 'ip' : 7520, 'zp' : 8660, 'w' : 6080}
         wavelength = filter_cwave[filtername] * u.angstrom
 
@@ -197,6 +199,7 @@ class Telescope:
         self.num_mirrors = num_mirrors
 
         modelclass = Empirical1D
+        mirrors = []
         # Default value based on average of coated Al over 300-1200nm and also matches SIGNAL
         reflectivity = kwargs.get('reflectivity',  0.85)
         try:
@@ -204,17 +207,26 @@ class Telescope:
             wavelengths = np.arange(300, 1501, 1) * u.nm
             refl = len(wavelengths) * [reflectivity,]
             header = {}
+            mirror_se = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
+            # Assume all mirrors are the same reflectivity and copy
+            for x in range(self.num_mirrors):
+                mirrors.append(mirror_se)
         except ValueError:
-            file_path = os.path.expandvars(kwargs['reflectivity'])
-            if not os.path.exists(file_path):
-                file_path = pkg_resources.files('etc.data').joinpath(kwargs['reflectivity'])
-            header, wavelengths, refl = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit='%')
-
-        mirror_se = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=refl, keep_neg=True, meta={'header': header})
-        # Assume all mirrors are the same reflectivity and multiply together
-        self.reflectivity = mirror_se
+            # single filename
+            component =  kwargs['reflectivity']
+            mirror_se =read_element(component)
+            for x in range(self.num_mirrors):
+                mirrors.append(mirror_se)
+        except TypeError:
+            # List of filename components
+            telescope_components = kwargs['reflectivity']
+            for component in telescope_components:
+                mirror_se = read_element(component)
+                mirrors.append(mirror_se)
+        # Multiply mirror reflectivities together
+        self.reflectivity = mirrors[0]
         for x in range(0, self.num_mirrors-1):
-            self.reflectivity *= mirror_se
+            self.reflectivity *= mirrors[x+1]
 
     def tpeak(self, wavelengths=None):
         """Calculate :ref:`peak bandpass throughput <synphot-formula-tpeak>`.

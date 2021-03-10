@@ -182,6 +182,22 @@ class TestTelescope:
         assert tel.num_mirrors == 2
         assert tel.tpeak() == 0.92**2
 
+    def test_reflectivity_list(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_mirror.dat"))
+
+        test_config = { 'name' : "BPL 1-m",
+                        'size' : 1,
+                        'area' : 0.625,
+                        'reflectivity' : [test_fp, test_fp]
+                      }
+        tel = Telescope(**test_config)
+
+        assert tel.name == "BPL 1-m"
+        assert tel.size == 1 * u.m
+        assert tel.area == 0.625 * u.m * u.m
+        assert tel.num_mirrors == 2
+        assert tel.tpeak() == 0.92**2
+
 class TestInstrument:
 
     def test_initialize_defaults(self):
