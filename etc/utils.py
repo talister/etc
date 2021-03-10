@@ -50,7 +50,8 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
         if throughput.mean() > 1.0:
             throughput /= 100.0
             header['notes'] = 'Divided by 100.0 to convert from percentage'
-
+    header['source'] = source
+    header['filename'] = filename
     element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
     return element
@@ -98,7 +99,9 @@ def sptype_to_pickles_standard(sp_type):
                 'M3V' : 'pickles_42.fits',
                 'M4V' : 'pickles_43.fits',
                 'M5V' : 'pickles_44.fits',
-                'M6V' : 'pickles_45.fits'
+                'M6V' : 'pickles_45.fits',
+                # Subgiants
+                'B2IV' : 'pickles_46.fits'
             }
 
     return mapping.get(sp_type.upper(), None)
