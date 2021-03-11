@@ -32,7 +32,6 @@ class ETC(object):
     _sun_raw = SourceSpectrum.from_file(os.path.expandvars(conf.sun_file))
     _vega = SourceSpectrum.from_file(os.path.expandvars(conf.vega_file))
     _V_band = SpectralElement.from_filter('johnson_v')
-    _B_band = SpectralElement.from_filter('johnson_b')
 
     def __init__(self, config_file=None, components=None):
         PRESET_MODELS = toml.loads(pkg_resources.read_text(data, "FTN_FLOYDS.toml"))
@@ -50,6 +49,8 @@ class ETC(object):
             self._create_components_from_config(component_config)
 
         self.combined = None
+        self.combined_noatmos = None
+        self.obs = None
 
     def _create_components_from_config(self, config):
         class_mapping = {'site' : Site, 'telescope' : Telescope, 'instrument' : Instrument }
@@ -139,7 +140,8 @@ class ETC(object):
 
         # get the synphot observation object
         synphot_obs = Observation(source_spec_norm, spec_elements, force=force_overlap)
-
+        if self.obs is None:
+            self.obs = synphot_obs
         countrate = synphot_obs.countrate(area=self.telescope.area)
 
         return countrate
@@ -170,6 +172,7 @@ class ETC(object):
         # define countrate to be in photons/sec, which can be treated as the
         # same as (photo)electrons for CCDs but are not technically convertible in
         # astropy.units:
+#        countrate = countrate * np.pi
         countrate = countrate.value * (u.photon / u.s)
 
         print("Counts/s=", countrate)
@@ -212,7 +215,7 @@ class ETC(object):
             sky2 = sky.normalize(sky_mag*units.VEGAMAG, sky_filter, vegaspec=self._vega)
             print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
             self._create_combined()
-            waves, thru = self.combined._get_arrays(None)
+            waves, thru = self.combined_noatmos._get_arrays(None)
             filter_waves, filter_trans = obs_filter._get_arrays(waves)
             print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
             spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)
@@ -221,7 +224,7 @@ class ETC(object):
             warnings.simplefilter('ignore', category = AstropyUserWarning)
             sky_obs = Observation(sky2, spec_elements, force='taper')
 
-            sky_countrate = sky_obs.countrate(area=self.telescope.area)
+            sky_countrate = sky_obs.countrate(area=self.telescope.area) # * np.pi
             # Actually a count rate per arcsec^2 as the original magnitude is
             # also per sq. arcsec. Also set to photons/s to match signal from object
             sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
@@ -479,12 +482,18 @@ class ETC(object):
         filterlist : list, str or None
             Filter name(s) to plot
 
-        kwargs
-            See :func:`do_plot`.
+        kwargs :
+            atmos : bool
+                Whether to include the atmosphere or not
+            Also see :func:`do_plot`.
 
         """
         self._create_combined()
-        waves, trans = self.combined._get_arrays(None)
+        if kwargs.get('atmos', True) is True:
+            waves, trans = self.combined._get_arrays(None)
+        else:
+            waves, trans = self.combined_noatmos._get_arrays(None)
+            del(kwargs['atmos'])
         filterset = None
         # Handle single filter string case
         if isinstance(filterlist, str):
@@ -498,8 +507,10 @@ class ETC(object):
         self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
 
     def _create_combined(self):
+        if self.combined_noatmos is None:
+            self.combined_noatmos = self.telescope.reflectivity * self.instrument.transmission * self.instrument.ccd_qe
         if self.combined is None:
-            self.combined = self.site.transmission * self.telescope.reflectivity * self.instrument.transmission * self.instrument.ccd_qe
+            self.combined = self.combined_noatmos * self.site.transmission
 
     def __repr__(self):
         prefixstr = '<' + self.__class__.__name__ + ' '
