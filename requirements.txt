@@ -2,6 +2,6 @@ astropy
 jedi==0.17.2
 ipython
 toml
-synphot==0.3
+synphot==1.0.1
 pytest
 matplotlib
