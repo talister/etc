@@ -135,7 +135,7 @@ class Site:
         for SDSS/PanSTARRS
         """
 
-        flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'R' : 3064, 'I' : 2416, 'Z' : 2200,
+        flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'R' : 3064, 'Rc' : 3028, 'I' : 2416, 'Z' : 2200,
                     'u' : 3631, 'g': 3631, 'r': 3631, 'i': 3631, 'z': 3631,
                     'up' : 3631, 'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
         flux_mag0_Jy = flux_janskys[filtername] * u.Jy
@@ -148,7 +148,7 @@ class Site:
         """Maps the given [filtername] (defaults to 'V' for Bessell-V') to a wavelength
         which is returned as an AstroPy Quantity in angstroms"""
 
-        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'R' : 6500, 'I' : 8200, 'Z' : 9500,
+        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'R' : 6500, 'Rc' : 6358, 'I' : 8200, 'Z' : 9500,
                         'u' : 3675, 'g' : 4763, 'rp' : 6204, 'ip' : 7523, 'zp' : 8660, 'z' : 9724,
                         'gp' : 4810, 'rp' : 6170, 'ip' : 7520, 'zp' : 8660, 'w' : 6080}
         wavelength = filter_cwave[filtername] * u.angstrom
