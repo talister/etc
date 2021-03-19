@@ -21,9 +21,9 @@ from synphot.models import Empirical1D
 from synphot.observation import Observation
 
 from . import data
-from .models import Site, Telescope, Instrument, ETCError
+from .models import Site, Telescope, Instrument
 from .config import conf
-from .utils import sptype_to_pickles_standard
+from .utils import sptype_to_pickles_standard, ETCError
 
 
 class ETC(object):
@@ -172,7 +172,6 @@ class ETC(object):
         # define countrate to be in photons/sec, which can be treated as the
         # same as (photo)electrons for CCDs but are not technically convertible in
         # astropy.units:
-#        countrate = countrate * np.pi
         countrate = countrate.value * (u.photon / u.s)
 
         print("Counts/s=", countrate)
@@ -224,7 +223,7 @@ class ETC(object):
             warnings.simplefilter('ignore', category = AstropyUserWarning)
             sky_obs = Observation(sky2, spec_elements, force='taper')
 
-            sky_countrate = sky_obs.countrate(area=self.telescope.area) # * np.pi
+            sky_countrate = sky_obs.countrate(area=self.telescope.area)
             # Actually a count rate per arcsec^2 as the original magnitude is
             # also per sq. arcsec. Also set to photons/s to match signal from object
             sky_countrate = sky_countrate.value * (u.photon/u.s/u.arcsec**2)
@@ -388,7 +387,8 @@ class ETC(object):
 
         return countrate * t / np.sqrt(radicand)
 
-    def _do_plot(self, waves, thru, filterlist=[], filterset=None, title='', left=300*u.nm, right=1200*u.nm, bottom=0.0, top=None):
+    def _do_plot(self, waves, thru, filterlist=[], filterset=None, title='', plot_label='',
+        left=300*u.nm, right=1200*u.nm, bottom=0.0, top=None):
         """Plot worker.
 
         Parameters
@@ -403,6 +403,9 @@ class ETC(object):
 
         title : str
             Plot title.
+
+        plot_label : str
+            Line plot label for legend
 
         left, right : `None`, number or `Quantity`
             Minimum and maximum wavelengths to plot.
@@ -422,7 +425,7 @@ class ETC(object):
             return
 
         fig, ax = plt.subplots()
-        ax.plot(waves, thru)
+        ax.plot(waves, thru, label=plot_label)
 
         # Plot filters
         for filtername in filterlist:
@@ -455,6 +458,8 @@ class ETC(object):
         yu = thru.unit
         if yu is u.dimensionless_unscaled:
             ax.set_ylabel('Unitless')
+        elif yu is u.percent:
+            ax.set_ylabel('Efficiency ({0})'.format(yu))
         else:
             ax.set_ylabel('Flux ({0})'.format(yu))
 
@@ -463,7 +468,8 @@ class ETC(object):
 
         # Turn on minorticks on both axes
         ax.minorticks_on()
-        ax.legend()
+        if len(filterlist) > 0 or plot_label != '':
+            ax.legend()
 
         plt.draw()
 
@@ -505,6 +511,43 @@ class ETC(object):
         if len(filterlist) > 0 and set(filterlist).issubset(set(self.instrument.filterlist)):
             filterset = self.instrument.filterset
         self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
+
+    def plot_efficiency(self, filtername, **kwargs):
+        """Plot combined system throughput for filtername.
+
+        Parameters
+        ----------
+        waves, thru : `~astropy.units.quantity.Quantity`
+            Wavelength and throughput to plot.
+
+        filtername : str
+            Filter name to plot
+
+        kwargs :
+            atmos : bool
+                Whether to include the atmosphere or not
+            Also see :func:`do_plot` for additional options.
+
+        """
+        self._create_combined()
+        if kwargs.get('atmos', True) is True:
+            throughput = self.combined
+            atmos_presence = 'incl.'
+        else:
+            throughput = self.combined_noatmos
+            atmos_presence = 'excl.'
+        if 'atmos' in kwargs:
+            del(kwargs['atmos'])
+        if 'title' not in kwargs:
+            kwargs['title'] = 'System Efficiency {} Atmosphere'.format(atmos_presence)
+        # Handle single filter string case
+        if filtername in self.instrument.filterlist:
+            efficiency = throughput * self.instrument.filterset[filtername]
+            waves = efficiency.waveset
+            thru = efficiency(waves) * 100.0 * u.percent
+            self._do_plot(waves.to(self._internal_wave_unit), thru, filterlist=[], filterset=[], **kwargs)
+        else:
+            raise ETCError('Filter name {0} is invalid.'.format(filtername))
 
     def _create_combined(self):
         if self.combined_noatmos is None:

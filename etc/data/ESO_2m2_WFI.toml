@@ -7,16 +7,16 @@ longitude = -70.73459528
 transmission = "comp/eso/LaSilla_atmos_z1.2_pwv7.50.dat"
 [site.sky_mag]
 # From https://www.eso.org/gen-fac/pubs/astclim/lasilla/l-vanzi-poster/sld011.htm
-    U = 21.9
+    U = 22.0
     B = 22.7
-    V = 21.9
-    R = 21.1
+    V = 21.72
+    Rc = 20.93
     I = 19.58
 
 [telescope]
 name = "MPG/ESO 2.2m"
 size = 2.2
-area = 1.031916 # m^2 Based on M1=2200mm, central obstruction 844mm diameters (http://www.eso.org/sci/facilities/lasilla/telescopes/national/2p2/overview.html)
+area = 3.24185972# m^2 Based on M1=2200mm, central obstruction 844mm diameters (http://www.eso.org/sci/facilities/lasilla/telescopes/national/2p2/overview.html)
 num_mirrors = 2
 reflectivity = "comp/eso/nttM1.dat"
 
