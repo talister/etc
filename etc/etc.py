@@ -82,7 +82,7 @@ class ETC(object):
 
         new_filtername = filtername
         if '::' in filtername:
-            new_filtername = filtername.split('::')[1]
+            new_filtername = filtername.split('::')[-1]
         return new_filtername
 
     def _map_filter_to_standard(self, filtername):
@@ -307,7 +307,7 @@ class ETC(object):
             # XXX need to refactor photons_from_source() to do this also
             sky_filtername = filtername
             if '::' in filtername:
-                sky_filtername = filtername.split('::')[1]
+                sky_filtername = filtername.split('::')[-1]
             sky = self.site.sky_spectrum(sky_filtername)
             print("  Original sky=" ,sky(sky.avgwave()))
             sky2 = sky.normalize(sky_mag*units.VEGAMAG, self._V_band, vegaspec=self._vega)
@@ -525,7 +525,7 @@ class ETC(object):
 
         kwargs :
             atmos : bool
-                Whether to include the atmosphere or not
+                Whether to include the atmosphere or not (default is True)
             Also see :func:`do_plot` for additional options.
 
         """
