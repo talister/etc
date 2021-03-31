@@ -44,18 +44,10 @@ class Site:
                 wavelengths = np.arange(300, 1501, 1) * u.nm
                 throughput = len(wavelengths) * [transmission,]
                 header = {}
+                self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=  throughput, keep_neg=False, meta={'header': header})
             except ValueError:
-                # XXX Replace with read_element()?
+                self.transmission = read_element(kwargs['transmission'])
                 sky_file = str(pkg_resources.files('etc.data').joinpath(os.path.expandvars(kwargs['transmission'])))
-                try:
-                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='trans', wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
-                except KeyError:
-                    # ESO-SM01 format; different column name for transmission and micron vs nm
-                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
-                except InconsistentTableError:
-                    # ASCII format ?
-                    header, wavelengths, throughput = specio.read_spec(sky_file, wave_unit=u.nm,flux_unit=u.dimensionless_unscaled)
-            self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
         if 'sky_mag' in kwargs:
             self.sky_mags = kwargs['sky_mag']
         else:
@@ -135,7 +127,7 @@ class Site:
         for SDSS/PanSTARRS
         """
 
-        flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'R' : 3064, 'Rc' : 3028, 'I' : 2416, 'Z' : 2200,
+        flux_janskys = {'U': 1790, 'B': 4063, 'V' : 3636, 'v' : 3583.05, 'R' : 3064, 'Rc' : 3028, 'I' : 2416, 'Z' : 2200,
                     'u' : 3631, 'g': 3631, 'r': 3631, 'i': 3631, 'z': 3631,
                     'up' : 3631, 'gp': 3631, 'rp': 3631, 'ip': 3631, 'zp': 3631, 'w' : 3631}
         flux_mag0_Jy = flux_janskys[filtername] * u.Jy
@@ -148,7 +140,7 @@ class Site:
         """Maps the given [filtername] (defaults to 'V' for Bessell-V') to a wavelength
         which is returned as an AstroPy Quantity in angstroms"""
 
-        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'R' : 6500, 'Rc' : 6358, 'I' : 8200, 'Z' : 9500,
+        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'v' : 5513, 'R' : 6500, 'Rc' : 6358, 'I' : 8200, 'Z' : 9500,
                         'u' : 3675, 'g' : 4763, 'rp' : 6204, 'ip' : 7523, 'zp' : 8660, 'z' : 9724,
                         'gp' : 4810, 'rp' : 6170, 'ip' : 7520, 'zp' : 8660, 'w' : 6080}
         wavelength = filter_cwave[filtername] * u.angstrom
@@ -214,7 +206,7 @@ class Telescope:
         except ValueError:
             # single filename
             component =  kwargs['reflectivity']
-            mirror_se =read_element(component)
+            mirror_se = read_element(component)
             for x in range(self.num_mirrors):
                 mirrors.append(mirror_se)
         except TypeError:
@@ -269,11 +261,15 @@ class Telescope:
 
 class Instrument:
     adc_error = np.sqrt(0.289) * (u.adu / u.pixel)
+    # Conversion factor from FWHM to Gaussian standard deviation sigma
+    _fwhm2sigma = 2.0 * np.sqrt(2 * np.log(2))
 
     def __init__(self, name=None, inst_type="IMAGER", **kwargs):
+
         _ins_types = ["IMAGER", "SPECTROGRAPH"]
         self.name = name if name is not None else "Undefined"
         self.inst_type = inst_type.upper() if inst_type.upper() in _ins_types else "IMAGER"
+        self.fiber_diameter = kwargs.get('fiber_diameter', None)
 
         # Defaults assume a "standard" imager with a single lens, 2 AR coatings
         # on the front and back surfaces and no mirrors
@@ -358,6 +354,10 @@ class Instrument:
     def is_imager(self):
         return True if self.inst_type == 'IMAGER' else False
 
+    @property
+    def is_fiberfed(self):
+        return True if self.inst_type == 'SPECTROGRAPH' and self.fiber_diameter is not None else False
+
     def ccd_fov(self, fov_units=u.arcsec):
         """Computes the CCD's field of view and returns a tuple of Quantity's
         Uses `self.ccd_pixsize`, `self.focal_scale` and `self.ccd_x/ypixels`
@@ -422,8 +422,10 @@ class Instrument:
 
     def slit_vignette(self, slit_width=1*u.arcsec):
         """Compute the fraction of light entering the slit of width <slit_width>
-        for an object described by a FWHM of <self.fwhm>
-        In the case of imaging mode, 1.0 is always returned.
+        or into a fiber of `self.fiber_diameter` for an object described by a
+        FWHM of <self.fwhm>
+        In the case of imaging mode, 1.0 is always returned. For fiberfed
+        spectrographs (`self.is_fiberfed is True`), the <slit_width> is ignored.
 
         The code is taken from the IAC/Chris Benn's SIGNAL code (`slitvign` routine):
         http://www.ing.iac.es/Astronomy/instruments/signal/help.html
@@ -442,20 +444,27 @@ class Instrument:
 
         if self.is_imager is False:
             # Spectroscopy
-            try:
-                ratio = slit_width.to(u.arcsec) / self.fwhm.to(u.arcsec)
-            except AttributeError:
-                ratio = slit_width / self.fwhm.value
+            if self.is_fiberfed is False:
+                # Slit spectrograph
+                try:
+                    ratio = slit_width.to(u.arcsec) / self.fwhm.to(u.arcsec)
+                except AttributeError:
+                    ratio = slit_width / self.fwhm.value
 
-            if ratio < 0.76:
-                vign = 0.868*ratio
-            if 0.76 <= ratio < 1.40:
-                vign = 0.37+0.393*ratio
-            if 1.40 <= ratio < 2.30:
-                vign = 1.00-0.089*(2.3-ratio)
-            if ratio >= 2.3:
-                vign = 1.0
-
+                if ratio < 0.76:
+                    vign = 0.868*ratio
+                if 0.76 <= ratio < 1.40:
+                    vign = 0.37+0.393*ratio
+                if 1.40 <= ratio < 2.30:
+                    vign = 1.00-0.089*(2.3-ratio)
+                if ratio >= 2.3:
+                    vign = 1.0
+            else:
+                print("Fiberfed")
+                # Fiber/lenslet spectrograph
+                radius = self.fiber_diameter.value / 2.0
+                sigma = self.fwhm.to(u.arcsec).value/self._fwhm2sigma
+                vign = 1.0 - np.exp(-radius*radius/2.0/sigma/sigma)
         return vign
 
     def throughput(self, filtername):

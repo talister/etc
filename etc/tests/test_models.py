@@ -217,6 +217,14 @@ class TestInstrument:
 
         assert inst.name == "FLOYDS"
         assert inst.inst_type == "SPECTROGRAPH"
+        assert inst.is_fiberfed == False
+
+    def test_initialize_fiber_spectrograph(self):
+        inst = Instrument(name="FEROS", inst_type="Spectrograph", fiber_diameter=2*u.arcsec)
+
+        assert inst.name == "FEROS"
+        assert inst.inst_type == "SPECTROGRAPH"
+        assert inst.is_fiberfed == True
 
     def test_trans_default(self):
         inst = Instrument()
@@ -694,5 +702,67 @@ class TestInstrument:
         expected_vign = 0.5208
 
         vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1pt4_fiber2pt0(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.4 * u.arcsec,
+                         'fiber_diameter' : 2.0 * u.arcsec,
+                         'slit_width' : 2.0 * u.arcsec
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.7569738014945818
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm1pt4_fiber2pt0(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 1.4 * u.arcsec,
+                         'fiber_diameter' : 2.0 * u.arcsec,
+                         'slit_width' : 1.0 * u.arcsec
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.7569738014945818
+
+        vign = inst.slit_vignette(inst_options['slit_width'])
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm0pt9_fiber2pt0(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 0.9 * u.arcsec,
+                         'fiber_diameter' : 2.0 * u.arcsec,
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.9673838889561505
+
+        vign = inst.slit_vignette()
+
+        assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm2pt0_fiber2pt0(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 2.0 * u.arcsec,
+                         'fiber_diameter' : 2.0 * u.arcsec,
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.5
+
+        vign = inst.slit_vignette()
 
         assert_quantity_allclose(expected_vign, vign)
