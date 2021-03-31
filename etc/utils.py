@@ -49,6 +49,9 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
                 header, wavelengths, throughput = specio.read_spec(file_path, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
         else:
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=wave_units, flux_unit=flux_units)
+        if wavelengths[0].value < 100.0 and wave_units == u.nm:
+            # Small values seen, Convert to microns
+            wavelengths = wavelengths.value * u.micron
         if throughput.mean() > 1.0:
             throughput /= 100.0
             header['notes'] = 'Divided by 100.0 to convert from percentage'
