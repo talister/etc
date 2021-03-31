@@ -270,6 +270,8 @@ class Instrument:
         self.name = name if name is not None else "Undefined"
         self.inst_type = inst_type.upper() if inst_type.upper() in _ins_types else "IMAGER"
         self.fiber_diameter = kwargs.get('fiber_diameter', None)
+        if self.fiber_diameter is not None:
+            self.fiber_diameter = self.fiber_diameter * u.arcsec
 
         # Defaults assume a "standard" imager with a single lens, 2 AR coatings
         # on the front and back surfaces and no mirrors
@@ -460,7 +462,6 @@ class Instrument:
                 if ratio >= 2.3:
                     vign = 1.0
             else:
-                print("Fiberfed")
                 # Fiber/lenslet spectrograph
                 radius = self.fiber_diameter.value / 2.0
                 sigma = self.fwhm.to(u.arcsec).value/self._fwhm2sigma

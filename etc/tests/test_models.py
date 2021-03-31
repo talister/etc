@@ -766,3 +766,18 @@ class TestInstrument:
         vign = inst.slit_vignette()
 
         assert_quantity_allclose(expected_vign, vign)
+
+    def test_vignette_fwhm2pt0_fiber2pt0_nounits(self):
+
+        inst_options = {
+                         'inst_type' : 'spectrograph',
+                         'fwhm' : 2.0 * u.arcsec,
+                         'fiber_diameter' : 2.0,
+                       }
+        inst = Instrument(**inst_options)
+
+        expected_vign = 0.5
+
+        vign = inst.slit_vignette()
+
+        assert_quantity_allclose(expected_vign, vign)
