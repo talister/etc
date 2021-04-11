@@ -1,0 +1,27 @@
+# Wavelength [nm]	Transmittance [0..1]
+# Optical transmission for Schott LF5 (10mm thickness)
+# From: https://shop.schott.com/advanced_optics/en/LF5/c/glass-LF5#subTabInternalTransmittance
+300     0.0
+310     0.040
+320     0.320
+334     0.799
+350     0.950
+365     0.981
+370     0.984
+380     0.989
+390     0.994
+400     0.997
+405     0.997
+420     0.997
+436     0.998
+460     0.998
+500     0.998
+546     0.999
+580     0.999
+620     0.999
+660     0.999
+700     0.999
+1060    0.999
+1530    0.997
+1970    0.946
+2325    0.847
