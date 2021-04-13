@@ -60,6 +60,20 @@ class Conf(ConfigNamespace):
     eso_Rc_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0844', 'ESO/WFI Rc')
     eso_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0879', 'ESO/WFI I')
 
+    eso_uHIGH_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1112', 'ESO/FORS u_HIGH')
+    eso_bHIGH_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1113', 'ESO/FORS b_HIGH')
+    eso_vHIGH_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1114', 'ESO/FORS v_HIGH')
+    eso_gHIGH_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1115', 'ESO/FORS g_HIGH')
+    eso_fors_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1076', 'ESO/FORS Bessell R Special')
+    eso_fors_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1077', 'ESO/FORS Bessell I')
+    eso_fors_z_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1078', 'ESO/FORS Gunn z')
+
+    eso_fors_300V_file = ConfigItem("comp/eso/ESO_FORS2_Grism_300V.dat")
+    eso_fors_600B_file = ConfigItem("comp/eso/ESO_FORS2_Grism_600B.dat")
+    eso_efosc2_grism1_file = ConfigItem("comp/eso/ESO_EFOSC2_Grism1.dat")
+    eso_efosc2_grism2_file = ConfigItem("comp/eso/ESO_EFOSC2_Grism2.dat")
+    eso_feros_file = ConfigItem("comp/eso/ESO_FEROS_slitfiber.dat")
+
     optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
@@ -107,6 +121,18 @@ class Conf(ConfigNamespace):
                 'ESO::V' : eso_V_file,
                 'ESO::Rc' : eso_Rc_file,
                 'ESO::I' : eso_I_file,
+                'ESO::FORS::u' : eso_uHIGH_file,
+                'ESO::FORS::b' : eso_bHIGH_file,
+                'ESO::FORS::v' : eso_vHIGH_file,
+                'ESO::FORS::g' : eso_gHIGH_file,
+                'ESO::FORS::R' : eso_fors_R_file,
+                'ESO::FORS::I' : eso_fors_I_file,
+                'ESO::FORS::z' : eso_fors_z_file,
+                'ESO::FORS::300V' : eso_fors_300V_file,
+                'ESO::FORS::600B' : eso_fors_600B_file,
+                'ESO::EFOSC2::Grism1' : eso_efosc2_grism1_file,
+                'ESO::EFOSC2::Grism2' : eso_efosc2_grism2_file,
+                'ESO::FEROS' : eso_feros_file,
                 'LSST::u' : lsst_u_file,
                 'LSST::g' : lsst_g_file,
                 'LSST::r' : lsst_r_file,

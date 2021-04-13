@@ -1,0 +1,42 @@
+[site]
+name = "Cerro Paranal"
+altitude = 2640
+altitude_units = "m"
+latitude = -24.62722222
+longitude = -70.40472222
+transmission = "comp/eso/Paranal_atmos_z1.5_pwv3.50.dat"
+[site.sky_mag]
+# From skycalc output, lower case letters to match the {u,b,v}_HIGH filternames in ESO ETC
+    u = 21.91
+    b = 22.59
+    v = 21.57
+    R = 20.75
+    I = 19.37
+    z = 18.69
+
+[telescope]
+name = "ESO 8.2m VLT"
+size = 8.2
+area = 51.2 # m^2 Based on https://www.eso.org/observing/etc/doc/formulabook/node15.html
+num_mirrors = 1 # file below includes both mirrors
+reflectivity = "comp/eso/vltCass.dat"
+
+[instrument]
+name = "FORS2"
+inst_type = "Spectrograph"
+trans_components = "comp/eso/ESO_FORS2_SRoptics.dat,comp/eso/ESO_FORS2_fudge.dat"
+fwhm = 0.8                                                  #
+fwhm_units = "arcsec"
+focal_scale = 8.3333333333333333                            # 1"=0.120um (SR), 240um (HR) Seifert et al 1994
+focal_scale_units = "arcsec/mm"
+filterlist = ['ESO::FORS::300V', 'ESO::FORS::600B']
+#ccd_qe = "comp/eso/ESO_FORS2_CCD_E2V_Chip2.dat"
+ccd_qe = "comp/eso/ESO_FORS2_CCD_MIT.dat"
+#ccd_readnoise = 4.16                                        # electrons (E2V chips)
+ccd_readnoise = 3.15                                        # electrons (MIT chip)
+ccd_gain = 2.0                                              # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 4096
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 5.0
+ccd_darkcurrent_units = "ph/pixel/hour"
