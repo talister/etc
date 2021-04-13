@@ -543,6 +543,11 @@ class ETC(object):
         # Handle single filter string case
         if filtername in self.instrument.filterlist:
             efficiency = throughput * self.instrument.filterset[filtername]
+            # Add slit/fiber vignetting (if applicable)
+            vignetting = self.instrument.slit_vignette()
+#            print("Vignetting", vignetting, (1.0-vignetting)*100., self.instrument.fiber_diameter, self.instrument.fwhm)
+            efficiency = efficiency * vignetting
+            self.efficiency = efficiency
             waves = efficiency.waveset
             thru = efficiency(waves) * 100.0 * u.percent
             self._do_plot(waves.to(self._internal_wave_unit), thru, filterlist=[], filterset=[], **kwargs)
