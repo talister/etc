@@ -273,6 +273,17 @@ class Instrument:
         if self.fiber_diameter is not None:
             self.fiber_diameter = self.fiber_diameter * u.arcsec
 
+        self.grating_linespermm = kwargs.get('grating_linespermm', None)
+        if self.grating_linespermm:
+            self.grating_spacing = 1.0 / (self.grating_linespermm * (1 / u.mm))
+        self.grating_blaze = kwargs.get('grating_blaze', 0.0)
+        self.grating_gamma = kwargs.get('grating_gamma', 0.0)
+        self.cam_focallength = kwargs.get('cam_focallength', None)
+        if self.cam_focallength:
+            self.cam_focallength = self.cam_focallength * u.mm
+        self.dispersion_along_x = kwargs.get('dispersion_along_x', True)
+        self._echelle_constant = None
+
         # Defaults assume a "standard" imager with a single lens, 2 AR coatings
         # on the front and back surfaces and no mirrors
         self.num_ar_coatings = kwargs.get('num_ar_coatings', 2)
@@ -331,6 +342,8 @@ class Instrument:
         self.ccd_pixsize = (ccd_pixsize * ccd_pixsize_units).to(u.micron)
         self.ccd_xpixels = kwargs.get('ccd_xpixels', 0)
         self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
+        self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
+        self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
 
         fwhm = kwargs.get('fwhm', 1)
         try:
@@ -359,6 +372,16 @@ class Instrument:
     @property
     def is_fiberfed(self):
         return True if self.inst_type == 'SPECTROGRAPH' and self.fiber_diameter is not None else False
+
+    @property
+    def echelle_constant(self):
+        if self._echelle_constant is None:
+            self._echelle_constant = 2.0 * self.grating_spacing * np.cos(np.radians(self.grating_gamma)) * np.sin(np.radians(self.grating_blaze))
+        return self._echelle_constant
+
+    @property
+    def binning_disp(self):
+        return self.ccd_xbinning if self.dispersion_along_x is True else self.ccd_ybinning
 
     def ccd_fov(self, fov_units=u.arcsec):
         """Computes the CCD's field of view and returns a tuple of Quantity's
@@ -475,6 +498,23 @@ class Instrument:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
 
         return self.filterset[filtername] * self.transmission * self.ccd_qe
+
+    def central_wavelength(self, n):
+        """Compute central wavelength for the passed order <n>"""
+
+        wave_central = None
+        if self.is_imager is False:
+            wave_central = self.echelle_constant / n
+        return wave_central.to(u.nm)
+
+    def dispersion(self, n):
+        """Compute inverse linear dispersion (nm/pixel) for the passed order <n>"""
+
+        disp = None
+        if self.is_imager is False:
+            ang_disp = (1.0/n) * self.grating_spacing * np.cos(np.radians(self.grating_blaze))
+            disp = ang_disp * (self.ccd_pixsize.to(u.mm) * self.binning_disp) / self.cam_focallength.to(u.mm)
+        return disp.to(u.nm)
 
     def _compute_transmission(self):
         """This calculates the optical transmission of the instrument from lenses,
