@@ -505,7 +505,8 @@ class Instrument:
         wave_central = None
         if self.is_imager is False:
             wave_central = self.echelle_constant / n
-        return wave_central.to(u.nm)
+            wave_central = wave_central.to(u.nm)
+        return wave_central
 
     def dispersion(self, n):
         """Compute inverse linear dispersion (nm/pixel) for the passed order <n>"""
@@ -514,7 +515,8 @@ class Instrument:
         if self.is_imager is False:
             ang_disp = (1.0/n) * self.grating_spacing * np.cos(np.radians(self.grating_blaze))
             disp = ang_disp * (self.ccd_pixsize.to(u.mm) * self.binning_disp) / self.cam_focallength.to(u.mm)
-        return disp.to(u.nm)
+            disp = disp.to(u.nm)
+        return disp
 
     def _compute_transmission(self):
         """This calculates the optical transmission of the instrument from lenses,
