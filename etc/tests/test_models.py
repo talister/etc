@@ -785,24 +785,30 @@ class TestInstrument:
 
 class TestMultiChannelInstrument:
 
-    def test_multichannel_channel_summary(self):
-        inst_options = { 'name': 'MuSCAT',
-                         'inst_type': 'Imager',
-                         'ccd_readnoise': 10.0,
-                         'ccd_gain': 1.0,
-                         'ccd_pixsize': 13.5,
-                         'channels': {'channel1': {'filterlist': ['gp'], 'ccd_qe': 0.8},
-                                      'channel2': {'filterlist': ['rp'], 'ccd_qe': 0.9},
-                                      'channel3': {'filterlist': ['ip'], 'ccd_qe': 0.4},
-                                      'channel4': {
-                                                   'filterlist': ['zs'],
-                                                   'ccd_qe': 0.1,
-                                                   'ccd_gain': 2.0,
-                                                   'ccd_readnoise': 15.0}
-                                     }
-                       }
+    @classmethod
+    def setup_class(cls):
+        cls.inst_options = { 'name': 'MuSCAT',
+                             'inst_type': 'Imager',
+                             'ccd_readnoise': 10.0,
+                             'ccd_gain': 1.0,
+                             'ccd_xpixels' : 2048,
+                             'ccd_ypixels' : 2048,
+                             'ccd_pixsize': 13.5,
+                             'ccd_qe' : 0.75,
+                             'channels': {'channel1': {'filterlist': ['gp'], 'ccd_qe': 0.8},
+                                          'channel2': {'filterlist': ['rp'], 'ccd_qe': 0.9},
+                                          'channel3': {'filterlist': ['ip'], 'ccd_qe': 0.4},
+                                          'channel4': {
+                                                       'filterlist': ['zs'],
+                                                       'ccd_qe': 0.1,
+                                                       'ccd_gain': 2.0,
+                                                       'ccd_readnoise': 15.0}
+                                         }
+                           }
 
-        inst = Instrument(**inst_options)
+    def test_multichannel_channel_summary(self):
+
+        inst = Instrument(**self.inst_options)
 
         assert inst.num_channels == 4
 
@@ -817,3 +823,35 @@ class TestMultiChannelInstrument:
         inst = Instrument(**inst_options)
 
         assert inst.num_channels == 1
+
+    def test_multichannel_ccd_qe(self):
+
+        inst = Instrument(**self.inst_options)
+
+        expected_qe = [0.8, 0.9, 0.4, 0.1]
+
+        assert_quantity_allclose(expected_qe, inst.ccd_qe)
+
+    def test_multichannel_ccd_gain(self):
+
+        inst = Instrument(**self.inst_options)
+
+        expected_gain = [1.0, 1.0, 1.0, 2.0]*u.electron/u.adu
+
+        assert_quantity_allclose(expected_gain, inst.ccd_gain)
+
+    def test_multichannel_ccd_readnoise(self):
+
+        inst = Instrument(**self.inst_options)
+
+        expected_readnoise = [10.0, 10.0, 10.0, 15.0]*u.electron/u.pix
+
+        assert_quantity_allclose(expected_readnoise, inst.ccd_readnoise)
+
+    def test_multichannel_ccd_pixsize(self):
+
+        inst = Instrument(**self.inst_options)
+
+        expected_pixsize = [13.5*u.micron]*4
+
+        assert_quantity_allclose(expected_pixsize, inst.ccd_pixsize)
