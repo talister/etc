@@ -298,6 +298,7 @@ class Instrument:
         # Transmission/Reflection values of optical elements coating
         self.ar_coating = kwargs.get('inst_ar_coating_refl', 0.99)
 
+        # Read common components first
         trans_components = kwargs.get('trans_components',  None)
         wavelengths = np.arange(300, 1501, 1) * u.nm
         if trans_components:
@@ -319,32 +320,6 @@ class Instrument:
             if filtername not in self.filterset:
                 self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
 
-        ccd_qe = kwargs.get('ccd_qe', 0.9)
-        if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
-            file_path = os.path.expandvars(ccd_qe)
-            if not os.path.exists(file_path):
-                file_path = str(pkg_resources.files('etc.data').joinpath(ccd_qe))
-            header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
-            if throughput.mean() > 1.0:
-                throughput /= 100.0
-                header['notes'] = 'Divided by 100.0 to convert from percentage'
-            header['filename'] = ccd_qe
-            self.ccd_qe = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
-        else:
-            self.ccd_qe = ccd_qe
-        self.ccd_gain = kwargs.get('ccd_gain', 1) * (u.electron / u.adu)
-        self.ccd_readnoise = kwargs.get('ccd_readnoise', 0) * (u.electron / u.pix)
-        ccd_pixsize = kwargs.get('ccd_pixsize', 0)
-        try:
-            ccd_pixsize_units = u.Unit(kwargs.get('ccd_pixsize_units', 'micron'))
-        except ValueError:
-            ccd_pixsize_units = u.micron
-        self.ccd_pixsize = (ccd_pixsize * ccd_pixsize_units).to(u.micron)
-        self.ccd_xpixels = kwargs.get('ccd_xpixels', 0)
-        self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
-        self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
-        self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
-
         fwhm = kwargs.get('fwhm', 1)
         try:
             fwhm_units = u.Unit(kwargs.get('fwhm_units', 'arcsec'))
@@ -362,8 +337,19 @@ class Instrument:
         except ValueError:
             focal_scale_units = u.arcsec/u.mm
         self.focal_scale = focal_scale * focal_scale_units
-        if self.ccd_pixsize !=0 and self.focal_scale != 0:
-            self.ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.ccd_pixsize.to(u.mm)
+
+        channels = kwargs.get('channels', {'default' : {} })
+        self.num_channels = max(len(channels), 1)
+        self.channelset = OrderedDict()
+        for channel in channels:
+            # Make copy of common params defined at the Instrument level and then
+            # overwrite with channel/camera-specific versions
+            camera_kwargs = kwargs.copy()
+            for k,v in channels[channel].items():
+                camera_kwargs[k] = v
+            self.channelset[channel] = Camera(**camera_kwargs)
+            if self.channelset[channel].ccd_pixsize != 0 and self.focal_scale != 0:
+                self.channelset[channel].ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.channelset[channel].ccd_pixsize.to(u.mm)
 
     @property
     def is_imager(self):
@@ -383,17 +369,57 @@ class Instrument:
     def binning_disp(self):
         return self.ccd_xbinning if self.dispersion_along_x is True else self.ccd_ybinning
 
+    @property
+    def ccd_qe(self):
+        qes = [c.ccd_qe for c in self.channelset.values()]
+        if len(qes) == 1:
+            qes = qes[0]
+        return qes
+
+    @property
+    def ccd_readnoise(self):
+        readnoises = [c.ccd_readnoise for c in self.channelset.values()]
+        if len(readnoises) == 1:
+            readnoises = readnoises[0]
+        return readnoises
+
+    @property
+    def ccd_gain(self):
+        gains = [c.ccd_gain for c in self.channelset.values()]
+        if len(gains) == 1:
+            gains = gains[0]
+        return gains
+
+    @property
+    def ccd_pixsize(self):
+        pixsizes = [c.ccd_pixsize for c in self.channelset.values()]
+        if len(pixsizes) == 1:
+            pixsizes = pixsizes[0]
+        return pixsizes
+
+    @property
+    def ccd_pixscale(self):
+        pixscales = [c.ccd_pixscale for c in self.channelset.values()]
+        if len(pixscales) == 1:
+            pixscales = pixscales[0]
+        return pixscales
+
     def ccd_fov(self, fov_units=u.arcsec):
         """Computes the CCD's field of view and returns a tuple of Quantity's
         Uses `self.ccd_pixsize`, `self.focal_scale` and `self.ccd_x/ypixels`
         to compute the size"""
 
-        xsize=ysize=0*u.arcsec
-        if self.ccd_pixsize is not None and self.focal_scale is not None and\
-            self.ccd_xpixels is not None and self.ccd_ypixels is not None:
-            xsize = self.ccd_xpixels * self.ccd_pixsize * self.focal_scale
-            ysize = self.ccd_ypixels * self.ccd_pixsize * self.focal_scale
-        return xsize.decompose().to(fov_units), ysize.decompose().to(fov_units)
+        fovs = []
+        for camera in self.channelset.values():
+            xsize=ysize=0*u.arcsec
+            if camera.ccd_pixsize is not None and self.focal_scale is not None and\
+                camera.ccd_xpixels is not None and camera.ccd_ypixels is not None:
+                xsize = camera.ccd_xpixels * camera.ccd_pixsize * self.focal_scale
+                ysize = camera.ccd_ypixels * camera.ccd_pixsize * self.focal_scale
+            fovs.append(( xsize.decompose().to(fov_units), ysize.decompose().to(fov_units)))
+        if len(fovs) == 1:
+            fovs = fovs[0]
+        return fovs
 
     def _read_lco_filter_csv(self, csv_filter):
         """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
@@ -536,3 +562,36 @@ class Instrument:
     def __repr__(self):
         return "[{}({})]".format(self.__class__.__name__, self.name)
 
+
+class Camera:
+
+    def __init__(self, name=None, camera_type="CCD", **kwargs):
+        _cam_types = ["CCD", ]
+        self.camera_type = camera_type.upper() if camera_type.upper() in _cam_types else "CCD"
+        self.name = name if name is not None else self.camera_type + ' camera'
+
+        ccd_qe = kwargs.get('ccd_qe', 0.9)
+        if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
+            file_path = os.path.expandvars(ccd_qe)
+            if not os.path.exists(file_path):
+                file_path = str(pkg_resources.files('etc.data').joinpath(ccd_qe))
+            header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT)
+            if throughput.mean() > 1.0:
+                throughput /= 100.0
+                header['notes'] = 'Divided by 100.0 to convert from percentage'
+            header['filename'] = ccd_qe
+            self.ccd_qe = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+        else:
+            self.ccd_qe = ccd_qe
+        self.ccd_gain = kwargs.get('ccd_gain', 1) * (u.electron / u.adu)
+        self.ccd_readnoise = kwargs.get('ccd_readnoise', 0) * (u.electron / u.pix)
+        ccd_pixsize = kwargs.get('ccd_pixsize', 0)
+        try:
+            ccd_pixsize_units = u.Unit(kwargs.get('ccd_pixsize_units', 'micron'))
+        except ValueError:
+            ccd_pixsize_units = u.micron
+        self.ccd_pixsize = (ccd_pixsize * ccd_pixsize_units).to(u.micron)
+        self.ccd_xpixels = kwargs.get('ccd_xpixels', 0)
+        self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
+        self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
+        self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)

@@ -781,3 +781,39 @@ class TestInstrument:
         vign = inst.slit_vignette()
 
         assert_quantity_allclose(expected_vign, vign)
+
+
+class TestMultiChannelInstrument:
+
+    def test_multichannel_channel_summary(self):
+        inst_options = { 'name': 'MuSCAT',
+                         'inst_type': 'Imager',
+                         'ccd_readnoise': 10.0,
+                         'ccd_gain': 1.0,
+                         'ccd_pixsize': 13.5,
+                         'channels': {'channel1': {'filterlist': ['gp'], 'ccd_qe': 0.8},
+                                      'channel2': {'filterlist': ['rp'], 'ccd_qe': 0.9},
+                                      'channel3': {'filterlist': ['ip'], 'ccd_qe': 0.4},
+                                      'channel4': {
+                                                   'filterlist': ['zs'],
+                                                   'ccd_qe': 0.1,
+                                                   'ccd_gain': 2.0,
+                                                   'ccd_readnoise': 15.0}
+                                     }
+                       }
+
+        inst = Instrument(**inst_options)
+
+        assert inst.num_channels == 4
+
+    def test_singlechannel_channel_summary(self):
+        inst_options = { 'name': 'MuSCAT',
+                         'inst_type': 'Imager',
+                         'ccd_readnoise': 10.0,
+                         'ccd_gain': 1.0,
+                         'ccd_pixsize': 13.5,
+                       }
+
+        inst = Instrument(**inst_options)
+
+        assert inst.num_channels == 1
