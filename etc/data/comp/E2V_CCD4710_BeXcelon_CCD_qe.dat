@@ -1,0 +1,20 @@
+# Wavelength(nm) QE_B_eXcelon(0..1.0)
+# QE curve for Princeton Instruments Pixis (e2v 47-10 AIMO) CCD for 'B_eXcelon' coating
+# Hand digitized by TAL 2019/08/08
+250   0.00
+300   0.03
+350   0.26
+400   0.65
+450   0.86
+500   0.94
+550   0.95
+600   0.955
+650   0.975
+700   0.965
+750   0.92
+800   0.845
+850   0.705
+900   0.52
+950   0.30
+1000  0.13
+1050  0.04
