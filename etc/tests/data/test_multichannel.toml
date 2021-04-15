@@ -1,0 +1,48 @@
+[site]
+name = "FTN"
+altitude = 3050
+latitude = 34.5
+longitude = -119.86
+transmission = 0.90
+
+[atmosphere]
+condition = "foggy"
+
+[telescope]
+name = "BPL 1-m"
+size = 1.0
+size_units = "m"
+area = 0.625
+reflectivity = 0.8
+
+[instrument]
+name = "MuSCAT"
+inst_type = "Imager"
+num_ar_coatings = 0
+num_inst_mirrors = 5
+num_inst_lenses = 2
+inst_lens_trans = 0.99
+fwhm = 3.0
+fwhm_units = "arcsec"
+focal_scale = 25.9
+focal_scale_units = "arcsec/mm"
+ccd_readnoise = 10.0 # electrons
+ccd_gain = 1.0 # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 2048
+ccd_pixsize = 13.5 # microns
+[instrument.channels.channel1]
+filterlist = ['gp',]
+ccd_qe = 0.8
+[instrument.channels.channel2]
+filterlist = ['rp',]
+ccd_qe = 0.9
+[instrument.channels.channel3]
+filterlist = ['ip',]
+ccd_qe = 0.4
+[instrument.channels.channel4]
+filterlist = ['zs',]
+ccd_qe = 0.1
+ccd_gain = 2.0 # electrons/ADU
+ccd_readnoise = 15.0 # electrons
+
