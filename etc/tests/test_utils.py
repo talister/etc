@@ -6,9 +6,9 @@ import toml
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
-from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum
+from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum, SourceSpectrum
 
-from etc.utils import read_element
+from etc.utils import read_element, read_eso_spectra
 
 class TestReadElement:
 
@@ -43,3 +43,20 @@ class TestReadElement:
 
         assert_quantity_allclose(element.waveset[0], 3000 * u.AA)
         assert_quantity_allclose(element(element.waveset[0]), 0.00751) # File is not in percent
+
+
+class TestReadESOSpectra():
+
+    @classmethod
+    def setup_class(cls):
+
+        cls.test_fits_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_spectrum.fits"))
+        cls.funit = u.erg / (u.cm**2 * u.s * u.AA)
+
+    def test_spectra(self):
+
+        source_spec = read_eso_spectra(self.test_fits_fp)
+
+        assert type(source_spec) == SourceSpectrum
+        assert_quantity_allclose(source_spec.waveset[0], 3451.65 * u.AA)
+        assert_quantity_allclose(source_spec(source_spec.waveset[0], flux_unit='FLAM'), 4.341547e-16*self.funit)

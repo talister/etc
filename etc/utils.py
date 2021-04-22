@@ -13,7 +13,11 @@ except ImportError:
     import importlib_resources as pkg_resources
 
 from astropy import units as u
+from astropy.io import fits
+from astropy.wcs import WCS
+from astropy.wcs import FITSFixedWarning
 from astropy.utils.exceptions import AstropyUserWarning
+import numpy as np
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
 
@@ -60,6 +64,84 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
     element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
     return element
+
+def get_x_units(x_data):
+    """finds wavelength units from x_data
+       inputs: <xdata>: unitless wavelength data
+       outputs: wavelength in Angstroms
+    """
+    x_mean = np.mean(x_data)
+
+    # assuming visible to NIR range (~3000-10000A)
+    if x_mean > 1000:
+        x_units = u.AA  # (Angstroms)
+    elif 100 < x_mean < 1000:
+        x_units = u.nm
+    elif .1 < x_mean < 10:
+        x_units = u.micron
+    else:
+        print("Could not parse wavelength units from file. Assuming Angstroms")
+        x_units = u.AA
+    xxx = np.array(x_data)
+    wavelength = (xxx * x_units).to(u.AA)
+    return wavelength
+
+def get_y_units(y_data, filename, header):
+    """finds flux/reflectance units
+       inputs: y_data, spectrum file
+       outputs: scaled flux with Units
+    """
+    y_factor = 1
+    if 'BUNIT' in header:
+        try:
+            y_units = u.Unit(header['BUNIT'])
+        except ValueError:
+            print("Could not parse flux units from header.")
+
+    elif "ctiostan" in filename and '.dat' in filename:  # from ESO aaareadme.ctio
+        y_units = u.erg/(u.cm**2)/u.s/u.AA
+        y_factor = 10**16
+
+    elif .001 < np.median(y_data) < 10:  # Probably Normalized
+        y_units = u.def_unit("Normalized_Reflectance", u.dimensionless_unscaled)
+
+    elif '_2df_ex.fits' in filename:  # from FLOYDS
+        y_factor = 10**20
+        y_units = u.erg/(u.cm**2)/u.s/u.AA
+
+    else:
+        print("Could not parse flux units from file. Assuming erg/cm^2/s/A")
+        y_units = u.erg/(u.cm**2)/u.s/u.AA
+
+    yyy = np.array(y_data)
+    flux = ((yyy / y_factor) * y_units)
+    return flux
+
+def read_eso_spectra(filepath):
+
+    try:
+        hdul = fits.open(filepath)
+    except FileNotFoundError:
+        print("Cannot find file {}".format(filepath))
+        return None
+
+    data = hdul[0].data
+    hdr = hdul[0].header
+
+    yyy = data
+    if hdr.get('NAXIS3') == 4:
+        # FLOYDS merged data, slice/bandid 1 has the extracted spectrum
+        yyy = data[0][0]
+    warnings.simplefilter('ignore', category=FITSFixedWarning)
+    w = WCS(hdr, naxis=1, relax=False, fix=False)
+    lam = w.wcs_pix2world(np.arange(len(yyy)), 0)[0]
+
+    wavelength = get_x_units(lam)
+    flux = get_y_units(yyy, filepath, hdr)
+
+    source_spec = SourceSpectrum(Empirical1D, points=wavelength, lookup_table=flux,
+                   keep_neg=True, meta={'header': hdr})
+    return source_spec
 
 def sptype_to_pickles_standard(sp_type):
     """Maps the passed <sp_type> e.g. 'F8V' to a Pickles standard star filename.
