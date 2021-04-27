@@ -1,0 +1,68 @@
+[site]
+name = "Maui, HI"
+altitude = 3065
+altitude_units = "m"
+latitude = +20.7069
+longitude = -156.258
+transmission = "${CDBS_PATH}/atmos/FTN_a12_pwv035.fits"
+[site.sky_mag]
+    U = 22.0
+    B = 22.7
+    V = 21.9
+    R = 21.0
+    I = 20.0
+    Z = 18.8
+    gp = 21.9
+    rp = 20.8
+    ip = 19.8
+    zp = 19.2
+    w = 20.6
+
+[telescope]
+name = "FTN"
+size = 2.0
+area = 2.574
+num_mirrors = 2
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "MuSCAT3"
+inst_type = "Imager"
+num_inst_mirrors = 5
+num_inst_lenses = 2
+num_ar_coating = 2
+inst_ar_coating_refl = 0.995
+focal_scale = 10.173
+focal_scale_units = "arcsec/mm"
+fwhm = 1.3
+fwhm_units = "arcsec"
+filterlist = ['gp','rp','ip','zs']
+ccd_readnoise = 13 # electrons
+ccd_fullwell = 100000 # electrons
+ccd_gain = 1.8 # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 2048
+ccd_pixsize = 13.5                                          # microns
+ccd_darkcurrent = 0.005
+ccd_darkcurrent_units = "ph/pixel/s"
+[instrument.channels.channel1]
+filterlist = ['gp',]
+trans_components = "comp/lco/DM1_reflectance.csv"
+ccd_qe = "comp/E2V_CCD4710_BeXcelon_CCD_qe.dat"
+
+[instrument.channels.channel2]
+filterlist = ['rp',]
+trans_components = "comp/lco/DM1_transmittance.csv"
+ccd_qe = "comp/E2V_CCD4710_B_CCD_qe.dat"
+
+[instrument.channels.channel3]
+filterlist = ['ip',]
+ccd_qe = "comp/E2V_CCD4710_BeXcelon_CCD_qe.dat"
+trans_components = "comp/lco/DM1_transmittance.csv,comp/lco/DM2_transmittance.csv"
+
+[instrument.channels.channel4]
+filterlist = ['zs',]
+trans_components = "comp/lco/DM3_transmittance.csv,comp/lco/DM2_transmittance.csv,comp/lco/DM3_transmittance.csv"
+ccd_qe = "comp/E2V_CCD4240DD_CCD_qe.dat"
+ccd_gain = 2.0 # electrons/ADU
+ccd_readnoise = 18.0 # electrons

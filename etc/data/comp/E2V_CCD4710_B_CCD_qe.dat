@@ -1,0 +1,20 @@
+# Wavelength(nm) QE_B(0..1.0)
+# QE curve for Princeton Instruments Pixis (e2v 47-10 AIMO) CCD for 'B' coating
+# Hand digitized by TAL 2019/08/08
+250   0.18
+300   0.12
+350   0.22
+400   0.54
+450   0.79
+500   0.94
+550   0.97
+600   0.97
+650   0.945
+700   0.91
+750   0.85
+800   0.75
+850   0.62
+900   0.44
+950   0.28
+1000  0.13
+1050  0.04
