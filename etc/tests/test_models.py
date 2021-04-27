@@ -805,6 +805,7 @@ class TestMultiChannelInstrument:
                                                        'ccd_readnoise': 15.0}
                                          }
                            }
+        cls.test_mirror_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_mirror.dat"))
 
     def test_multichannel_channel_summary(self):
 
@@ -855,3 +856,39 @@ class TestMultiChannelInstrument:
         expected_pixsize = [13.5*u.micron]*4
 
         assert_quantity_allclose(expected_pixsize, inst.ccd_pixsize)
+
+    def test_numchannels(self):
+
+        expected_num_channels = 4
+
+        inst = Instrument(**self.inst_options)
+
+        assert expected_num_channels == inst.num_channels
+
+    def test_modify_numchannels(self):
+
+        expected_num_channels = 4
+
+        inst = Instrument(**self.inst_options)
+
+        assert expected_num_channels == inst.num_channels
+        with pytest.raises(AttributeError) as execinfo:
+            inst.num_channels = 2
+        assert expected_num_channels == inst.num_channels
+        assert inst.num_channels != 2
+
+    def test_channel_trans(self):
+
+        inst_options = self.inst_options.copy()
+        # Change channel2 to have incorrect ('inst') names
+        inst_options['channels']['channel2']['num_inst_lenses']  = 1
+        inst_options['channels']['channel2']['num_inst_mirrors'] = 1
+        inst_options['channels']['channel3']['trans_components']  = self.test_mirror_fp
+        inst_options['channels']['channel4']['num_chan_lenses']  = 1
+        inst_options['channels']['channel4']['num_chan_mirrors'] = 1
+
+        inst = Instrument(**inst_options)
+
+        assert_quantity_allclose(inst.channelset['channel2'].transmission.tpeak(), 1.0)
+        assert_quantity_allclose(inst.channelset['channel3'].transmission.tpeak(), 0.92)
+        assert_quantity_allclose(inst.channelset['channel4'].transmission.tpeak(), 0.923025)

@@ -339,17 +339,28 @@ class Instrument:
         self.focal_scale = focal_scale * focal_scale_units
 
         channels = kwargs.get('channels', {'default' : {} })
-        self.num_channels = max(len(channels), 1)
+        self._num_channels = max(len(channels), 1)
         self.channelset = OrderedDict()
         for channel in channels:
             # Make copy of common params defined at the Instrument level and then
             # overwrite with channel/camera-specific versions
             camera_kwargs = kwargs.copy()
+            # Delete any trans_components
+            if 'trans_components' in camera_kwargs:
+                del(camera_kwargs['trans_components'])
             for k,v in channels[channel].items():
                 camera_kwargs[k] = v
             self.channelset[channel] = Camera(**camera_kwargs)
             if self.channelset[channel].ccd_pixsize != 0 and self.focal_scale != 0:
                 self.channelset[channel].ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.channelset[channel].ccd_pixsize.to(u.mm)
+
+    @property
+    def channels(self):
+        return self.channelset.values()
+
+    @property
+    def num_channels(self):
+        return self._num_channels
 
     @property
     def is_imager(self):
@@ -570,6 +581,37 @@ class Camera:
         self.camera_type = camera_type.upper() if camera_type.upper() in _cam_types else "CCD"
         self.name = name if name is not None else self.camera_type + ' camera'
 
+        # Defaults assume no elements per channel on the assumption that it's
+        # in the common optics (populated in Instrument())
+        self.num_ar_coatings = kwargs.get('num_chan_ar_coatings', 0)
+        self.num_lenses = kwargs.get('num_chan_lenses', 0)
+        self.num_mirrors = kwargs.get('num_chan_mirrors', 0)
+
+        # Fused silica (common lens material) and fused quartz (common for CCD windows)
+        # turn out to have the same transmission...
+        self.lens_trans = kwargs.get('chan_lens_trans', 0.93)
+
+        self.mirror_refl = kwargs.get('chan_mirror_refl', 0.9925)
+        # Transmission/Reflection values of optical elements coating
+        self.ar_coating = kwargs.get('chan_ar_coating_refl', 0.99)
+
+        # Read common components first
+        trans_components = kwargs.get('trans_components',  None)
+        wavelengths = np.arange(300, 1501, 1) * u.nm
+        if trans_components:
+            print("Computing channel transmission from components")
+            trans = len(wavelengths) * [1.0,]
+            for comp_name in trans_components.split(","):
+                print(comp_name)
+                element = read_element(comp_name)
+                trans *= element(wavelengths)
+        else:
+            print("Computing channel transmission from elements")
+            transmission = self._compute_transmission()
+            trans = len(wavelengths) * [transmission,]
+        header = {}
+        self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
+
         ccd_qe = kwargs.get('ccd_qe', 0.9)
         if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
             file_path = os.path.expandvars(ccd_qe)
@@ -595,3 +637,19 @@ class Camera:
         self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
         self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
         self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
+
+
+    def _compute_transmission(self):
+        """This calculates the optical transmission of the instrument from lenses,
+        mirrors and AR coatings. Assumes no/little wavelength dependence which
+        is true for typical fused silica or quartz over most of optical/NIR regime
+        see e.g. https://www.newport.com/n/optical-materials"""
+
+        # Air-glass interfaces:
+        throughput = self.ar_coating**self.num_ar_coatings
+        # Transmissive optical elements
+        throughput *= self.lens_trans**self.num_lenses
+        # Reflective optical elements (Mirrors):
+        throughput *= self.mirror_refl**self.num_mirrors
+
+        return throughput
