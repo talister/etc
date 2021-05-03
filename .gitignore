@@ -130,3 +130,5 @@ dmypy.json
 
 ESO_vs_tim_ETC*png
 etc/data/comp/eso/ETC_*_2021*.dat
+*_tests_20*py
+*.png
