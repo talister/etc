@@ -139,6 +139,48 @@ class TestETC:
         throughput = test_etc._throughput_for_filter('rp')(550*u.nm)
         assert_quantity_allclose(expected_throughput, throughput)
 
+    def test_throughput_for_filter_dualchannel(self):
+        #                        Atmos Mirrors   AR       Lens    CCD
+        expected_gp_throughput = 0.9 * 0.85*0.85*0.995**2*0.93**3*0.85
+        expected_ip_throughput = 0.9 * 0.85*0.85*0.995**2*0.93**3*0.8
+        config_dict = {
+                        'site' : {  'name': 'Tenerife, Spain',
+                                    'transmission' : 0.9
+                                 },
+                        'telescope' : { 'name' : 'LCO 1.0m',
+                                        'size': 1.0,
+                                        'area': 0.63,
+                                        'num_mirrors': 2,
+                                        'reflectivity': 0.85},
+                        'instrument' : {'name': 'DBI',
+                                        'inst_type': 'Imager',
+                                        'num_inst_mirrors': 0,
+                                        'num_ar_coatings' : 2,
+                                        'num_inst_lenses': 3,
+                                        'inst_ar_coating_refl': 0.995,
+                                        'fwhm': 1.17,
+                                        'fwhm_units': 'arcsec',
+                                        'focal_scale': 25.9,
+                                        'focal_scale_units': 'arcsec/mm',
+                                        'ccd_xpixels': 4096,
+                                        'ccd_ypixels': 4096,
+                                        'ccd_pixsize': 15.0,
+                                        'channels' : { 'blue_channel' : {'filterlist': ['gp',], 'ccd_qe': 0.85},
+                                                       'red_channel'  : {'filterlist': ['ip',], 'ccd_qe': 0.8}
+                                                     }
+                                       }
+                        }
+
+        test_etc = etc.ETC(config_dict)
+
+        assert isinstance(test_etc._throughput_for_filter('gp'), BaseUnitlessSpectrum)
+        throughput = test_etc._throughput_for_filter('gp')(500*u.nm)
+        assert_quantity_allclose(expected_gp_throughput, throughput)
+
+        assert isinstance(test_etc._throughput_for_filter('ip'), BaseUnitlessSpectrum)
+        throughput = test_etc._throughput_for_filter('ip')(750*u.nm)
+        assert_quantity_allclose(expected_ip_throughput, throughput)
+
     def test_channel_for_filter_singlechannel(self):
         config_dict = {'instrument' : {'name': 'Sinistro',
                                        'inst_type': 'Imager',

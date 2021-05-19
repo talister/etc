@@ -576,11 +576,9 @@ class ETC(object):
             throughput = self.combined
         else:
             throughput = self.combined_noatmos
-        # XXX map filtername to instrument channel and correct throughput
-        if len(throughput) == 1:
-            throughput = throughput[0]
-        else:
-            print("XXX need to map to instrument channel")
+        # Map filtername to instrument channel and correct throughput
+        index = self._channel_for_filter(filtername)
+        throughput = throughput[index]
 
         return throughput
 
