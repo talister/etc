@@ -36,7 +36,6 @@ focal_scale = 10.173
 focal_scale_units = "arcsec/mm"
 fwhm = 1.3
 fwhm_units = "arcsec"
-filterlist = ['gp','rp','ip','zs']
 ccd_readnoise = 13 # electrons
 ccd_fullwell = 100000 # electrons
 ccd_gain = 1.8 # electrons/ADU

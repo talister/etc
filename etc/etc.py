@@ -135,7 +135,7 @@ class ETC(object):
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
-        waves, thru = self.combined._get_arrays(filter_waves)
+        waves, thru = self.combined[0]._get_arrays(filter_waves)
         spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
 
         # get the synphot observation object
@@ -496,9 +496,17 @@ class ETC(object):
         """
         self._create_combined()
         if kwargs.get('atmos', True) is True:
-            waves, trans = self.combined._get_arrays(None)
+            waves, trans = self.combined[0]._get_arrays(None)
         else:
-            waves, trans = self.combined_noatmos._get_arrays(None)
+            waves, trans = self.combined_noatmos[0]._get_arrays(None)
+        for channel_num in range(1, self.instrument.num_channels):
+            if kwargs.get('atmos', True) is True:
+                chan_trans = self.combined[channel_num](waves)
+            else:
+                chan_trans = self.combined_noatmos[channel_num](waves)
+            trans *= chan_trans
+
+        if 'atmos' in kwargs:
             del(kwargs['atmos'])
         filterset = None
         # Handle single filter string case
@@ -517,9 +525,6 @@ class ETC(object):
 
         Parameters
         ----------
-        waves, thru : `~astropy.units.quantity.Quantity`
-            Wavelength and throughput to plot.
-
         filtername : str
             Filter name to plot
 
@@ -529,19 +534,19 @@ class ETC(object):
             Also see :func:`do_plot` for additional options.
 
         """
-        self._create_combined()
-        if kwargs.get('atmos', True) is True:
-            throughput = self.combined
-            atmos_presence = 'incl.'
-        else:
-            throughput = self.combined_noatmos
-            atmos_presence = 'excl.'
-        if 'atmos' in kwargs:
-            del(kwargs['atmos'])
-        if 'title' not in kwargs:
-            kwargs['title'] = 'System Efficiency {} Atmosphere'.format(atmos_presence)
         # Handle single filter string case
         if filtername in self.instrument.filterlist:
+            throughput = self._throughput_for_filter(filtername, atmos=kwargs.get('atmos', True))
+
+            if kwargs.get('atmos', True) is True:
+                atmos_presence = 'incl.'
+            else:
+                atmos_presence = 'excl.'
+            if 'atmos' in kwargs:
+                del(kwargs['atmos'])
+            if 'title' not in kwargs:
+                kwargs['title'] = 'System Efficiency {} Atmosphere'.format(atmos_presence)
+
             efficiency = throughput * self.instrument.filterset[filtername]
             # Add slit/fiber vignetting (if applicable)
             vignetting = self.instrument.slit_vignette()
@@ -554,11 +559,46 @@ class ETC(object):
         else:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
 
+    def _channel_for_filter(self, filtername):
+        """Maps the passed <filtername> to Instrument channel number which is
+        returned"""
+
+        channel_name = self.instrument.filter2channel_map.get(filtername, 'default')
+        try:
+            index = list(self.instrument.channelset).index(channel_name)
+        except ValueError:
+            print("Filter {} not in instrument channel map".format(filtername))
+        return index
+
+    def _throughput_for_filter(self, filtername, atmos=True):
+        self._create_combined()
+        if atmos is True:
+            throughput = self.combined
+        else:
+            throughput = self.combined_noatmos
+        # XXX map filtername to instrument channel and correct throughput
+        if len(throughput) == 1:
+            throughput = throughput[0]
+        else:
+            print("XXX need to map to instrument channel")
+
+        return throughput
+
     def _create_combined(self):
         if self.combined_noatmos is None:
-            self.combined_noatmos = self.telescope.reflectivity * self.instrument.transmission * self.instrument.ccd_qe
+            self.combined_noatmos = []
+            for channel in self.instrument.channelset.values():
+                channel_combined = self.telescope.reflectivity * self.instrument.transmission * channel.transmission * channel.ccd_qe
+                self.combined_noatmos.append(channel_combined)
         if self.combined is None:
-            self.combined = self.combined_noatmos * self.site.transmission
+            self.combined = []
+            for channel in self.combined_noatmos:
+                channel_combined = channel * self.site.transmission
+                self.combined.append(channel_combined)
+        # Collapse lists back down to single instance if only one channel
+        # if self.instrument.num_channels == 1:
+            # self.combined_noatmos = self.combined_noatmos[0]
+            # self.combined = self.combined[0]
 
     def __repr__(self):
         prefixstr = '<' + self.__class__.__name__ + ' '

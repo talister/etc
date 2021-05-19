@@ -7,6 +7,7 @@ from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
 from synphot import units
+from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum
 
 from etc import etc
 from etc.models import ETCError
@@ -67,6 +68,128 @@ class TestETC:
         assert test_etc.site.altitude == 3065 * u.m
         assert test_etc.telescope.name == "FTN"
         assert test_etc.instrument.name == "FLOYDS"
+
+    def test_throughput_for_filter_noatmos_singlechannel(self):
+        #                     Mirrors   AR       Lens
+        expected_throughput = 0.85*0.85*0.995**2*0.93**3*0.9
+        config_dict = {
+                        'site' : {  'name': 'Tenerife, Spain',
+                                    'transmission' : 0.9
+                                 },
+                        'telescope' : { 'name' : 'LCO 1.0m',
+                                        'size': 1.0,
+                                        'area': 0.63,
+                                        'num_mirrors': 2,
+                                        'reflectivity': 0.85},
+                        'instrument' : {'name': 'Sinistro',
+                                                       'inst_type': 'Imager',
+                                                       'num_inst_mirrors': 0,
+                                                       'num_inst_lenses': 3,
+                                                       'inst_ar_coating_refl': 0.995,
+                                                       'fwhm': 1.17,
+                                                       'fwhm_units': 'arcsec',
+                                                       'focal_scale': 25.9,
+                                                       'focal_scale_units': 'arcsec/mm',
+                                                       'filterlist': ['U', 'B', 'V', 'R', 'I', 'up', 'gp', 'rp', 'ip', 'zs'],
+                                                       'ccd_qe': 0.9,
+                                                       'ccd_xpixels': 4096,
+                                                       'ccd_ypixels': 4096,
+                                                       'ccd_pixsize': 15.0,
+                                                       }
+                                        }
+
+        test_etc = etc.ETC(config_dict)
+
+        assert isinstance(test_etc._throughput_for_filter('rp', atmos=False), BaseUnitlessSpectrum)
+        throughput = test_etc._throughput_for_filter('rp', atmos=False)(550*u.nm)
+        assert_quantity_allclose(expected_throughput, throughput)
+
+    def test_throughput_for_filter_singlechannel(self):
+        #                     Atmos Mirrors   AR       Lens
+        expected_throughput = 0.9 * 0.85*0.85*0.995**2*0.93**3*0.9
+        config_dict = {
+                        'site' : {  'name': 'Tenerife, Spain',
+                                    'transmission' : 0.9
+                                 },
+                        'telescope' : { 'name' : 'LCO 1.0m',
+                                        'size': 1.0,
+                                        'area': 0.63,
+                                        'num_mirrors': 2,
+                                        'reflectivity': 0.85},
+                        'instrument' : {'name': 'Sinistro',
+                                                       'inst_type': 'Imager',
+                                                       'num_inst_mirrors': 0,
+                                                       'num_inst_lenses': 3,
+                                                       'inst_ar_coating_refl': 0.995,
+                                                       'fwhm': 1.17,
+                                                       'fwhm_units': 'arcsec',
+                                                       'focal_scale': 25.9,
+                                                       'focal_scale_units': 'arcsec/mm',
+                                                       'filterlist': ['U', 'B', 'V', 'R', 'I', 'up', 'gp', 'rp', 'ip', 'zs'],
+                                                       'ccd_qe': 0.9,
+                                                       'ccd_xpixels': 4096,
+                                                       'ccd_ypixels': 4096,
+                                                       'ccd_pixsize': 15.0,
+                                                       }
+                                        }
+
+        test_etc = etc.ETC(config_dict)
+
+        assert isinstance(test_etc._throughput_for_filter('rp'), BaseUnitlessSpectrum)
+        throughput = test_etc._throughput_for_filter('rp')(550*u.nm)
+        assert_quantity_allclose(expected_throughput, throughput)
+
+    def test_channel_for_filter_singlechannel(self):
+        config_dict = {'instrument' : {'name': 'Sinistro',
+                                       'inst_type': 'Imager',
+                                       'num_inst_mirrors': 0,
+                                       'num_inst_lenses': 3,
+                                       'inst_ar_coating_refl': 0.995,
+                                       'fwhm': 1.17,
+                                       'fwhm_units': 'arcsec',
+                                       'focal_scale': 25.9,
+                                       'focal_scale_units': 'arcsec/mm',
+                                       'filterlist': ['U', 'B', 'V', 'R', 'I', 'up', 'gp', 'rp', 'ip', 'zs'],
+                                       'ccd_qe': 0.9,
+                                       'ccd_xpixels': 4096,
+                                       'ccd_ypixels': 4096,
+                                       'ccd_pixsize': 15.0,
+                                       }
+                        }
+
+        test_etc = etc.ETC(config_dict)
+
+        assert test_etc.instrument.name == "Sinistro"
+        assert test_etc.instrument.filterlist == config_dict['instrument']['filterlist']
+
+        assert test_etc._channel_for_filter('V') == 0
+
+    def test_channel_for_filter_dualchannel(self):
+        config_dict = {'instrument' : {'name': 'DBI',
+                                       'inst_type': 'Imager',
+                                       'num_inst_mirrors': 0,
+                                       'num_inst_lenses': 3,
+                                       'inst_ar_coating_refl': 0.995,
+                                       'fwhm': 1.17,
+                                       'fwhm_units': 'arcsec',
+                                       'focal_scale': 25.9,
+                                       'focal_scale_units': 'arcsec/mm',
+                                       'ccd_xpixels': 4096,
+                                       'ccd_ypixels': 4096,
+                                       'ccd_pixsize': 15.0,
+                                       'channels' : { 'blue_channel' : {'filterlist': ['gp'], 'ccd_qe': 0.85},
+                                                      'red_channel'  : {'filterlist': ['ip'], 'ccd_qe': 0.8}
+                                                    }
+                                       }
+                        }
+
+        test_etc = etc.ETC(config_dict)
+
+        assert test_etc.instrument.name == "DBI"
+        assert test_etc.instrument.filterlist == ['gp', 'ip']
+
+        assert test_etc._channel_for_filter('gp') == 0
+        assert test_etc._channel_for_filter('ip') == 1
 
 
 class TestComputeSNR:

@@ -312,13 +312,8 @@ class Instrument:
             transmission = self._compute_transmission()
             trans = len(wavelengths) * [transmission,]
         header = {}
-        self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans, keep_neg=True, meta={'header': header})
-
-        self.filterlist = kwargs.get('filterlist', [])
-        self.filterset = OrderedDict()
-        for filtername in self.filterlist:
-            if filtername not in self.filterset:
-                self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
+        self.transmission = SpectralElement(Empirical1D, points=wavelengths, lookup_table=trans,\
+            keep_neg=True, meta={'header': header})
 
         fwhm = kwargs.get('fwhm', 1)
         try:
@@ -341,6 +336,15 @@ class Instrument:
         channels = kwargs.get('channels', {'default' : {} })
         self._num_channels = max(len(channels), 1)
         self.channelset = OrderedDict()
+        self.filter2channel_map = OrderedDict()
+
+        self.filterlist = kwargs.get('filterlist', [])
+        self.filterset = OrderedDict()
+        for filtername in self.filterlist:
+            if filtername not in self.filterset:
+                self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
+                self.filter2channel_map[filtername] = 'default'
+
         for channel in channels:
             # Make copy of common params defined at the Instrument level and then
             # overwrite with channel/camera-specific versions
@@ -353,6 +357,12 @@ class Instrument:
             self.channelset[channel] = Camera(**camera_kwargs)
             if self.channelset[channel].ccd_pixsize != 0 and self.focal_scale != 0:
                 self.channelset[channel].ccd_pixscale = self.focal_scale.to(u.arcsec/u.mm) * self.channelset[channel].ccd_pixsize.to(u.mm)
+            cam_filterlist = camera_kwargs.get('filterlist', [])
+            for filtername in cam_filterlist:
+                if filtername not in self.filterset:
+                    self.filterlist.append(filtername)
+                    self.filterset[filtername] = self.set_bandpass_from_filter(filtername)
+                self.filter2channel_map[filtername] = channel
 
     @property
     def channels(self):
