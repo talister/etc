@@ -5,3 +5,4 @@ toml
 synphot==1.0.1
 pytest
 matplotlib
+importlib_resources; python_version < '3.8'
