@@ -13,6 +13,7 @@ class Conf(ConfigNamespace):
     lco_i_file = ConfigItem('comp/lco/SDSS.ip.txt', 'LCO SDSS i')
     lco_zs_file = ConfigItem('comp/lco/PSTR-ZS-avg.txt', 'LCO SDSS/PanSTARRS zs')
     lco_w_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.PS_w', 'LCO PanSTARRS w')
+    lco_Y_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.PS_y', 'LCO PanSTARRS Y')
 
     lco_c2_file = ConfigItem("comp/lco/LCO_ESA_C2.csv", "LCO ESA C2")
     lco_c3_file = ConfigItem("comp/lco/LCO_ESA_C3.csv", "LCO ESA C3")
@@ -90,6 +91,7 @@ class Conf(ConfigNamespace):
                 'z' : lco_zs_file,
                 'zs' : lco_zs_file,
                 'w'  : lco_w_file,
+                'Y'  : lco_Y_file,
                 'C2' : lco_c2_file,
                 'C3' : lco_c3_file,
                 'OH' : lco_oh_file,
