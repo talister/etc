@@ -892,3 +892,34 @@ class TestMultiChannelInstrument:
         assert_quantity_allclose(inst.channelset['channel2'].transmission.tpeak(), 1.0)
         assert_quantity_allclose(inst.channelset['channel3'].transmission.tpeak(), 0.92)
         assert_quantity_allclose(inst.channelset['channel4'].transmission.tpeak(), 0.923025)
+
+    def test_channel2filter_map_muscat(self):
+
+        expected_dict = {'channel1' : ['gp'], 'channel2' : ['rp'], 'channel3' : ['ip'], 'channel4' : ['zs'] }
+
+        inst = Instrument(**self.inst_options)
+
+
+        assert expected_dict == inst.channel2filter_map
+
+    def test_channel2filter_map_2filters_per_arm(self):
+
+        expected_dict = {'blue_channel' : ['up', 'gp'], 'red_channel' : ['ip', 'zs'] }
+
+        inst_options = { 'name': 'Dual Beam Imager',
+                         'inst_type': 'Imager',
+                         'ccd_readnoise': 10.0,
+                         'ccd_gain': 1.0,
+                         'ccd_xpixels' : 2048,
+                         'ccd_ypixels' : 2048,
+                         'ccd_pixsize': 13.5,
+                         'ccd_qe' : 0.75,
+                         'channels': {'blue_channel': {'filterlist': ['up', 'gp'], 'ccd_qe': 0.5},
+                                      'red_channel' : {'filterlist': ['ip', 'zs'], 'ccd_qe': 0.7},
+                                     }
+                        }
+
+        inst = Instrument(**inst_options)
+
+
+        assert expected_dict == inst.channel2filter_map

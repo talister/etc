@@ -373,6 +373,17 @@ class Instrument:
         return self._num_channels
 
     @property
+    def channel2filter_map(self):
+        inv_map = OrderedDict()
+        for k, v in self.filter2channel_map.items():
+            if v in inv_map:
+                inv_map[v].append(k)
+            else:
+                inv_map[v] = [k,]
+
+        return inv_map
+
+    @property
     def is_imager(self):
         return True if self.inst_type == 'IMAGER' else False
 
