@@ -1,0 +1,18 @@
+# Wavelength(nm) QE(0..1.0)
+# Efficiency for GMOS optics (from http://www.gemini.edu/sciops/instruments/gmos/docs/SPIE4841-161.ps)
+# Hand digitized by TAL 2021/05/20
+300 0.0
+350 0.38
+400 0.67
+425 0.695
+450 0.70
+500 0.73
+550 0.75
+600 0.745
+650 0.755
+700 0.79
+750 0.80
+800 0.82
+850 0.84
+900 0.83
+950 0.80

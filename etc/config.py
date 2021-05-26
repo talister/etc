@@ -76,6 +76,15 @@ class Conf(ConfigNamespace):
     eso_efosc2_grism2_file = ConfigItem("comp/eso/ESO_EFOSC2_Grism2.dat")
     eso_feros_file = ConfigItem("comp/eso/ESO_FEROS_slitfiber.dat")
 
+    gemini_gmosn_g_file = ConfigItem("comp/gemini/gmos_n_g_G0301.txt", 'Gemini/GMOS-N g')
+    gemini_gmosn_r_file = ConfigItem("comp/gemini/gmos_n_r_G0303.txt", 'Gemini/GMOS-N r')
+# These don't go down to 0 at the ends of the bandpass, creating extrapolation problems
+#    gemini_gmosn_g_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.g', 'Gemini/GMOS-N g')
+#    gemini_gmosn_r_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.r', 'Gemini/GMOS-N r')
+    gemini_gmosn_i_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.i', 'Gemini/GMOS-N i')
+    gemini_gmosn_z_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.z', 'Gemini/GMOS-N z')
+    gemini_gmosn_ri_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.ri', 'Gemini/GMOS-N ri')
+
     optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
@@ -143,6 +152,11 @@ class Conf(ConfigNamespace):
                 'LSST::i' : lsst_i_file,
                 'LSST::z' : lsst_z_file,
                 'LSST::y' : lsst_y_file,
+                'Gemini::GMOS-N::g' : gemini_gmosn_g_file,
+                'Gemini::GMOS-N::r' : gemini_gmosn_r_file,
+                'Gemini::GMOS-N::i' : gemini_gmosn_i_file,
+                'Gemini::GMOS-N::z' : gemini_gmosn_z_file,
+                'Gemini::GMOS-N::ri' : gemini_gmosn_ri_file,
                 'NaCl' : optics_NaCl_file,
                 'UVFS' : optics_UVFS_file,
                 'CaF2' : optics_CaF2_file,

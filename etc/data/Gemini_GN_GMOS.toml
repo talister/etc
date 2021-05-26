@@ -1,0 +1,38 @@
+[site]
+name = "Mauna Kea"
+altitude = 4213
+altitude_units = "m"
+latitude = 19.82380145
+longitude = -155.46904675
+transmission = "comp/gemini/mk_am15_pwv50.dat"
+[site.sky_mag]
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#Transmission
+    U = 21.3
+    B = 22.1
+    V = 21.3
+    R = 20.5
+
+[telescope]
+name = "Gemini North 8.1m"
+size = 8.1
+area = 48.378949# m^2 Based on M1=8.1m, M2 baffle (optical mode) diam=2003mm
+num_mirrors = 3 # file below includes both mirrors
+reflectivity = "comp/gemini/Gemini_Optics_Reflectivity_Data.csv"
+
+[instrument]
+name = "GMOS-N"
+inst_type = "Imager"
+trans_components = "comp/gemini/Gemini_GMOSN_optics.dat"
+fwhm = 1.0                                                  #
+fwhm_units = "arcsec"
+focal_scale = 5.380                            # From https://www.gemini.edu/observing/telescopes-and-sites/telescopes#Optics scaled by GMOS scale
+focal_scale_units = "arcsec/mm"
+filterlist = ['Gemini::GMOS-N::g', 'Gemini::GMOS-N::r', 'Gemini::GMOS-N::i', 'Gemini::GMOS-N::z', 'Gemini::GMOS-N::ri', ]
+ccd_qe = "comp/gemini/Gemini_GMOSN_CCD_BB.dat"
+ccd_readnoise = 3.60                                        # electrons (Hamamatsu chip)
+ccd_gain = 1.63                                              # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 4176
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 3.0
+ccd_darkcurrent_units = "ph/pixel/hour"
