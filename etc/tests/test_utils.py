@@ -44,6 +44,14 @@ class TestReadElement:
         assert_quantity_allclose(element.waveset[0], 3000 * u.AA)
         assert_quantity_allclose(element(element.waveset[0]), 0.00751) # File is not in percent
 
+    def test_read_element_angstroms(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_atmos_angstroms.dat"))
+
+        element = read_element(test_fp)
+
+        assert_quantity_allclose(element.waveset[0], 3200 * u.AA)
+        assert_quantity_allclose(element(element.waveset[0]), 0.306, rtol=1e-3)
+
 
 class TestReadESOSpectra():
 

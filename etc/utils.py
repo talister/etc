@@ -56,6 +56,9 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
         if wavelengths[0].value < 100.0 and wave_units == u.nm:
             # Small values seen, Convert to microns
             wavelengths = wavelengths.value * u.micron
+        elif wavelengths[0].value > 3000.0 and wave_units == u.nm:
+            # Large values seen, Convert to angstroms
+            wavelengths = wavelengths.value * u.AA
         if throughput.mean() > 1.0:
             throughput /= 100.0
             header['notes'] = 'Divided by 100.0 to convert from percentage'
