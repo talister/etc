@@ -135,7 +135,8 @@ class ETC(object):
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
-        waves, thru = self.combined[0]._get_arrays(filter_waves)
+        throughput = self._throughput_for_filter(filtername)
+        waves, thru = throughput._get_arrays(filter_waves)
         spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = filter_trans * thru)
 
         # get the synphot observation object
@@ -214,7 +215,8 @@ class ETC(object):
             sky2 = sky.normalize(sky_mag*units.VEGAMAG, sky_filter, vegaspec=self._vega)
             print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
             self._create_combined()
-            waves, thru = self.combined_noatmos._get_arrays(None)
+            throughput = self._throughput_for_filter(filtername, atmos=False)
+            waves, thru = throughput._get_arrays(None)
             filter_waves, filter_trans = obs_filter._get_arrays(waves)
             print('thruput=', thru.max(), self.telescope.area.to(units.AREA)*thru.max())
             spec_elements = SpectralElement(Empirical1D, points=filter_waves, lookup_table = thru * filter_trans)

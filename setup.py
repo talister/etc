@@ -7,7 +7,7 @@ requirements = ["astropy>=4.0", "toml", "synphot>=0.3"]
 
 setup(
     name="etc",
-    version="0.0.1",
+    version="0.0.3",
     author="Tim Lister",
     author_email="tlister@lco.global",
     description="A package to model astronomical sites, telescopes and instrument and predict exposure times",
