@@ -6,6 +6,7 @@ import toml
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
+from synphot import units
 from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum, SourceSpectrum
 
 from etc.models import *
@@ -15,6 +16,10 @@ class TestSite:
     def setUp(self):
 
         self.eso_rad_unit = u.photon/u.s/u.m**2/u.um
+
+
+        self.zp_B = (4063*u.Jy).to(units.PHOTLAM, equivalencies=u.spectral_density(4300*u.AA))
+        self.zp_V = (3636*u.Jy).to(units.PHOTLAM, equivalencies=u.spectral_density(5500*u.AA))
 
     def test_initialize_defaults(self):
 
@@ -112,7 +117,69 @@ class TestSite:
         radiance = site.radiance
         assert isinstance(radiance, SourceSpectrum)
         assert_quantity_allclose(radiance.waveset[1], 350*u.nm)
+        # 1000x bigger due to micron->nm
         assert_quantity_allclose(radiance(radiance.waveset[1]),  371148*self.eso_rad_unit)
+
+
+    def test_sky_spectrum_default(self):
+
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                      }
+        site = Site(**test_config)
+
+        sky_spectrum = site.sky_spectrum()
+        assert isinstance(sky_spectrum, SourceSpectrum)
+        assert_quantity_allclose(sky_spectrum.waveset[0], 300*u.nm)
+        assert_quantity_allclose(sky_spectrum.waveset[-1], 1200*u.nm)
+        assert_quantity_allclose(sky_spectrum(sky_spectrum.waveset[0]), self.zp_V)
+
+    def test_sky_spectrum_V(self):
+
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                      }
+        site = Site(**test_config)
+
+        sky_spectrum = site.sky_spectrum('V')
+        assert isinstance(sky_spectrum, SourceSpectrum)
+        assert_quantity_allclose(sky_spectrum.waveset[0], 300*u.nm)
+        assert_quantity_allclose(sky_spectrum.waveset[-1], 1200*u.nm)
+        assert_quantity_allclose(sky_spectrum(sky_spectrum.waveset[0]), self.zp_V)
+
+    def test_sky_spectrum_B(self):
+
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                      }
+        site = Site(**test_config)
+
+        sky_spectrum = site.sky_spectrum('B')
+        assert isinstance(sky_spectrum, SourceSpectrum)
+        assert_quantity_allclose(sky_spectrum.waveset[0], 300*u.nm)
+        assert_quantity_allclose(sky_spectrum.waveset[-1], 1200*u.nm)
+        assert_quantity_allclose(sky_spectrum(sky_spectrum.waveset[0]), self.zp_B)
+
+
+    def test_sky_spectrum_radiance_file(self):
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                        'radiance' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat"))
+                      }
+        site = Site(**test_config)
+
+        sky_spectrum = site.sky_spectrum()
+        assert isinstance(sky_spectrum, SourceSpectrum)
+        assert_quantity_allclose(sky_spectrum.waveset[1], 350*u.nm)
+        assert_quantity_allclose(sky_spectrum(sky_spectrum.waveset[1]),  371.148*self.eso_rad_unit)
 
     def test_rebin_transmission(self):
         test_config = { 'name' : "BPL",

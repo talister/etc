@@ -57,6 +57,7 @@ class Site:
             if self.sky_mags_table:
                 self.sky_mags = dict(zip(self.sky_mags_table.colnames, self.sky_mags_table[0]))
 
+        self.radiance = None
         if 'radiance' in kwargs:
             # Assume this is from ESO skycalc so flux_units are photons/s/m**2/micron
             # unless given by the user
@@ -70,6 +71,15 @@ class Site:
             self.radiance = read_element(kwargs['radiance'], element_type='spectrum', flux_units=radiance_unit)
 
     def sky_spectrum(self, filtername='V'):
+
+        if self.radiance is None:
+            sky = self.sky_spectrum_from_filter(filtername)
+        else:
+            sky = self.radiance
+
+        return sky
+
+    def sky_spectrum_from_filter(self, filtername='V'):
         waveset = np.arange(3000,12001,1) * u.AA
         sky_flux = np.empty(len(waveset))
         sky_flux.fill(self._photon_rate(filtername))
