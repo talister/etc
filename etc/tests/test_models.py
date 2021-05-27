@@ -6,11 +6,15 @@ import toml
 from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
-from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum
+from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum, SourceSpectrum
 
 from etc.models import *
 
 class TestSite:
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+
+        self.eso_rad_unit = u.photon/u.s/u.m**2/u.um
 
     def test_initialize_defaults(self):
 
@@ -53,6 +57,62 @@ class TestSite:
         assert site.latitude == 34.5 * u.deg
         assert site.longitude == -119.86 * u.deg
         assert site.tpeak() == 0.975
+
+    def test_radiance_file(self):
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                        'radiance' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat"))
+                      }
+        site = Site(**test_config)
+
+        assert site.name == "Cerro Armazones"
+        assert site.altitude == 3060 * u.m
+        assert site.latitude ==  -24.58916667 * u.deg
+        assert site.longitude == -70.19166667 * u.deg
+        radiance = site.radiance
+        assert isinstance(radiance, SourceSpectrum)
+        assert_quantity_allclose(radiance.waveset[1], 350*u.nm)
+        assert_quantity_allclose(radiance(radiance.waveset[1]),  371.148*self.eso_rad_unit)
+
+    def test_radiance_file_bad_units(self):
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                        'radiance' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat")),
+                        'radiance_units' : 'photon/elephant**2'
+                      }
+        site = Site(**test_config)
+
+        assert site.name == "Cerro Armazones"
+        assert site.altitude == 3060 * u.m
+        assert site.latitude ==  -24.58916667 * u.deg
+        assert site.longitude == -70.19166667 * u.deg
+        radiance = site.radiance
+        assert isinstance(radiance, SourceSpectrum)
+        assert_quantity_allclose(radiance.waveset[1], 350*u.nm)
+        assert_quantity_allclose(radiance(radiance.waveset[1]),  371.148*self.eso_rad_unit)
+
+    def test_radiance_file_goodunits(self):
+        test_config = { 'name' : "Cerro Armazones",
+                        'altitude' : 3060,
+                        'latitude' : -24.58916667,
+                        'longitude' : -70.19166667,
+                        'radiance' : os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat")),
+                        'radiance_units' : 'photon/s/m**2/nm'
+                      }
+        site = Site(**test_config)
+
+        assert site.name == "Cerro Armazones"
+        assert site.altitude == 3060 * u.m
+        assert site.latitude ==  -24.58916667 * u.deg
+        assert site.longitude == -70.19166667 * u.deg
+        radiance = site.radiance
+        assert isinstance(radiance, SourceSpectrum)
+        assert_quantity_allclose(radiance.waveset[1], 350*u.nm)
+        assert_quantity_allclose(radiance(radiance.waveset[1]),  371148*self.eso_rad_unit)
 
     def test_rebin_transmission(self):
         test_config = { 'name' : "BPL",

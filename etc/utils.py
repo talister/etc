@@ -28,7 +28,25 @@ class ETCError(Exception):
     pass
 
 
-def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROUGHPUT):
+def read_element(filtername_or_filename, element_type='element', wave_units=u.nm, flux_units=units.THROUGHPUT):
+    """Generic reader for optical elements, filters and others.
+    The passed <filtername_or_filename> is first looked up in the `Conf` mapping
+    dictionary for a match; if there is no match, it is assumed to be a filename
+    or location specifier. These can be of 3 types:
+    1. LCO Imaging Lab scanned optical element CSV files (contain 'LCO_' and '.csv' in the filename)
+    2. SVO filter service references (contain 'http://svo')
+    3. Local files (either ASCII or FITS)
+
+    Checking on the read wavelengths is performed for local files:
+    * if the first wavelength value is <100nm and the user didn't override the
+    units through [wave_units], the wavelengths are assumed to be in, and are
+    converted to, microns.
+    * if the first wavelength value is >3000nm and the user didn't override the
+    units through [wave_units], the wavelengths are assumed to be in, and are
+    converted to, angstroms.
+    """
+
+    element_type = element_type.lower()
     filename =  conf.mapping.get(filtername_or_filename, None)
     if filename is None:
         filename = filtername_or_filename
@@ -59,12 +77,20 @@ def read_element(filtername_or_filename, wave_units=u.nm, flux_units=units.THROU
         elif wavelengths[0].value > 3000.0 and wave_units == u.nm:
             # Large values seen, Convert to angstroms
             wavelengths = wavelengths.value * u.AA
-        if throughput.mean() > 1.0:
+        if element_type != 'spectrum' and throughput.mean() > 1.0:
             throughput /= 100.0
             header['notes'] = 'Divided by 100.0 to convert from percentage'
     header['source'] = source
     header['filename'] = filename
-    element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+    if element_type == 'spectrum':
+        # SourceSpectrum can't use the default units.THROUGHPUT so we need to
+        # change to an assumed units.PHOTLAM (u.photon / (u.cm**2 * u.s * u.AA))
+        # if nothing was passed by the user
+        if flux_units == units.THROUGHPUT:
+            throughput = throughput.value * units.PHOTLAM
+        element = SourceSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+    else:
+        element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
     return element
 

@@ -7,6 +7,7 @@ from astropy import units as u
 warnings.simplefilter("ignore", pytest.PytestUnknownMarkWarning)
 from astropy.tests.helper import assert_quantity_allclose
 from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum, SourceSpectrum
+from synphot import units
 
 from etc.utils import read_element, read_eso_spectra
 
@@ -51,6 +52,29 @@ class TestReadElement:
 
         assert_quantity_allclose(element.waveset[0], 3200 * u.AA)
         assert_quantity_allclose(element(element.waveset[0]), 0.306, rtol=1e-3)
+
+    def test_read_element_as_sourcespectrum(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat"))
+
+        element = read_element(test_fp, element_type='spectrum')
+
+        assert isinstance(element, SourceSpectrum)
+        assert element.waveset[0].unit == u.AA
+        assert_quantity_allclose(element.waveset[0], 300 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 16.4805*units.PHOTLAM, rtol=1e-3)
+
+    def test_read_element_as_sourcespectrum_ownfluxunits(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat"))
+
+        eso_unit = units.u.photon/units.u.s/units.u.m**2/units.u.um
+
+        element = read_element(test_fp, element_type='spectrum', flux_units=eso_unit)
+
+        assert isinstance(element, SourceSpectrum)
+        assert element.waveset[0].unit == u.AA
+        assert element(element.waveset[0]).unit == units.PHOTLAM
+        assert_quantity_allclose(element.waveset[0], 300 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 16.4805*eso_unit, rtol=1e-3)
 
 
 class TestReadESOSpectra():

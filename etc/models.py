@@ -47,7 +47,7 @@ class Site:
                 self.transmission = BaseUnitlessSpectrum(modelclass, points=wavelengths, lookup_table=  throughput, keep_neg=False, meta={'header': header})
             except ValueError:
                 self.transmission = read_element(kwargs['transmission'])
-                sky_file = str(pkg_resources.files('etc.data').joinpath(os.path.expandvars(kwargs['transmission'])))
+#                sky_file = str(pkg_resources.files('etc.data').joinpath(os.path.expandvars(kwargs['transmission'])))
         if 'sky_mag' in kwargs:
             self.sky_mags = kwargs['sky_mag']
         else:
@@ -56,6 +56,18 @@ class Site:
             self.sky_mags = []
             if self.sky_mags_table:
                 self.sky_mags = dict(zip(self.sky_mags_table.colnames, self.sky_mags_table[0]))
+
+        if 'radiance' in kwargs:
+            # Assume this is from ESO skycalc so flux_units are photons/s/m**2/micron
+            # unless given by the user
+            radiance_unit_str = kwargs.get("radiance_units", "photon/s/m**2/um")
+            try:
+                warnings.simplefilter('ignore', category=u.UnitsWarning)
+                radiance_unit = u.Unit(radiance_unit_str)
+            except ValueError:
+                radiance_unit = u.photon/u.s/u.m**2/u.um
+                print("Warning: invalid units: {}. Assuming {}".format(radiance_unit_str, radiance_unit))
+            self.radiance = read_element(kwargs['radiance'], element_type='spectrum', flux_units=radiance_unit)
 
     def sky_spectrum(self, filtername='V'):
         waveset = np.arange(3000,12001,1) * u.AA
