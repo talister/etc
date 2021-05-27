@@ -353,12 +353,16 @@ class TestPhotonsFromSource:
         print(WHT_config)
         test_etc = etc.ETC(WHT_config)
 
-        expected_countrate = 39.4130738 * (u.ct/u.s)
+        # From SIGNAL with W=704.17948 (from integration of SVO WHT::B filter)
+        # and more accurate Planck constant (6.62607015d0 vs 6.6d0)
+        expected_countrate = 41.5181084 * (u.ct/u.s)
 
         sky_spec = test_etc.site.sky_spectrum('B')
         countrate = test_etc.photons_from_source(22.7, 'B', 'WHT::B', sky_spec)
 
-        assert_quantity_allclose(expected_countrate, countrate, rtol=9e-4)
+        # Difference is ~1.55% from differences in normalization with exact
+        # Vega spectrum vs standard 10**(-0.4*skymag)
+        assert_quantity_allclose(expected_countrate, countrate, rtol=2e-2)
 
 
 class TestCCDSNR:

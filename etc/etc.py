@@ -131,7 +131,10 @@ class ETC(object):
             raise ETCError('Invalid sourcespec; must be a SourceSpectrum')
 
         # XXX Todo: allow support for AB mags here
-        source_spec_norm = source_spec.normalize(mag * units.VEGAMAG, band, vegaspec=self._vega)
+        # test line below for comparison with SIGNAL. Difference in mag when
+        # using proper normalization is ~mag-0.0155 (for B=22.7)
+#        source_spec_norm = source_spec*10**(-0.4*mag)
+        source_spec_norm = source_spec.normalize(mag* units.VEGAMAG, band, vegaspec=self._vega)
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
