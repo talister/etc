@@ -5,12 +5,19 @@ altitude_units = "m"
 latitude = 19.82380145
 longitude = -155.46904675
 transmission = "comp/gemini/mk_am15_pwv50.dat"
+radiance = "etc/data/comp/gemini/skybg_50_10.dat"
+radiance_units =  'ph / (m2 nm s)'
 [site.sky_mag]
-# From https://www.gemini.edu/observing/telescopes-and-sites/sites#Transmission
-    U = 21.3
-    B = 22.1
-    V = 21.3
-    R = 20.5
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 20%ile
+#    U = 21.3
+#    B = 22.1
+#    V = 21.3
+#    R = 20.5
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 50%ile
+    U = 19.2
+    B = 20.9
+    V = 20.7
+    R = 19.9
 
 [telescope]
 name = "Gemini North 8.1m"
