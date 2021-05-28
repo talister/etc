@@ -364,6 +364,51 @@ class TestPhotonsFromSource:
         # Vega spectrum vs standard 10**(-0.4*skymag)
         assert_quantity_allclose(expected_countrate, countrate, rtol=2e-2)
 
+    def test_sky_spectrum_R(self):
+
+        WHT_config = deepcopy(self.WHT_config)
+        WHT_config['site']['transmission'] = 0.9204495717531713 # 0.09 mag/airmass
+        WHT_config['instrument']['filterlist'] = ['WHT::R']
+        WHT_config['instrument']['ccd_qe'] = 0.74
+        WHT_config['instrument']['inst_lens_trans'] = 1.0 * 0.7
+
+        print(WHT_config)
+        test_etc = etc.ETC(WHT_config)
+
+        # From SIGNAL with W=1344.827885 (from integration of SVO WHT::R filter)
+        # and more accurate Planck constant (6.62607015d0 vs 6.6d0)
+        expected_countrate = 192.487091 * (u.ct/u.s)
+
+        sky_spec = test_etc.site.sky_spectrum('R')
+        countrate = test_etc.photons_from_source(21.0, 'Rc', 'WHT::R', sky_spec)
+
+        # Difference is ~0.5% from differences in normalization with exact
+        # Vega spectrum vs standard 10**(-0.4*skymag)
+        assert_quantity_allclose(expected_countrate, countrate, rtol=5e-3)
+
+    def test_sky_spectrum_I(self):
+
+        WHT_config = deepcopy(self.WHT_config)
+        WHT_config['site']['transmission'] = 0.9462371613657931 # 0.06 mag/airmass
+        WHT_config['instrument']['filterlist'] = ['WHT::I']
+        WHT_config['instrument']['ccd_qe'] = 0.45
+        WHT_config['instrument']['inst_lens_trans'] = 1.0 * 0.7
+
+        print(WHT_config)
+        test_etc = etc.ETC(WHT_config)
+
+        # From SIGNAL with W=2549.3 AA (from integration of custom I/RG9 filter)
+        # and more accurate Planck constant (6.62607015d0 vs 6.6d0)
+        expected_countrate = 358.132690* (u.ct/u.s)
+
+        sky_spec = test_etc.site.sky_spectrum('I')
+        countrate = test_etc.photons_from_source(20.0, 'I', 'WHT::I', sky_spec)
+
+        # Difference is ~1.5% from differences in normalization with exact
+        # Vega spectrum vs standard 10**(-0.4*skymag) and massive difference
+        # in I bandpasses with the truncated default in SIGNAL.
+        assert_quantity_allclose(expected_countrate, countrate, rtol=1.5e-2)
+
 
 class TestCCDSNR:
     @pytest.fixture(autouse=True)
