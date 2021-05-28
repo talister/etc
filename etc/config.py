@@ -7,6 +7,12 @@ __all__ = ['conf']
 class Conf(ConfigNamespace):
     """Configuration parameters."""
 
+    bessell_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.U', 'Bessell U')
+    bessell_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.B', 'Bessell B')
+    bessell_V_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.V', 'Bessell V')
+    bessell_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.R', 'Bessell R')
+    bessell_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.I', 'Bessell I')
+
     lco_u_file = ConfigItem('comp/lco/SDSS.up.txt', 'LCO SDSS u')
     lco_g_file = ConfigItem('comp/lco/SDSS.gp.txt', 'LCO SDSS g')
     lco_r_file = ConfigItem('comp/lco/SDSS.rp.txt', 'LCO SDSS r')
@@ -32,7 +38,12 @@ class Conf(ConfigNamespace):
     wht_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_B', 'WHT/PFIP Harris B')
     wht_V_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_V', 'WHT/PFIP Harris V')
     wht_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_R', 'WHT/PFIP Harris R')
-    wht_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_I', 'WHT/PFIP Harris I')
+# This abruptly stops at 900nm and ~82% transmission causing issues.
+#    wht_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_I', 'WHT/PFIP Harris I')
+# This second version is just the glass from Schott, scaled from 3->4mm but
+# reproduces above very well and continues down to 0 transmission and so is
+# better behaved.
+    wht_I_file = ConfigItem("comp/ing/WHT_Harris_I.dat", 'WHT/PFIP Harris I')
 
     ctio_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_U', 'CTIO/SOI Bessell U')
     ctio_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=CTIO/SOI.bessel_B', 'CTIO/SOI Bessell B')
@@ -107,11 +118,16 @@ class Conf(ConfigNamespace):
                 'CN' : lco_cn_file,
                 'NH2': lco_nh2_file,
                 'CR' : lco_cr_file,
-                'U' : lco_U_file,
-                'B' : lco_B_file,
-                'V' : lco_V_file,
-                'R' : lco_R_file,
-                'I' : lco_I_file,
+                'U' : bessell_U_file,
+                'B' : bessell_B_file,
+                'V' : bessell_V_file,
+                'R' : bessell_R_file,
+                'I' : bessell_I_file,
+                'LCO::U' : lco_U_file,
+                'LCO::B' : lco_B_file,
+                'LCO::V' : lco_V_file,
+                'LCO::R' : lco_R_file,
+                'LCO::I' : lco_I_file,
                 'WHT::U' : wht_U_file,
                 'WHT::B' : wht_B_file,
                 'WHT::V' : wht_V_file,

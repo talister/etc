@@ -92,16 +92,19 @@ class ETC(object):
         band_mapping = {'U' : 'johnson_u',
                         'B' : 'johnson_b',
                         'V' : 'johnson_v',
-                        'R' : 'cousins_r',
+                        'R' : conf.bessell_R_file,
                         'Rc': 'cousins_r',
-                        'I' : 'cousins_i',
+                        'I' : conf.bessell_I_file,
                         'Ic': 'cousins_i',
                         'J' : 'bessel_j',
                         'H' : 'bessel_h',
                         'K' : 'bessel_k'
                        }
         band_name = band_mapping.get(self._convert_filtername(filtername), 'johnson_v')
-        band = SpectralElement.from_filter(band_name)
+        if band_name.startswith('http://svo'):
+            band = SpectralElement.from_file(band_name)
+        else:
+            band = SpectralElement.from_filter(band_name)
 
         return band
 
