@@ -16,6 +16,7 @@ from astropy import units as u
 from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.wcs import FITSFixedWarning
+from astropy.table import QTable
 from astropy.utils.exceptions import AstropyUserWarning
 import numpy as np
 from synphot import units, SourceSpectrum, SpectralElement, specio
@@ -53,7 +54,7 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
     if 'LCO_' in filename.upper() and '.csv' in filename.lower():
         file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename))
         source = "LCO iLab format"
-        header, wavelengths, throughput  = self._read_lco_filter_csv(file_path)
+        header, wavelengths, throughput = read_lco_filter_csv(file_path)
     elif 'http://svo' in filename.lower():
         source = "SVO filter service"
         header, wavelengths, throughput = specio.read_remote_spec(filename, wave_unit=u.AA, flux_unit=units.THROUGHPUT)
@@ -93,6 +94,20 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
         element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
     return element
+
+def read_lco_filter_csv(csv_filter):
+    """Reads filter transmission files in LCO Imaging Lab v1 format (CSV
+    file with header and data)
+    Returns an empty header dictionary and the wavelength and transmission columns"""
+
+    table = QTable.read(csv_filter, format='ascii.csv', header_start=0, data_start=64)
+    table.rename_column('ILDIALCT', 'Wavelength')
+    table['Wavelength'].unit = u.nm
+    table.rename_column('ilab_v1', 'Trans_measured')
+    table['Trans_measured'].unit = u.dimensionless_unscaled
+    table.rename_column('FITS/CSV file dialect', 'Trans_filtered')
+
+    return {}, table['Wavelength'], table['Trans_measured']
 
 def get_x_units(x_data):
     """finds wavelength units from x_data
