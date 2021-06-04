@@ -28,6 +28,17 @@ class Conf(ConfigNamespace):
     lco_nh2_file = ConfigItem("comp/lco/LCO_ESA_NH2.csv", "LCO ESA NH2")
     lco_cr_file = ConfigItem("comp/lco/LCO_ESA_CR.csv", "LCO ESA CR")
 
+    lco_fli_clear_file = ConfigItem("comp/lco/LCO_ADNP-P1-002.csv", "LCO Astrodon clear")
+    lco_fli_U_file = ConfigItem("comp/lco/LCO_ADNP-UV-001.csv", "LCO Astrodon U")
+    lco_fli_B_file = ConfigItem("comp/lco/LCO_ADNP-BU-001.csv", "LCO Astrodon B")
+    lco_fli_V_file = ConfigItem("comp/lco/LCO_ADNP-VX-001.csv", "LCO Astrodon V")
+    lco_fli_R_file = ConfigItem("comp/lco/LCO_ADNP-RS-001.csv", "LCO Astrodon R")
+    lco_fli_I_file = ConfigItem("comp/lco/LCO_ADNP-IC-001.csv", "LCO Astrodon I")
+    lco_fli_g_file = lco_g_file
+    lco_fli_r_file = lco_r_file
+    lco_fli_i_file = lco_i_file
+    lco_fli_zs_file = lco_zs_file
+
     lco_U_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-ux.txt', 'LCO Bessell U')
     lco_B_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-bx.txt', 'LCO Bessell B')
     lco_V_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-vx.txt', 'LCO Bessell V')
@@ -128,6 +139,16 @@ class Conf(ConfigNamespace):
                 'LCO::V' : lco_V_file,
                 'LCO::R' : lco_R_file,
                 'LCO::I' : lco_I_file,
+                'LCO::FLI::clear' : lco_fli_clear_file,
+                'LCO::FLI::U' : lco_fli_U_file,
+                'LCO::FLI::B' : lco_fli_B_file,
+                'LCO::FLI::V' : lco_fli_V_file,
+                'LCO::FLI::R' : lco_fli_R_file,
+                'LCO::FLI::I' : lco_fli_I_file,
+                'LCO::FLI::gp' : lco_fli_g_file,
+                'LCO::FLI::rp' : lco_fli_r_file,
+                'LCO::FLI::ip' : lco_fli_i_file,
+                'LCO::FLI::zs' : lco_fli_zs_file,
                 'WHT::U' : wht_U_file,
                 'WHT::B' : wht_B_file,
                 'WHT::V' : wht_V_file,

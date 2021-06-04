@@ -1,0 +1,41 @@
+[site]
+name = "CTIO"
+altitude = 2201
+altitude_units = "m"
+latitude = -30.1673833333
+longitude = -70.8047888889
+transmission = "${CDBS_PATH}/atmos/skytable_LaSilla_z1.2_pwv7.5_new_moon_R48000.fits"
+[site.sky_mag]
+    U = 22.0
+    B = 22.7
+    V = 21.8
+    R = 20.9
+    I = 19.9
+
+[telescope]
+name = "LCO 1m"
+size = 1.0
+area = 0.62494       # m^2 Based on M1=1000mm, M2+baffle=452mm diameters
+num_mirrors = 2
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "FLI Autoguider"
+inst_type = "Imager"
+num_inst_mirrors = 1
+num_inst_lenses = 4
+num_ar_coatings = 4
+inst_ar_coating_refl = 0.995                                # assuming 0.5% reflectance AR coating
+fwhm = 1.17                                                 # Median seeing from Liu et al. 2019
+fwhm_units = "arcsec"
+focal_scale = 26.13007614                                   # http://intranet.lco.gtn/1.0_Meter_Optical_Design scaled by f/7.95->f/7.88
+focal_scale_units = "arcsec/mm"
+filterlist = ['LCO::FLI::clear','LCO::FLI::B','LCO::FLI::V','LCO::FLI::gp','LCO::FLI::rp','LCO::FLI::ip','LCO::FLI::zs']
+ccd_qe = "comp/E2V_CCD4720_MB_CCD_qe.dat"
+ccd_readnoise = 16.3                                      # electrons
+ccd_gain = 2.4                                             # electrons/ADU (after pipeline)
+ccd_xpixels = 1024
+ccd_ypixels = 1024
+ccd_pixsize = 13.0                                          # microns
+ccd_darkcurrent = 0.9
+ccd_darkcurrent_units = "electron/pixel/s"

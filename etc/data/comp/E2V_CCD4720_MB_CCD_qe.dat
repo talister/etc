@@ -1,0 +1,24 @@
+# QE curve for e2v CCD47-20-1-339 (MidBand coating) CCD as used in FLI MicroLine 4720 CCD camera
+#Wavelength[nm] QE[%]
+260  15
+280  10
+300  13
+340  18
+380  35
+420  63
+460  78
+500  90
+540  94
+580  95
+620  93
+660  91
+700  86
+740  82
+780  74
+820  61
+860  50
+900  36
+940  21
+980  11
+1020  5
+1060  0
