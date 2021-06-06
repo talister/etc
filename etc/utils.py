@@ -51,6 +51,8 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
     filename =  conf.mapping.get(filtername_or_filename, None)
     if filename is None:
         filename = filtername_or_filename
+    else:
+        filename = filename()
     if 'LCO_' in filename.upper() and '.csv' in filename.lower():
         file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename))
         source = "LCO iLab format"
@@ -78,7 +80,10 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
         elif wavelengths[0].value > 3000.0 and wave_units == u.nm:
             # Large values seen, Convert to angstroms
             wavelengths = wavelengths.value * u.AA
-        if element_type != 'spectrum' and throughput.mean() > 1.0:
+        if element_type != 'spectrum' and throughput.mean() > 1.5:
+            # Test for mean throughput is above 1 to catch case where a throughput
+            # fudge may be in the range ~1 to a few e.g. ESO Omegacam optics fudge
+            # which goes to 3.2 and averages out to ~1.4
             throughput /= 100.0
             header['notes'] = 'Divided by 100.0 to convert from percentage'
     header['source'] = source

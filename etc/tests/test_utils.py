@@ -76,6 +76,30 @@ class TestReadElement:
         assert_quantity_allclose(element.waveset[0], 300 * u.nm)
         assert_quantity_allclose(element(element.waveset[0]), 16.4805*eso_unit, rtol=1e-3)
 
+    def test_read_fudge_greater_than_one(self):
+        """ESO Omegacam has an optics throughput fudge which goes fro, 0.93 to 3.2
+        with a mean of 1.4024. This incorrectly triggers the divide by 100 logic
+        to convert it from a percentage to a 0..1 range. This test checks this
+        is correctly handled"""
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_fudge.dat"))
+
+        element = read_element(test_fp)
+
+        assert_quantity_allclose(element.waveset[0], 320 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 0.93)
+        assert_quantity_allclose(element.waveset[-1], 1000 * u.nm)
+        assert_quantity_allclose(element(element.waveset[-1]), 3.2)
+
+    def test_config_item_Vfilter(self):
+        element = read_element('V')
+
+        assert isinstance(element, BaseUnitlessSpectrum)
+        assert_quantity_allclose(element.waveset[0], 4700 * u.AA)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0)
+        assert_quantity_allclose(element.waveset[-1], 7000 * u.AA)
+        assert_quantity_allclose(element(element.waveset[-1]), 0.0)
+        assert_quantity_allclose(element(530*u.nm), 1.0)
+
 
 class TestReadESOSpectra():
 
