@@ -162,7 +162,7 @@ class Site:
         """Maps the given [filtername] (defaults to 'V' for Bessell-V') to a wavelength
         which is returned as an AstroPy Quantity in angstroms"""
 
-        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'v' : 5513, 'R' : 6500, 'Rc' : 6358, 'I' : 8200, 'Ic' : 7869.4, 'Z' : 9500,
+        filter_cwave = {'U': 3600, 'B': 4300, 'V' : 5500, 'v' : 5513, 'R' : 6500, 'Rc' : 6358, 'I' : 8200, 'Ic' : 7869.4, 'Z' : 9500, 'Y' : 10020,
                         'u' : 3675, 'g' : 4763, 'rp' : 6204, 'ip' : 7523, 'zp' : 8660, 'z' : 9724,
                         'gp' : 4810, 'rp' : 6170, 'ip' : 7520, 'zp' : 8660, 'w' : 6080}
         wavelength = filter_cwave[filtername] * u.angstrom
@@ -327,7 +327,7 @@ class Instrument:
             trans = len(wavelengths) * [1.0,]
             for comp_name in trans_components.split(","):
                 print(comp_name)
-                element = read_element(comp_name)
+                element = read_element(comp_name.strip())
                 trans *= element(wavelengths)
         else:
             print("Computing transmission from elements")
