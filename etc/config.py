@@ -91,6 +91,20 @@ class Conf(ConfigNamespace):
     eso_fors_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1076', 'ESO/FORS Bessell R Special')
     eso_fors_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1077', 'ESO/FORS Bessell I')
     eso_fors_z_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.1078', 'ESO/FORS Gunn z')
+    eso_vst_uprime_file = ConfigItem('comp/eso/sloan_u_prime.dat', "ESO Omegacam u'")
+    eso_vst_gprime_file = ConfigItem('comp/eso/sloan_g_prime.dat', "ESO Omegacam g'")
+    eso_vst_rprime_file = ConfigItem('comp/eso/sloan_r_prime.dat', "ESO Omegacam r'")
+    eso_vst_iprime_file = ConfigItem('comp/eso/sloan_i_prime.dat', "ESO Omegacam i'")
+    eso_vst_zprime_file = ConfigItem('comp/eso/sloan_z_prime.dat', "ESO Omegacam z'")
+    # These are the more correct versions, having being extracted from the 47
+    # point scans across the filter and averaged but the above, which if I am
+    # correct, include the CCD response, is what are used in the ESO ETC and then
+    # partly undone through use of the Omegacam optics fudge file... <sigh>
+    # eso_vst_u_file = ConfigItem('comp/eso/ESO_Omegacam_u.csv', "ESO Omegacam u'")
+    # eso_vst_g_file = ConfigItem('comp/eso/ESO_Omegacam_g.csv', "ESO Omegacam g'")
+    # eso_vst_r_file = ConfigItem('comp/eso/ESO_Omegacam_r.csv', "ESO Omegacam r'")
+    # eso_vst_i_file = ConfigItem('comp/eso/ESO_Omegacam_i.csv', "ESO Omegacam i'")
+    # eso_vst_z_file = ConfigItem('comp/eso/ESO_Omegacam_z.csv', "ESO Omegacam z'")
 
     eso_fors_300V_file = ConfigItem("comp/eso/ESO_FORS2_Grism_300V.dat")
     eso_fors_600B_file = ConfigItem("comp/eso/ESO_FORS2_Grism_600B.dat")
@@ -171,6 +185,16 @@ class Conf(ConfigNamespace):
                 'ESO::V' : eso_V_file,
                 'ESO::Rc' : eso_Rc_file,
                 'ESO::I' : eso_I_file,
+                'ESO::Omegacam::up' : eso_vst_uprime_file,
+                'ESO::Omegacam::gp' : eso_vst_gprime_file,
+                'ESO::Omegacam::rp' : eso_vst_rprime_file,
+                'ESO::Omegacam::ip' : eso_vst_iprime_file,
+                'ESO::Omegacam::zp' : eso_vst_zprime_file,
+                # 'ESO::Omegacam::u' : eso_vst_u_file,
+                # 'ESO::Omegacam::g' : eso_vst_g_file,
+                # 'ESO::Omegacam::r' : eso_vst_r_file,
+                # 'ESO::Omegacam::i' : eso_vst_i_file,
+                # 'ESO::Omegacam::z' : eso_vst_z_file,
                 'ESO::FORS::u' : eso_uHIGH_file,
                 'ESO::FORS::b' : eso_bHIGH_file,
                 'ESO::FORS::v' : eso_vHIGH_file,

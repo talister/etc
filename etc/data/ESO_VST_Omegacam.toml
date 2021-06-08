@@ -1,0 +1,41 @@
+[site]
+name = "Cerro Paranal"
+altitude = 2640
+altitude_units = "m"
+latitude = -24.62722222
+longitude = -70.40472222
+transmission = "comp/eso/Paranal_atmos_z1.5_pwv3.50.dat"
+radiance = "comp/eso/radiance_Paranal_z1.5_pwv3.5_new_moon_R60000.dat"
+[site.sky_mag]
+# From skycalc output
+    U = 21.90
+    B = 22.57
+    V = 21.56
+    R = 20.74
+    I = 19.37
+    Z = 18.42
+
+[telescope]
+name = "ESO 2.6m VST"
+size = 2.6
+area = 4.82443074# m^2 Based on M1=2.65m, M2=93.8 cm from https://www.eso.org/public/teles-instr/paranal-observatory/surveytelescopes/vst/mirror/
+num_mirrors = 2
+reflectivity = "comp/eso/vstM1.dat"
+
+[instrument]
+name = "Omegacam"
+inst_type = "Imager"
+trans_components = "comp/eso/ESO_Omegacam_optics_no_adc.dat, comp/eso/ESO_Omegacam_optics_fudge.dat"
+fwhm = 1.2
+fwhm_units = "arcsec"
+focal_scale = 14.26666667                            #
+focal_scale_units = "arcsec/mm"
+filterlist = ['ESO::Omegacam::up', 'ESO::Omegacam::gp', 'ESO::Omegacam::rp', 'ESO::Omegacam::ip','ESO::Omegacam::zp']
+ccd_qe = "comp/eso/ESO_Omegacam_CCD60.dat"
+ccd_readnoise = 5.2                                         # electrons (e2v chip)
+ccd_gain = 2.6                                              # electrons/ADU
+ccd_xpixels = 16384                                         # 2048x8
+ccd_ypixels = 16400                                         # 4100x4
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 2.0
+ccd_darkcurrent_units = "ph/pixel/hour"
