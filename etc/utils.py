@@ -53,6 +53,7 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
         filename = filtername_or_filename
     else:
         filename = filename()
+        element_type = 'spectral_element'
     if 'LCO_' in filename.upper() and '.csv' in filename.lower():
         file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(filename))
         source = "LCO iLab format"
@@ -95,6 +96,8 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
         if flux_units == units.THROUGHPUT:
             throughput = throughput.value * units.PHOTLAM
         element = SourceSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
+    elif element_type == 'spectral_element':
+        element = SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
     else:
         element = BaseUnitlessSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
 
@@ -241,3 +244,9 @@ def sptype_to_pickles_standard(sp_type):
             }
 
     return mapping.get(sp_type.upper(), None)
+
+def percentage_difference(v1, v2):
+    """Calculates the percentage difference between value <v1> and <v2>
+    The result is returned as an astropy percentage Quantity"""
+
+    return np.abs(v1-v2)/((v1+v2)/2.)*100*u.percent
