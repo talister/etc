@@ -137,7 +137,7 @@ class ETC(object):
         # test line below for comparison with SIGNAL. Difference in mag when
         # using proper normalization is ~mag-0.0155 (for B=22.7)
 #        source_spec_norm = source_spec*10**(-0.4*mag)
-        source_spec_norm = source_spec.normalize(mag* units.VEGAMAG, band, vegaspec=self._vega)
+        source_spec_norm = source_spec.normalize(mag*units.VEGAMAG, band, vegaspec=self._vega)
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
@@ -201,25 +201,37 @@ class ETC(object):
             # Obtain sky value based on flux at mag=0 for given filter
             sky_filtername = self._convert_filtername(filtername)
             sky = self.site.sky_spectrum(sky_filtername)
-            print("  Original sky=" ,sky(sky.avgwave()))
+            print("  Original sky for =" ,sky(sky.avgwave()), sky.meta.get('header', {}).get('filename', ''))
             prefix = "Using"
+            sky2 = None
             if sky_mag is None:
                 # Try and obtain sky magnitude from Site. This should probably
                 # move into sky_spectrum()
                 sky_mag = self.site.sky_mags.get(sky_filtername, None)
                 prefix = "Determined new"
                 if sky_mag is None:
-                    raise ETCError('Could not determine a valid sky magnitude for filter: {0}'.format(sky_filtername))
+                    if self.site.radiance is None:
+                        raise ETCError('Could not determine a valid sky magnitude for filter: {0}'.format(sky_filtername))
+                    else:
+                        print("Attempting synthesized sky magnitude from radiance spectrum")
+                        normalizing_sky_mag = self.site.sky_mags.get('V', None)
+                        V_band = self._map_filter_to_standard('V')
+                        print("Normalizing sky spectrum to {} in V band".format(normalizing_sky_mag))
+                        radiance_norm = sky.normalize(normalizing_sky_mag*units.VEGAMAG, V_band, vegaspec=self._vega)
+                        obs_rad_norm = Observation(radiance_norm, obs_filter)
+                        sky_mag = obs_rad_norm.effstim(units.VEGAMAG, vegaspec=self._vega)
+                        sky_mag = sky_mag.value
+                        sky2 = radiance_norm
 
             print("{} sky magnitude of {:.2f} for {} band".format(prefix, sky_mag, sky_filtername))
+            if sky2 is None:
+                # Compute countrate from given sky magnitude.
+                # XXX need to refactor photons_from_source() to do this also
+                sky_filter = self._map_filter_to_standard(sky_filtername)
+                print("sky_filter",sky_filter.meta.get('expr', 'Unknown'), type(sky))
 
-            # Compute countrate from given sky magnitude.
-            # XXX need to refactor photons_from_source() to do this also
-            sky_filter = self._map_filter_to_standard(sky_filtername)
-            print("sky_filter",sky_filter.meta.get('expr', 'Unknown'), type(sky))
-
-            sky2 = sky.normalize(sky_mag*units.VEGAMAG, sky_filter, vegaspec=self._vega)
-            print("Normalized sky=", sky2(sky2.avgwave()), sky(sky.avgwave())*10**(-sky_mag/2.5))
+                sky2 = sky.normalize(sky_mag*units.VEGAMAG, sky_filter, vegaspec=self._vega)
+            print("Normalized sky=", sky2(sky2.avgwave()), sky2(sky2.avgwave())*10**(-sky_mag/2.5))
             self._create_combined()
             throughput = self._throughput_for_filter(filtername, atmos=False)
             waves, thru = throughput._get_arrays(None)
@@ -251,15 +263,17 @@ class ETC(object):
             # value for npix into this method to emulate this.
     #        npix = 1.4*(fwhm / pixel_scale)**2
             npix = np.pi*(fwhm / pixel_scale)**2
+            print("npix (fractional pixels)=", npix)
             npix = int(round(npix.value)) * u.pixel
 
-        print("npix=", npix)
+        print("npix (whole pixels)=", npix)
         sobj2 = countrate * exp_time
         sky_countrate = sky_countrate * exp_time/obs_filter.equivwidth()
-        dark_count = darkcurrent_rate * exp_time
-        noise_ccd = np.sqrt(npix * (dark_count + readnoise_sq))
+        dark_count = darkcurrent_rate.to(u.photon/u.pix/u.s) * exp_time
         print("Noise(Star)=", np.sqrt(sobj2))
-        print("Noise( CCD)=", noise_ccd)
+        print("Noise(Dark)=", np.sqrt(npix * dark_count), dark_count)
+        print("Noise( CCD)=", np.sqrt(npix * readnoise_sq))
+        noise_ccd = np.sqrt(npix * (dark_count + readnoise_sq))
         ssky2 = background_rate * exp_time
         peak = sobj2/1.14/fwhm/fwhm*pixel_area
 
