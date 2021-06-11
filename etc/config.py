@@ -129,7 +129,13 @@ class Conf(ConfigNamespace):
     optics_LAL7_file = ConfigItem("comp/optics/LAL7_glass.dat", "LAL7 glass")
     optics_UVFS_file = ConfigItem("comp/optics/UVFusedSilica.dat", "UV Fused Silica")
 
-    mapping = { 'u' : lco_u_file,
+    mapping = {
+                'U' : bessell_U_file,
+                'B' : bessell_B_file,
+                'V' : bessell_V_file,
+                'R' : bessell_R_file,
+                'I' : bessell_I_file,
+                'u' : lco_u_file,
                 'g' : lco_g_file,
                 'r' : lco_r_file,
                 'i' : lco_i_file,
@@ -143,11 +149,6 @@ class Conf(ConfigNamespace):
                 'CN' : lco_cn_file,
                 'NH2': lco_nh2_file,
                 'CR' : lco_cr_file,
-                'U' : bessell_U_file,
-                'B' : bessell_B_file,
-                'V' : bessell_V_file,
-                'R' : bessell_R_file,
-                'I' : bessell_I_file,
                 'LCO::U' : lco_U_file,
                 'LCO::B' : lco_B_file,
                 'LCO::V' : lco_V_file,
