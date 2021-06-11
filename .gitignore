@@ -130,5 +130,24 @@ dmypy.json
 
 ESO_vs_tim_ETC*png
 etc/data/comp/eso/ETC_*_2021*.dat
+etc/data/spectra/*_norm.dat
+etc/data/spectra/*_refl.dat
+etc/data/spectra/A.dat
+etc/data/spectra/Cb.dat
+etc/data/spectra/Cg.dat
+etc/data/spectra/Cgh.dat
+etc/data/spectra/Ch.dat
+etc/data/spectra/K.dat
+etc/data/spectra/L.dat
+etc/data/spectra/O.dat
+etc/data/spectra/R.dat
+etc/data/spectra/Sa.dat
+etc/data/spectra/Sq.dat
+etc/data/spectra/Sr.dat
+etc/data/spectra/Sv.dat
+etc/data/spectra/T.dat
+etc/data/spectra/Xc.dat
+etc/data/spectra/Xe.dat
+etc/data/spectra/Xk.dat
 *_tests_20*py
 *.png

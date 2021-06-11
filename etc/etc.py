@@ -119,6 +119,30 @@ class ETC(object):
             source_spec = SourceSpectrum.from_file(filepath)
         return source_spec
 
+    def sso_to_source_spec(self, tax_type):
+        """Returns a SourceSpectrum from the passed <tax_type> if it is found
+        in the Bus-DeMeo taxonomy, otherwise None is returned.
+        The spectrum is produced by multiplying the reflectance spectra by
+        a Kurucz model for the Sun so will need to be normalized"""
+
+        source_spec = None
+
+        if tax_type.lower().startswith('sso::') is False:
+            tax_type = 'sso::' + tax_type.strip()
+        config_item = conf.source_mapping.get(tax_type, None)
+        if config_item is not None:
+            filename = config_item()
+            file_path = os.path.expandvars(filename)
+            if not os.path.exists(file_path):
+                file_path = str(pkg_resources.files('etc.data').joinpath(filename))
+            # Flux unit for LSST throughputs (*almost* FLAM but nm not Angstroms)
+            lsst_funit = u.erg/u.cm**2/u.s/u.nm
+            source_spec = SourceSpectrum.from_file(file_path, wave_unit=u.nm, flux_unit=lsst_funit,header_start=1)
+            source_spec.meta['header']['source'] = config_item.description
+            source_spec.meta['header']['filename'] = filename
+
+        return source_spec
+
     def photons_from_source(self, mag, mag_filter, filtername, source_spec=None, force_overlap='taper'):
         """Computes the photons coming from the source given by [source_spec] (Vega
         is assumed if not given) of the given <mag> in <mag_filter> (e.g. for "V=20",

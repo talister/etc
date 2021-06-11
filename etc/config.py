@@ -232,6 +232,31 @@ class Conf(ConfigNamespace):
     vega_file = ConfigItem(
         'http://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits', 'Vega')
     sun_file = ConfigItem(os.path.join('$CDBS_PATH', 'calspec', 'sun_reference_stis_002.fits'), "Solar reference spectrum from https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec.html")
+
+    # These are generated from a modified version of Lynne Jones's astcolors.py
+    # code in lsst throughputs with mods to take out a factor of 3631 to convert
+    # the units to closer to "normal" flamba and to write out the un-normalized
+    # spectra for use as a SourceSpec.
+    sso_B_file = ConfigItem("spectra/B.dat", "B-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_C_file = ConfigItem("spectra/C.dat", "C-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_D_file = ConfigItem("spectra/D.dat", "D-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_Q_file = ConfigItem("spectra/Q.dat", "Q-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_S_file = ConfigItem("spectra/S.dat", "S-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_V_file = ConfigItem("spectra/V.dat", "V-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+    sso_X_file = ConfigItem("spectra/X.dat", "X-type asteroid from Bus-DeMeo taxonomy (DeMeo et al. 2009)")
+
+    source_mapping = {
+                        'sun'    : sun_file,
+                        'vega'   : vega_file,
+                        'sso::B' : sso_B_file,
+                        'sso::C' : sso_C_file,
+                        'sso::D' : sso_D_file,
+                        'sso::Q' : sso_Q_file,
+                        'sso::S' : sso_S_file,
+                        'sso::V' : sso_V_file,
+                        'sso::X' : sso_X_file
+                     }
+
     sky_brightness_file = ConfigItem("comp/Sky_brightness.dat", "Walker (1987) Sky brightness model")
 
 conf = Conf()
