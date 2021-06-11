@@ -4,7 +4,7 @@ altitude = 5100
 altitude_units = "m"
 latitude = +32.317
 longitude = +80.017
-transmission = "${CDBS_PATH}/atmos/Ali_a12_pwv015.fits"
+transmission = "comp/atmos/Ali_a12_pwv015.fits"
 [site.sky_mag]
     V = 22.07
 

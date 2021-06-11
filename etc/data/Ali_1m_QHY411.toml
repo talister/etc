@@ -1,0 +1,37 @@
+[site]
+name = "Ali, Tibet"
+altitude = 5100
+altitude_units = "m"
+latitude = +32.317
+longitude = +80.017
+transmission = "comp/atmos/Ali_a12_pwv015.fits"
+[site.sky_mag]
+    V = 22.07
+
+[telescope]
+name = "Ali PW1000"
+size = 1.0
+area = 0.6119       # m^2 Based on M1=1000mm, M2=470mm diameters
+num_mirrors = 3
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "QHY411"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 2
+inst_ar_coating_refl = 0.995                                # from 0.5% reflectance AR coating figure on https://planewave.com/product/cdk24-ota/
+fwhm = 1.17                                                 # Median seeing from Liu et al. 2019
+fwhm_units = "arcsec"
+focal_scale = 34.3775                                       # 29.089 microns/arcsec->arcsec/mm
+focal_scale_units = "arcsec/mm"
+filterlist = ['LCO::B','LCO::V','LCO::R','LCO::I','up','gp','rp','ip','zs']
+#ccd_qe = "comp/Sony_IMX411BSI_CMOS_qe.dat"              # QE curve for actual chip but not absolute
+ccd_qe = "comp/Sony_IMX455ALK_CMOS_qe.dat"               # Absolute QE curve for same size pixel detector
+ccd_readnoise = 3                                         # electrons
+ccd_gain = 1                                             # electrons/ADU (Low gain channel, assuming 50k e-/65535 ADU (16bit ADC)
+ccd_xpixels = 14192
+ccd_ypixels = 10640
+ccd_pixsize = 3.76                                          # microns
+ccd_darkcurrent = 0.0011
+ccd_darkcurrent_units = "electron/pixel/s"
