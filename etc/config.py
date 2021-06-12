@@ -258,5 +258,7 @@ class Conf(ConfigNamespace):
                      }
 
     sky_brightness_file = ConfigItem("comp/Sky_brightness.dat", "Walker (1987) Sky brightness model")
+#    pickles_library_path = ConfigItem("https://ssb.stsci.edu/trds/grid/pickles/dat_uvi/", "Path to Pickles UVILIB spectral library")
+    pickles_library_path = ConfigItem('$CDBS_PATH/calspec/pickles', "Path to Pickles UVILIB spectral library")
 
 conf = Conf()

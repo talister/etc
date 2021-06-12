@@ -110,12 +110,15 @@ class ETC(object):
 
     def pickles_to_source_spec(self, sp_type):
         """Returns a SourceSpectrum from the passed <sp_type> if it is found
-        in the Pickles atlas, otherwise None is returned"""
+        in the Pickles atlas, otherwise None is returned.
+        The path to the library (which can be remote e.g.
+        https://ssb.stsci.edu/trds/grid/pickles/dat_uvi) is given in
+        `config.Conf.pickles_library_path"""
 
         source_spec = None
         filename = sptype_to_pickles_standard(sp_type)
         if filename:
-            filepath = os.path.expandvars(os.path.join('$CDBS_PATH', 'calspec', 'pickles', filename))
+            filepath = os.path.expandvars(os.path.join(conf.pickles_library_path, filename))
             source_spec = SourceSpectrum.from_file(filepath)
         return source_spec
 
