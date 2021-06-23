@@ -13,6 +13,10 @@ class Conf(ConfigNamespace):
     bessell_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.R', 'Bessell R')
     bessell_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.I', 'Bessell I')
 
+    gaiadr2_g_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.G', 'Gaia DR2 G')
+    gaiadr2_gbp_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.Gbp', 'Gaia DR2 G_BP')
+    gaiadr2_grp_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.Grp', 'Gaia DR2 G_RP')
+
     lco_u_file = ConfigItem('comp/lco/SDSS.up.txt', 'LCO SDSS u')
     lco_g_file = ConfigItem('comp/lco/SDSS.gp.txt', 'LCO SDSS g')
     lco_r_file = ConfigItem('comp/lco/SDSS.rp.txt', 'LCO SDSS r')
@@ -135,6 +139,9 @@ class Conf(ConfigNamespace):
                 'V' : bessell_V_file,
                 'R' : bessell_R_file,
                 'I' : bessell_I_file,
+                'Gaia::DR2:G' : gaiadr2_g_file,
+                'Gaia::DR2:GBP' : gaiadr2_gbp_file,
+                'Gaia::DR2:GRP' : gaiadr2_grp_file,
                 'u' : lco_u_file,
                 'g' : lco_g_file,
                 'r' : lco_r_file,
@@ -258,7 +265,7 @@ class Conf(ConfigNamespace):
                      }
 
     sky_brightness_file = ConfigItem("comp/Sky_brightness.dat", "Walker (1987) Sky brightness model")
-#    pickles_library_path = ConfigItem("https://ssb.stsci.edu/trds/grid/pickles/dat_uvi/", "Path to Pickles UVILIB spectral library")
-    pickles_library_path = ConfigItem('$CDBS_PATH/calspec/pickles', "Path to Pickles UVILIB spectral library")
+    pickles_library_path = ConfigItem("https://ssb.stsci.edu/trds/grid/pickles/dat_uvi/", "Path to Pickles UVILIB spectral library")
+#    pickles_library_path = ConfigItem('$CDBS_PATH/calspec/pickles', "Path to Pickles UVILIB spectral library")
 
 conf = Conf()
