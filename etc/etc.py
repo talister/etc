@@ -98,7 +98,8 @@ class ETC(object):
                         'Ic': 'cousins_i',
                         'J' : 'bessel_j',
                         'H' : 'bessel_h',
-                        'K' : 'bessel_k'
+                        'K' : 'bessel_k',
+                        'G' : conf.gaiadr2_g_file
                        }
         band_name = band_mapping.get(self._convert_filtername(filtername), 'johnson_v')
         if band_name.startswith('http://svo'):
@@ -146,7 +147,7 @@ class ETC(object):
 
         return source_spec
 
-    def photons_from_source(self, mag, mag_filter, filtername, source_spec=None, force_overlap='taper'):
+    def photons_from_source(self, mag, mag_filter, filtername, source_spec=None, force_overlap='taper',normalize=True):
         """Computes the photons coming from the source given by [source_spec] (Vega
         is assumed if not given) of the given <mag> in <mag_filter> (e.g. for "V=20",
         mag=20, mag_filter='V') when observed through the instrument's filter
@@ -164,7 +165,10 @@ class ETC(object):
         # test line below for comparison with SIGNAL. Difference in mag when
         # using proper normalization is ~mag-0.0155 (for B=22.7)
 #        source_spec_norm = source_spec*10**(-0.4*mag)
-        source_spec_norm = source_spec.normalize(mag*units.VEGAMAG, band, vegaspec=self._vega)
+        if normalize is True:
+            source_spec_norm = source_spec.normalize(mag*units.VEGAMAG, band, vegaspec=self._vega)
+        else:
+            source_spec_norm = source_spec
 
         self._create_combined()
         filter_waves, filter_trans = self.instrument.filterset[filtername]._get_arrays(None)
@@ -184,7 +188,7 @@ class ETC(object):
                          n_background=np.inf * u.pixel,
                          background_rate=0 * (u.ph / u.pixel / u.s),
                          sky_mag=None,
-                         darkcurrent_rate=0 * (u.ph / u.pixel / u.s)):
+                         darkcurrent_rate=0 * (u.ph / u.pixel / u.s), normalize=True):
         """Calculate the SNR in a given exposure time <exp_time> for a given <V_mag>
         """
 
@@ -201,7 +205,7 @@ class ETC(object):
         try:
             countrate = V_mag.to(u.photon / u.s)
         except (AttributeError, u.UnitConversionError):
-            countrate = self.photons_from_source(V_mag, 'V', filtername, source_spec=source_spec)
+            countrate = self.photons_from_source(V_mag, 'V', filtername, source_spec=source_spec,normalize=normalize)
 
         # define countrate to be in photons/sec, which can be treated as the
         # same as (photo)electrons for CCDs but are not technically convertible in
@@ -245,7 +249,7 @@ class ETC(object):
                         V_band = self._map_filter_to_standard('V')
                         print("Normalizing sky spectrum to {} in V band".format(normalizing_sky_mag))
                         radiance_norm = sky.normalize(normalizing_sky_mag*units.VEGAMAG, V_band, vegaspec=self._vega)
-                        obs_rad_norm = Observation(radiance_norm, obs_filter)
+                        obs_rad_norm = Observation(radiance_norm, obs_filter, force='taper')
                         sky_mag = obs_rad_norm.effstim(units.VEGAMAG, vegaspec=self._vega)
                         sky_mag = sky_mag.value
                         sky2 = radiance_norm
