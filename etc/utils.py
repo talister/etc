@@ -68,11 +68,15 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
             file_path = str(pkg_resources.files('etc.data').joinpath(filename))
         warnings.simplefilter('ignore', category = AstropyUserWarning)
         if filename.lower().endswith('fits') or filename.lower().endswith('fit'):
+            wave_col = 'lam'
+            flux_col = 'trans'
+            if element_type == 'radiance':
+                flux_col = 'flux'
             try:
-                header, wavelengths, throughput = specio.read_spec(file_path, wave_col='lam', flux_col='trans', wave_unit=u.nm, flux_unit=u.dimensionless_unscaled)
+                header, wavelengths, throughput = specio.read_spec(file_path, wave_col=wave_col, flux_col=flux_col, wave_unit=u.nm, flux_unit=flux_units)
             except KeyError:
                     # ESO-SM01 format; different column name for transmission and micron vs nm
-                header, wavelengths, throughput = specio.read_spec(file_path, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=u.dimensionless_unscaled)
+                header, wavelengths, throughput = specio.read_spec(file_path, wave_col='lam', flux_col='flux', wave_unit=u.micron,flux_unit=flux_units)
         else:
             header, wavelengths, throughput = specio.read_ascii_spec(file_path, wave_unit=wave_units, flux_unit=flux_units)
         if wavelengths[0].value < 100.0 and wave_units == u.nm:
@@ -81,7 +85,7 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
         elif wavelengths[0].value > 3000.0 and wave_units == u.nm:
             # Large values seen, Convert to angstroms
             wavelengths = wavelengths.value * u.AA
-        if element_type != 'spectrum' and throughput.mean() > 1.5:
+        if element_type != 'spectrum' and element_type != 'radiance' and throughput.mean() > 1.5:
             # Test for mean throughput is above 1 to catch case where a throughput
             # fudge may be in the range ~1 to a few e.g. ESO Omegacam optics fudge
             # which goes to 3.2 and averages out to ~1.4
@@ -89,12 +93,16 @@ def read_element(filtername_or_filename, element_type='element', wave_units=u.nm
             header['notes'] = 'Divided by 100.0 to convert from percentage'
     header['source'] = source
     header['filename'] = filename
-    if element_type == 'spectrum':
+    if element_type == 'spectrum' or element_type == 'radiance':
         # SourceSpectrum can't use the default units.THROUGHPUT so we need to
         # change to an assumed units.PHOTLAM (u.photon / (u.cm**2 * u.s * u.AA))
         # if nothing was passed by the user
         if flux_units == units.THROUGHPUT:
-            throughput = throughput.value * units.PHOTLAM
+            if element_type == 'radiance':
+                # Default units for ESO skycalc output (minus the arcsec^2)
+                throughput = throughput.value * u.photon/u.s/u.m**2/u.um
+            else:
+                throughput = throughput.value * units.PHOTLAM
         element = SourceSpectrum(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})
     elif element_type == 'spectral_element':
         element = SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, keep_neg=False, meta={'header': header})

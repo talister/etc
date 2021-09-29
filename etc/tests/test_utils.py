@@ -13,6 +13,8 @@ from etc.utils import read_element, read_eso_spectra, percentage_difference
 
 class TestReadElement:
 
+    eso_unit = units.u.photon/units.u.s/units.u.m**2/units.u.um
+
     def test_read_element(self):
         test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_mirror.dat"))
 
@@ -66,15 +68,53 @@ class TestReadElement:
     def test_read_element_as_sourcespectrum_ownfluxunits(self):
         test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_radiance.dat"))
 
-        eso_unit = units.u.photon/units.u.s/units.u.m**2/units.u.um
-
-        element = read_element(test_fp, element_type='spectrum', flux_units=eso_unit)
+        element = read_element(test_fp, element_type='spectrum', flux_units=self.eso_unit)
 
         assert isinstance(element, SourceSpectrum)
         assert element.waveset[0].unit == u.AA
         assert element(element.waveset[0]).unit == units.PHOTLAM
         assert_quantity_allclose(element.waveset[0], 300 * u.nm)
-        assert_quantity_allclose(element(element.waveset[0]), 16.4805*eso_unit, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[0]), 16.4805*self.eso_unit, rtol=1e-3)
+
+    def test_read_fits_as_radiance(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_skytable.fits"))
+
+        element = read_element(test_fp, element_type='radiance')
+
+        assert isinstance(element, SourceSpectrum)
+        assert element.waveset[0].unit == u.AA
+        assert element(element.waveset[0]).unit == units.PHOTLAM
+        assert_quantity_allclose(element.waveset[0], 300 * u.nm)
+        assert_quantity_allclose(element.waveset[-1], 1200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 14.20246*self.eso_unit, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[-1]), 3499.22056*self.eso_unit, rtol=1e-3)
+
+    def test_read_fits_as_radiance_ownfluxunits(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_skytable.fits"))
+
+        element = read_element(test_fp, element_type='RADiANCE', flux_units=self.eso_unit)
+
+        assert isinstance(element, SourceSpectrum)
+        assert element.waveset[0].unit == u.AA
+        assert element(element.waveset[0]).unit == units.PHOTLAM
+        assert_quantity_allclose(element.waveset[0], 300 * u.nm)
+        assert_quantity_allclose(element.waveset[-1], 1200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 14.20246*self.eso_unit, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[-1]), 3499.22056*self.eso_unit, rtol=1e-3)
+
+    def test_read_fits_as_element(self):
+        test_fp = os.path.abspath(os.path.join(__package__, 'etc', "tests", "data", "test_skytable.fits"))
+
+        element = read_element(test_fp, element_type='spectral_element')
+
+        assert isinstance(element, SpectralElement)
+        assert element.waveset[0].unit == u.AA
+        assert element(element.waveset[0]).unit == units.THROUGHPUT
+        assert_quantity_allclose(element.waveset[0], 300 * u.nm)
+        assert_quantity_allclose(element.waveset[-1], 1200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 0.03626, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[-1]), 0.971, rtol=1e-3)
+
 
     def test_read_fudge_greater_than_one(self):
         """ESO Omegacam has an optics throughput fudge which goes fro, 0.93 to 3.2
