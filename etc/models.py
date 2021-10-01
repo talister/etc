@@ -68,13 +68,15 @@ class Site:
             except ValueError:
                 radiance_unit = u.photon/u.s/u.m**2/u.um
                 print("Warning: invalid units: {}. Assuming {}".format(radiance_unit_str, radiance_unit))
-            self.radiance = read_element(kwargs['radiance'], element_type='spectrum', flux_units=radiance_unit)
+            self.radiance = read_element(kwargs['radiance'], element_type='radiance', flux_units=radiance_unit)
 
     def sky_spectrum(self, filtername='V'):
 
         if self.radiance is None:
+            print("Sky computed from filter")
             sky = self.sky_spectrum_from_filter(filtername)
         else:
+            print("Sky computed from radiance spectrum")
             sky = self.radiance
 
         return sky
