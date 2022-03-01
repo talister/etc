@@ -1,0 +1,46 @@
+[site]
+name = "CTIO"
+altitude = 2201
+altitude_units = "m"
+latitude = -30.1673833333
+longitude = -70.8047888889
+#transmission = "comp/eso/skytable_LaSilla_z1.0_pwv3.5_new_moon_R60000.fits"
+#radiance = "comp/eso/radiance_LaSilla_z1.0_pwv3.5_new_moon_R60000.dat"
+transmission = "comp/eso/skytable_LaSilla_z1.2_pwv3.5_FLI0.011_dl0.1.fits"
+radiance = "comp/eso/radiance_LaSilla_z1.2_pwv3.5_FLI0.011_dl0.1.dat"
+#transmission = "comp/eso/skytable_LaSilla_z1.1_pwv5.0_full_moon_dl0.1.fits"
+[site.sky_mag]
+    U = 21.81
+    B = 22.38
+    V = 21.40
+    R = 20.71
+    I = 19.48
+    Z = 18.60
+
+[telescope]
+name = "LCO 1m"
+size = 1.0
+area = 0.62494       # m^2 Based on M1=1000mm, M2+baffle=452mm diameters
+num_mirrors = 2
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "Cosmos"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 3
+inst_ar_coating_refl = 0.995                                # assuming 0.5% reflectance AR coating
+fwhm = 1.17                                                 # Median seeing from Liu et al. 2019
+fwhm_units = "arcsec"
+focal_scale = 25.9                                       # http://intranet.lco.gtn/1.0_Meter_Optical_Design
+focal_scale_units = "arcsec/mm"
+filterlist = ['LCO::U','LCO::B','LCO::V','LCO::R','LCO::I','up','gp','rp','ip','zs','w']
+ccd_qe = "comp/LaCera_COSMOS66_CMOS_qe.dat"
+ccd_readnoise = 2.7                                       # electrons (16bit STD mode, Global shutter
+ccd_gain = 1.0                                             # electrons/ADU (after pipeline)
+ccd_xpixels = 8120
+ccd_ypixels = 8120
+ccd_pixsize = 10.0                                          # microns
+ccd_darkcurrent = 0.05                                      # at -25C
+ccd_darkcurrent_units = "electron/pixel/s"
+ccd_fullwell = 80e3                                         # electrons
