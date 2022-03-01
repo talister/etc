@@ -1,0 +1,34 @@
+#Wavelength[nm] QE[%]
+# QE curve for Teledyne/Princeton Instruments COSMOS-66 8120 x 8120x10um sCMOS detector
+# From Princeton Instruments website: https://www.princetoninstruments.com/wp-content/uploads/2021/12/Cosmos-Datasheet-Rev-A5-09122021.pdf
+# Hand digitized by TAL 2022/03/01
+200 40
+210 41
+220 45
+230 53
+240 58
+250 52
+270 43
+300 52
+320 53.5
+330 54
+340 54
+350 52
+400 70
+450 82
+500 88
+550 92
+600 91
+650 87
+690 81
+700 81
+710 80
+750 70
+800 58
+850 48
+900 34
+950 23
+1000 14
+1050 7
+1100 3
+1125 0
