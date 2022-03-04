@@ -21,6 +21,10 @@ from astropy.utils.exceptions import AstropyUserWarning
 import numpy as np
 from synphot import units, SourceSpectrum, SpectralElement, specio
 from synphot.spectrum import BaseUnitlessSpectrum, Empirical1D
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.ticker import AutoMinorLocator
+from PIL import Image
 
 from .config import conf
 
@@ -258,3 +262,97 @@ def percentage_difference(v1, v2):
     The result is returned as an astropy percentage Quantity"""
 
     return np.abs(v1-v2)/((v1+v2)/2.)*100*u.percent
+
+def plot_multiple_fovs(instruments, include_moon=True, plot_filename="FOV_comparison.png"):
+    """Plots the instrument FOVs from <instruments> on a scale plot,
+    optionally (defaults to True) with a schematic figure of the Moon for scale
+    The figure is saved (defaults to "FOV_comparison.png" if not specified)
+    """
+
+    if type(instruments) != list:
+        instruments = [instruments, ]
+
+    fovs = [inst.ccd_fov() for inst in instruments]
+
+    biggest_x_fov = np.max([fov[0].value for fov in fovs])
+    biggest_y_fov = np.max([fov[1].value for fov in fovs])
+
+    x_scale = u.arcsec
+    if biggest_x_fov >= 1000:
+        x_scale = u.arcmin
+    y_scale = u.arcsec
+    if biggest_y_fov >= 1000:
+        y_scale = u.arcmin
+
+    biggest_x_fov = (biggest_x_fov*u.arcsec).to(x_scale)
+    biggest_y_fov = (biggest_y_fov*u.arcsec).to(y_scale)
+
+    # Assume the biggest FOV should fill 80% of a plot quadrant
+    base = 5.0
+    fov_x = base * round(biggest_x_fov.value/0.8/base)
+    fov_y = base * round(biggest_y_fov.value/0.8/base)
+
+
+    fig, ax = plt.subplots(figsize=(8, 8), dpi=100)
+
+    if len(instruments) > 1:
+        ax.set_xlim(-fov_x, +fov_x)
+        ax.set_ylim(-fov_y, +fov_y)
+    else:
+        if include_moon is True:
+            ax.set_xlim(-fov_x, +fov_x)
+            ax.set_ylim(0, +fov_y)
+        else:
+            ax.set_xlim(0, +fov_x)
+            ax.set_ylim(0, +fov_y)
+
+    if include_moon is True:
+        # Plot Moon (20->1004, 20->1004
+        moon_radius = 15 * u.arcmin
+
+        file_path = pkg_resources.files('etc.data').joinpath(os.path.expandvars(conf.moon_image))
+        moon_image = Image.open(file_path)
+        image_size = moon_image.size[0]
+
+        x_center = -fov_x*x_scale/2.0
+        x_left = x_center-moon_radius
+        x_right = x_center+moon_radius
+        y_center = fov_y*y_scale/2.0
+        y_left = y_center-moon_radius
+        y_right = y_center+moon_radius
+        im = ax.imshow(moon_image, extent=(x_left.value,x_right.value,y_left.value,y_right.value))
+        moon_size_pix = (image_size-20-20)*u.pixel
+        moon_diam = 2 * moon_radius
+        r = moon_radius * ((image_size-20-20)/image_size)
+        patch = patches.Circle((x_center.value,y_center.value), radius=r.value, transform=ax.transData)
+        im.set_clip_path(patch)
+
+    for i,inst in enumerate(instruments):
+        fov = inst.ccd_fov()
+        width = fov[0].to(x_scale).value
+        height = fov[1].to(y_scale).value
+        x_anchor = 0.0
+        if i == 2:
+            x_anchor = -width
+        y_anchor = 0.0
+        if i in [1,2]:
+            y_anchor = -height
+        rect = patches.Rectangle((x_anchor, y_anchor), width, height, linewidth=1.5, edgecolor='r', facecolor='none')
+        ax.add_patch(rect)
+        ax.text(x_anchor, y_anchor, inst.name)
+
+    ax.set_aspect('equal')
+    ax.xaxis.set_minor_locator(AutoMinorLocator(2))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+    ax.grid(True, which='both')
+
+    alpha_val = 0.5
+    dash_style = (0, (5, 10)) # "loosely dashed"
+    ax.axhline(y=0, color='k', linestyle=dash_style, alpha=alpha_val)
+    ax.axvline(x=0, color='k', linestyle=dash_style, alpha=alpha_val)
+    ax.set_xlabel(x_scale.to_string())
+    ax.set_ylabel(y_scale.to_string())
+
+    fig.savefig(plot_filename)
+
+    return

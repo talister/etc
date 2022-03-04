@@ -268,4 +268,5 @@ class Conf(ConfigNamespace):
     pickles_library_path = ConfigItem("https://ssb.stsci.edu/trds/grid/pickles/dat_uvi/", "Path to Pickles UVILIB spectral library")
 #    pickles_library_path = ConfigItem('$CDBS_PATH/calspec/pickles', "Path to Pickles UVILIB spectral library")
 
+    moon_image = ConfigItem("phase_full.3492_print.jpg", "Full Moon image")
 conf = Conf()
