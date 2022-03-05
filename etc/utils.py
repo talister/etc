@@ -339,9 +339,17 @@ def plot_multiple_fovs(instruments, include_moon=True, plot_filename="FOV_compar
             y_anchor = -height
         rect = patches.Rectangle((x_anchor, y_anchor), width, height, linewidth=1.5, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
-        ax.text(x_anchor, y_anchor, inst.name)
+        ax.text(x_anchor, y_anchor+(0.01*height), inst.name)
+        # Show size if box is big enough
+        if fov[0].to(x_scale) / (fov_x*x_scale) >= 0.5:
+            fov_text = f"{fov[0].to(x_scale).to_string(precision=3, format='latex'):} x {fov[1].to(x_scale).to_string(precision=3, format='latex'):}"
+            text_x_pos = width
+            if x_anchor < 0:
+                text_x_pos = 0
+            ax.text(text_x_pos, y_anchor+(0.01*height), fov_text, ha='right')
 
     ax.set_aspect('equal')
+    ax.minorticks_on()
     ax.xaxis.set_minor_locator(AutoMinorLocator(2))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(True, which='both')
