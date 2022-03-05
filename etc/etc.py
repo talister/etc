@@ -573,6 +573,46 @@ class ETC(object):
             filterset = self.instrument.filterset
         self._do_plot(waves.to(self._internal_wave_unit), trans, filterlist, filterset, **kwargs)
 
+    def _efficiency_for_filter(self, filtername, atmos=True):
+        """Calculate combined system throughput for filtername.
+
+        Parameters
+        ----------
+        filtername : str
+            Filter name to calculate efficiency for
+
+        kwargs :
+            atmos : bool
+                Whether to include the atmosphere or not (default is True)
+
+        Returns
+        -------
+        waves : Quantity
+            Wavelength array (with units of _internal_wave_unit)
+        thru : Quantity
+            Combined system efficiency (units of %)
+        """
+
+        waves = None
+        thru = None
+        # Handle single filter string case
+        if filtername in self.instrument.filterlist:
+            throughput = self._throughput_for_filter(filtername, atmos)
+
+            efficiency = throughput * self.instrument.filterset[filtername]
+            # Add slit/fiber vignetting (if applicable)
+            vignetting = self.instrument.slit_vignette()
+#            print("Vignetting", vignetting, (1.0-vignetting)*100., self.instrument.fiber_diameter, self.instrument.fwhm)
+            efficiency = efficiency * vignetting
+
+            waves = efficiency.waveset
+            thru = efficiency(waves) * 100.0 * u.percent
+            waves = waves.to(self._internal_wave_unit)
+        else:
+            raise ETCError('Filter name {0} is invalid.'.format(filtername))
+
+        return waves, thru
+
     def plot_efficiency(self, filtername, **kwargs):
         """Plot combined system throughput for filtername.
 
@@ -587,9 +627,10 @@ class ETC(object):
             Also see :func:`do_plot` for additional options.
 
         """
+
         # Handle single filter string case
         if filtername in self.instrument.filterlist:
-            throughput = self._throughput_for_filter(filtername, atmos=kwargs.get('atmos', True))
+            waves, thru = self._efficiency_for_filter(filtername, kwargs.get('atmos', True))
 
             if kwargs.get('atmos', True) is True:
                 atmos_presence = 'incl.'
@@ -600,15 +641,7 @@ class ETC(object):
             if 'title' not in kwargs:
                 kwargs['title'] = 'System Efficiency {} Atmosphere'.format(atmos_presence)
 
-            efficiency = throughput * self.instrument.filterset[filtername]
-            # Add slit/fiber vignetting (if applicable)
-            vignetting = self.instrument.slit_vignette()
-#            print("Vignetting", vignetting, (1.0-vignetting)*100., self.instrument.fiber_diameter, self.instrument.fwhm)
-            efficiency = efficiency * vignetting
-            self.efficiency = efficiency
-            waves = efficiency.waveset
-            thru = efficiency(waves) * 100.0 * u.percent
-            self._do_plot(waves.to(self._internal_wave_unit), thru, filterlist=[], filterset=[], **kwargs)
+            self._do_plot(waves, thru, filterlist=[], filterset=[], **kwargs)
         else:
             raise ETCError('Filter name {0} is invalid.'.format(filtername))
 
