@@ -1,5 +1,5 @@
+#Wavelength[nm] Reflectance[%]
 # Thorlabs P01 Protected Silver mirror coating (from https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=903)
-#Wavelength[µm] Reflectance[%]
 230.00  32.05956
 240.00  12.79264
 250.00  16.80748
