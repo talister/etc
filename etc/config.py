@@ -13,6 +13,18 @@ class Conf(ConfigNamespace):
     bessell_R_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.R', 'Bessell R')
     bessell_I_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell.I', 'Bessell I')
 
+    bessell_J_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.J', 'Bessell & Brett J')
+    bessell_H_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.H', 'Bessell & Brett H')
+    bessell_K_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.K', 'Bessell & Brett K')
+    bessell_L_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.L', 'Bessell & Brett L')
+    bessell_Lp_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.Lp', 'Bessell & Brett Lp')
+    bessell_M_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Bessell_JHKLM.M', 'Bessell & Brett M')
+
+    stromgren_u_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Stromgren.u', 'Stromgren u')
+    stromgren_v_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Stromgren.v', 'Stromgren v')
+    stromgren_b_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Stromgren.b', 'Stromgren b')
+    stromgren_y_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Generic/Stromgren.y', 'Stromgren y')
+
     gaiadr2_g_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.G', 'Gaia DR2 G')
     gaiadr2_gbp_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.Gbp', 'Gaia DR2 G_BP')
     gaiadr2_grp_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=GAIA/GAIA2.Grp', 'Gaia DR2 G_RP')
@@ -24,6 +36,8 @@ class Conf(ConfigNamespace):
     lco_zs_file = ConfigItem('comp/lco/PSTR-ZS-avg.txt', 'LCO SDSS/PanSTARRS zs')
     lco_w_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.PS_w', 'LCO PanSTARRS w')
     lco_Y_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.PS_y', 'LCO PanSTARRS Y')
+    lco_Halpha_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.Halpha', 'LCO H alpha')
+    lco_Hbeta_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.Hbeta', 'LCO H beta')
 
     lco_c2_file = ConfigItem("comp/lco/LCO_ESA_C2.csv", "LCO ESA C2")
     lco_c3_file = ConfigItem("comp/lco/LCO_ESA_C3.csv", "LCO ESA C3")
@@ -139,6 +153,16 @@ class Conf(ConfigNamespace):
                 'V' : bessell_V_file,
                 'R' : bessell_R_file,
                 'I' : bessell_I_file,
+                'J' : bessell_J_file,
+                'H' : bessell_H_file,
+                'K' : bessell_K_file,
+                'L' : bessell_L_file,
+                'Lp' : bessell_Lp_file,
+                'M' : bessell_M_file,
+                'Stromgren::u' : stromgren_u_file,
+                'Stromgren::b' : stromgren_b_file,
+                'Stromgren::v' : stromgren_v_file,
+                'Stromgren::y' : stromgren_y_file,
                 'Gaia::DR2:G' : gaiadr2_g_file,
                 'Gaia::DR2:GBP' : gaiadr2_gbp_file,
                 'Gaia::DR2:GRP' : gaiadr2_grp_file,
@@ -161,6 +185,8 @@ class Conf(ConfigNamespace):
                 'LCO::V' : lco_V_file,
                 'LCO::R' : lco_R_file,
                 'LCO::I' : lco_I_file,
+                'LCO::Halpha' : lco_Halpha_file,
+                'LCO::Hbeta' : lco_Hbeta_file,
                 'LCO::FLI::clear' : lco_fli_clear_file,
                 'LCO::FLI::U' : lco_fli_U_file,
                 'LCO::FLI::B' : lco_fli_B_file,
