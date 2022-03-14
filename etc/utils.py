@@ -263,7 +263,7 @@ def percentage_difference(v1, v2):
 
     return np.abs(v1-v2)/((v1+v2)/2.)*100*u.percent
 
-def plot_multiple_fovs(instruments, include_moon=True, plot_filename="FOV_comparison.png"):
+def plot_multiple_fovs(instruments, title=None, include_moon=True, plot_filename="FOV_comparison.png"):
     """Plots the instrument FOVs from <instruments> on a scale plot,
     optionally (defaults to True) with a schematic figure of the Moon for scale
     The figure is saved (defaults to "FOV_comparison.png" if not specified)
@@ -360,6 +360,8 @@ def plot_multiple_fovs(instruments, include_moon=True, plot_filename="FOV_compar
     ax.axvline(x=0, color='k', linestyle=dash_style, alpha=alpha_val)
     ax.set_xlabel(x_scale.to_string())
     ax.set_ylabel(y_scale.to_string())
+    if title:
+        ax.set_title(title)
 
     fig.savefig(plot_filename)
 
