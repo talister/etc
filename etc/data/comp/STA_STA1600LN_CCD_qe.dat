@@ -1,0 +1,22 @@
+# Wavelength(nm) QE(0..1.0)
+# QE curve for STA1600LN CCD
+# From https://iopscience.iop.org/article/10.1088/1538-3873/aabadf/pdf (interpolated between 2 curves, extrapolated <350 and >1050)
+# Hand digitized by TAL 2022/04/08
+250     0.0
+300     0.425
+350     0.58
+400     0.82
+450     0.905
+500     0.93
+550     0.96
+600     0.95
+650     0.925
+700     0.91
+750     0.86
+800     0.77
+850     0.67
+900     0.50
+950     0.32
+1000    0.17
+1050    0.055
+1100    0.0
