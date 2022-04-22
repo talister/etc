@@ -59,11 +59,11 @@ class Conf(ConfigNamespace):
     lco_fli_zs_file = lco_zs_file
 
     lco_UV_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.UV', 'LCO Astrodon UV')
-    lco_U_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-ux.txt', 'LCO Bessell U')
-    lco_B_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-bx.txt', 'LCO Bessell B')
-    lco_V_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-vx.txt', 'LCO Bessell V')
-    lco_R_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-rx.txt', 'LCO Bessell R')
-    lco_I_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-ix.txt', 'LCO Bessell I')
+    lco_U_file = ConfigItem('comp/lco/bssl-ux.txt', 'LCO Bessell U')
+    lco_B_file = ConfigItem('comp/lco/bssl-bx.txt', 'LCO Bessell B')
+    lco_V_file = ConfigItem('comp/lco/bssl-vx.txt', 'LCO Bessell V')
+    lco_R_file = ConfigItem('comp/lco/bssl-rx.txt', 'LCO Bessell R')
+    lco_I_file = ConfigItem('comp/lco/bssl-ix.txt', 'LCO Bessell I')
 
     wht_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.RGO_U9', 'WHT/PFIP RGO U9')
     wht_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WHT/PFIP.Har_B', 'WHT/PFIP Harris B')
@@ -91,12 +91,12 @@ class Conf(ConfigNamespace):
 
     soar_goodman_600l_file = ConfigItem('comp/soar/Goodman_600l_grating.dat', 'SOAR Goodman 600lines/mm grating order=1')
 
-    lsst_u_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_u.dat', 'LSST u')
-    lsst_g_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_g.dat', 'LSST g')
-    lsst_r_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_r.dat', 'LSST r')
-    lsst_i_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_i.dat', 'LSST i')
-    lsst_z_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_z.dat', 'LSST z')
-    lsst_y_file = ConfigItem('$CDBS_PATH/comp/lsst/filter_y.dat', 'LSST y')
+    lsst_u_file = ConfigItem('comp/lsst/filter_u.dat', 'LSST u')
+    lsst_g_file = ConfigItem('comp/lsst/filter_g.dat', 'LSST g')
+    lsst_r_file = ConfigItem('comp/lsst/filter_r.dat', 'LSST r')
+    lsst_i_file = ConfigItem('comp/lsst/filter_i.dat', 'LSST i')
+    lsst_z_file = ConfigItem('comp/lsst/filter_z.dat', 'LSST z')
+    lsst_y_file = ConfigItem('comp/lsst/filter_y.dat', 'LSST y')
 
     eso_U_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0877', 'ESO/WFI U')
     eso_B_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0878', 'ESO/WFI B')
@@ -267,8 +267,8 @@ class Conf(ConfigNamespace):
 
     # STANDARD STARS
     vega_file = ConfigItem(
-        'http://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits', 'Vega')
-    sun_file = ConfigItem(os.path.join('$CDBS_PATH', 'calspec', 'sun_reference_stis_002.fits'), "Solar reference spectrum from https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec.html")
+        'https://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits', 'Vega')
+    sun_file = ConfigItem('https://ssb.stsci.edu/cdbs/calspec/sun_reference_stis_002.fits', "Solar reference spectrum from https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec.html")
 
     # These are generated from a modified version of Lynne Jones's astcolors.py
     # code in lsst throughputs with mods to take out a factor of 3631 to convert
@@ -296,6 +296,7 @@ class Conf(ConfigNamespace):
 
     sky_brightness_file = ConfigItem("comp/Sky_brightness.dat", "Walker (1987) Sky brightness model")
     pickles_library_path = ConfigItem("https://ssb.stsci.edu/trds/grid/pickles/dat_uvi/", "Path to Pickles UVILIB spectral library")
+# Uncomment below (and comment out above) for local library
 #    pickles_library_path = ConfigItem('$CDBS_PATH/calspec/pickles', "Path to Pickles UVILIB spectral library")
 
     moon_image = ConfigItem("phase_full.3492_print.jpg", "Full Moon image")
