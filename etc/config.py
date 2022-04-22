@@ -38,6 +38,7 @@ class Conf(ConfigNamespace):
     lco_Y_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.PS_y', 'LCO PanSTARRS Y')
     lco_Halpha_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.Halpha', 'LCO H alpha')
     lco_Hbeta_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.Hbeta', 'LCO H beta')
+    lco_solar_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.Solar', 'LCO Solar (V+R)')
 
     lco_c2_file = ConfigItem("comp/lco/LCO_ESA_C2.csv", "LCO ESA C2")
     lco_c3_file = ConfigItem("comp/lco/LCO_ESA_C3.csv", "LCO ESA C3")
@@ -57,6 +58,7 @@ class Conf(ConfigNamespace):
     lco_fli_i_file = lco_i_file
     lco_fli_zs_file = lco_zs_file
 
+    lco_UV_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.UV', 'LCO Astrodon UV')
     lco_U_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-ux.txt', 'LCO Bessell U')
     lco_B_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-bx.txt', 'LCO Bessell B')
     lco_V_file = ConfigItem('$CDBS_PATH/comp/lco/bssl-vx.txt', 'LCO Bessell V')
@@ -180,6 +182,7 @@ class Conf(ConfigNamespace):
                 'CN' : lco_cn_file,
                 'NH2': lco_nh2_file,
                 'CR' : lco_cr_file,
+                'LCO::UV' : lco_UV_file,
                 'LCO::U' : lco_U_file,
                 'LCO::B' : lco_B_file,
                 'LCO::V' : lco_V_file,
@@ -187,6 +190,7 @@ class Conf(ConfigNamespace):
                 'LCO::I' : lco_I_file,
                 'LCO::Halpha' : lco_Halpha_file,
                 'LCO::Hbeta' : lco_Hbeta_file,
+                'LCO::solar' : lco_solar_file,
                 'LCO::FLI::clear' : lco_fli_clear_file,
                 'LCO::FLI::U' : lco_fli_U_file,
                 'LCO::FLI::B' : lco_fli_B_file,
