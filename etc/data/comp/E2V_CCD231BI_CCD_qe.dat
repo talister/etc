@@ -1,5 +1,5 @@
 # QE curve for NASA42 Lowell CCD (e2v ccd231-84 NIMO) 4k x 4k x 15um CCD for 'astro multi-2' and 'astro broadband' coating
-# These curves are a good match to the Andor iKon-XL-231 BEX2 and BB coatings respectively. 
+# The 'astro broadband' curve is a good match to the Andor iKon-XL-231 BB coatings;  BEX2 is a little (~1.3%) higher (rescale externally if desired).
 # Wavelength(nm) QE_multi-2(0..1.0) QE_broadband(0..1.0)
 300   0.16      0.38
 350   0.50      0.575
