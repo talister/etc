@@ -472,7 +472,10 @@ class Instrument:
                 camera.ccd_xpixels is not None and camera.ccd_ypixels is not None:
                 xsize = camera.ccd_xpixels * camera.ccd_pixsize * self.focal_scale
                 ysize = camera.ccd_ypixels * camera.ccd_pixsize * self.focal_scale
-            fovs.append(( xsize.decompose().to(fov_units), ysize.decompose().to(fov_units)))
+            if camera.fov_xsize is not None and camera.fov_ysize is not None:
+                fovs.append((camera.fov_xsize.to(fov_units), camera.fov_ysize.to(fov_units)))
+            else:
+                fovs.append(( xsize.decompose().to(fov_units), ysize.decompose().to(fov_units)))
         if len(fovs) == 1:
             fovs = fovs[0]
         return fovs
@@ -682,6 +685,18 @@ class Camera:
         self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
         self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
         self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
+        # Check if a fov_xsize and fov_ysize and corresponding units to limit
+        # the FOV we might calculate (since we don't model vignetting)
+        fov_xsize = kwargs.get('fov_xsize', None)
+        fov_ysize = kwargs.get('fov_ysize', None)
+        self.fov_xsize = self.fov_ysize = None
+        if fov_xsize and fov_ysize:
+            try:
+                fov_units = u.Unit(kwargs.get('fov_units', 'arcmin'))
+            except ValueError:
+                fov_units = u.arcmin
+            self.fov_xsize = (fov_xsize * fov_units).to(u.arcmin)
+            self.fov_ysize = (fov_ysize * fov_units).to(u.arcmin)
 
 
     def _compute_transmission(self):
