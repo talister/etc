@@ -272,16 +272,22 @@ def plot_multiple_fovs(instruments, title=None, include_moon=True, plot_filename
     if type(instruments) != list:
         instruments = [instruments, ]
 
-    fovs = [inst.ccd_fov() for inst in instruments]
+    fovs = []
+    for inst in instruments:
+        fov = inst.ccd_fov()
+        if type(fov) == list:
+            # XXX fix properly
+            fov = fov[0]
+        fovs.append(fov)
 
     biggest_x_fov = np.max([fov[0].value for fov in fovs])
     biggest_y_fov = np.max([fov[1].value for fov in fovs])
 
     x_scale = u.arcsec
-    if biggest_x_fov >= 1000:
+    if biggest_x_fov >= 600:
         x_scale = u.arcmin
     y_scale = u.arcsec
-    if biggest_y_fov >= 1000:
+    if biggest_y_fov >= 600:
         y_scale = u.arcmin
 
     biggest_x_fov = (biggest_x_fov*u.arcsec).to(x_scale)
@@ -329,24 +335,31 @@ def plot_multiple_fovs(instruments, title=None, include_moon=True, plot_filename
 
     for i,inst in enumerate(instruments):
         fov = inst.ccd_fov()
+        if type(fov) == list:
+            # XXX fix properly
+            fov = fov[0]
         width = fov[0].to(x_scale).value
         height = fov[1].to(y_scale).value
         x_anchor = 0.0
-        if i == 2:
+        if (i==0 and include_moon is False) or i == 2:
             x_anchor = -width
         y_anchor = 0.0
         if i in [1,2]:
             y_anchor = -height
         rect = patches.Rectangle((x_anchor, y_anchor), width, height, linewidth=1.5, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
-        ax.text(x_anchor, y_anchor+(0.01*height), inst.name)
+        if x_anchor < 0:
+            ypos_scale = 0.01
+        else:
+            ypos_scale = 0.1
+        ax.text(x_anchor, y_anchor+(ypos_scale*height), inst.name)
         # Show size if box is big enough
         if fov[0].to(x_scale) / (fov_x*x_scale) >= 0.5:
             fov_text = f"{fov[0].to(x_scale).to_string(precision=3, format='latex'):} x {fov[1].to(x_scale).to_string(precision=3, format='latex'):}"
             text_x_pos = width
             if x_anchor < 0:
                 text_x_pos = 0
-            ax.text(text_x_pos, y_anchor+(0.01*height), fov_text, ha='right')
+            ax.text(text_x_pos, y_anchor+(ypos_scale*height), fov_text, ha='right')
 
     ax.set_aspect('equal')
     ax.minorticks_on()
