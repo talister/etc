@@ -23,7 +23,8 @@ name = "FTN"
 size = 2.0
 area = 2.574
 num_mirrors = 2
-reflectivity = "comp/Protected_Al_mirror.dat"
+#reflectivity = "comp/Protected_Al_mirror.dat"
+reflectivity = "comp/eso/nttM1.dat"
 
 [instrument]
 name = "MuSCAT3"
