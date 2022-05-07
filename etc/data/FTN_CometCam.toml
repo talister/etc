@@ -4,7 +4,7 @@ altitude = 3065
 altitude_units = "m"
 latitude = +20.7069
 longitude = -156.258
-transmission = "${CDBS_PATH}/atmos/FTN_a12_pwv035.fits"
+transmission = "comp/atmos/FTN_a12_pwv035.fits"
 [site.sky_mag]
     U = 22.0
     B = 22.7
