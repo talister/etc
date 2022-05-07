@@ -609,6 +609,30 @@ class TestInstrument:
         assert isinstance(inst.focal_scale, u.Quantity)
         assert_quantity_allclose(expected_value, inst.ccd_pixscale)
 
+    def test_ccdpixscale_binning(self):
+        expected_value = 0.23625 * 2 * u.arcsec
+
+        inst_options = { 'focal_scale' : 17.5,
+                         'ccd_pixsize' : 13.5,
+                         'ccd_xbinning' : 2,
+                         'ccd_ybinning' : 2}
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.focal_scale, u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_pixscale)
+
+    def test_ccdpixscale_badbinning(self):
+
+        inst_options = { 'focal_scale' : 17.5,
+                         'ccd_pixsize' : 13.5,
+                         'ccd_xbinning' : 2,
+                         'ccd_ybinning' : 1}
+
+        with pytest.raises(Exception) as execinfo:
+            inst = Instrument(**inst_options)
+
+
     def test_ccdfov_square_defaults(self):
         expected_value = (483.84*u.arcsec, 483.84*u.arcsec)
 
@@ -643,7 +667,6 @@ class TestInstrument:
         assert_quantity_allclose(expected_value, fov)
 
     def test_ccdfov_square_badunits(self):
-        expected_value = (483.84/60.*u.arcmin, 483.84/60.0*u.arcmin)
 
         inst_options =  {
                           'ccd_pixsize' : 13.5,

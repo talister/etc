@@ -455,7 +455,7 @@ class Instrument:
 
     @property
     def ccd_pixscale(self):
-        pixscales = [c.ccd_pixscale for c in self.channelset.values()]
+        pixscales = [c.ccd_pixscale * c.ccd_xbinning for c in self.channelset.values()]
         if len(pixscales) == 1:
             pixscales = pixscales[0]
         return pixscales
@@ -685,6 +685,8 @@ class Camera:
         self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
         self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
         self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
+        if self.ccd_xbinning != self.ccd_ybinning:
+            raise ETCError(f"Non-equal binnings (X={self.ccd_xbinning:}, Y={self.ccd_ybinning:}) are not supported at this time")
         # Check if a fov_xsize and fov_ysize and corresponding units to limit
         # the FOV we might calculate (since we don't model vignetting)
         fov_xsize = kwargs.get('fov_xsize', None)
