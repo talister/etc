@@ -27,7 +27,7 @@ num_mirrors = 3
 reflectivity = "comp/eso/nttM1.dat"
 
 [instrument]
-name = "CometCam V2 (E2V)"
+name = "CometCam V2 (E2V 2k)"
 inst_type = "Imager"
 num_inst_mirrors = 0
 num_inst_lenses = 1
