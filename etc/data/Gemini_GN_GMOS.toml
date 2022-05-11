@@ -4,9 +4,10 @@ altitude = 4213
 altitude_units = "m"
 latitude = 19.82380145
 longitude = -155.46904675
-transmission = "comp/gemini/mk_am15_pwv50.dat"
-radiance = "etc/data/comp/gemini/skybg_50_10.dat"
-radiance_units =  'ph / (m2 nm s)'
+#transmission = "comp/gemini/mk_am15_pwv50.dat"
+transmission = "comp/gemini/skycalc_cli_gemini_z20_pwv025.fits"
+radiance = "comp/gemini/skycalc_cli_gemini_z20_pwv025.fits"
+#radiance_units =  'ph / (m2 nm s)'
 [site.sky_mag]
 # From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 20%ile
 #    U = 21.3
@@ -14,10 +15,15 @@ radiance_units =  'ph / (m2 nm s)'
 #    V = 21.3
 #    R = 20.5
 # From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 50%ile
-    U = 19.2
-    B = 20.9
-    V = 20.7
-    R = 19.9
+#    U = 19.2
+#    B = 20.9
+#    V = 20.7
+#    R = 19.9
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 80%ile
+    U = 17.3
+    B = 19.5
+    V = 19.5
+    R = 19.1
 
 [telescope]
 name = "Gemini North 8.1m"
@@ -32,7 +38,7 @@ inst_type = "Imager"
 trans_components = "comp/gemini/Gemini_GMOSN_optics.dat"
 fwhm = 1.0                                                  #
 fwhm_units = "arcsec"
-focal_scale = 5.380                            # From https://www.gemini.edu/observing/telescopes-and-sites/telescopes#Optics scaled by GMOS scale
+focal_scale = 5.3852                            # From https://www.gemini.edu/observing/telescopes-and-sites/telescopes#Optics scaled by GMOS pixel scale from ITC
 focal_scale_units = "arcsec/mm"
 filterlist = ['Gemini::GMOS-N::g', 'Gemini::GMOS-N::r', 'Gemini::GMOS-N::i', 'Gemini::GMOS-N::z', 'Gemini::GMOS-N::ri', ]
 ccd_qe = "comp/gemini/Gemini_GMOSN_CCD_BB.dat"
@@ -41,5 +47,7 @@ ccd_gain = 1.63                                              # electrons/ADU
 ccd_xpixels = 2048
 ccd_ypixels = 4176
 ccd_pixsize = 15.0                                          # microns
+ccd_xbinning = 2
+ccd_ybinning = 2
 ccd_darkcurrent = 3.0
 ccd_darkcurrent_units = "ph/pixel/hour"
