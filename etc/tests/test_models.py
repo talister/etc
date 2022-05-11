@@ -10,6 +10,7 @@ from synphot import units
 from synphot.spectrum import SpectralElement, BaseUnitlessSpectrum, SourceSpectrum
 
 from etc.models import *
+from etc.utils import ETCError
 
 class TestSite:
     @pytest.fixture(autouse=True)
@@ -666,7 +667,7 @@ class TestInstrument:
         assert isinstance(fov[1], u.Quantity)
         assert_quantity_allclose(expected_value, fov)
 
-    def test_ccdfov_square_badunits(self):
+    def test_ccdfov_square_badunits_output(self):
 
         inst_options =  {
                           'ccd_pixsize' : 13.5,
@@ -815,6 +816,218 @@ class TestInstrument:
         assert isinstance(inst.ccd_fov()[1], u.Quantity)
         assert_quantity_allclose(expected_value, inst.ccd_fov(u.arcmin), rtol=1e-1)
 
+    def test_ccdfov_max_fov_units_bad(self):
+        size = 7*u.arcmin
+        expected_value = (size, size)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'fov_xsize' : 7,
+                          'fov_ysize' : 7,
+                          'fov_units' : "furlongs",
+                        }
+
+        inst = Instrument(**inst_options)
+
+        assert isinstance(inst.ccd_fov()[0], u.Quantity)
+        assert isinstance(inst.ccd_fov()[1], u.Quantity)
+        assert_quantity_allclose(expected_value, inst.ccd_fov(u.arcmin), rtol=1e-1)
+
+    def test_ccdbinning_defaults(self):
+        expected_value = (1, 1)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_binning
+
+    def test_ccdbinning_bin1(self):
+        expected_value = (1, 1)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 1,
+                          'ccd_ybinning' : 1,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_binning
+
+    def test_ccdbinning_bin2(self):
+        expected_value = (2, 2)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 2,
+                          'ccd_ybinning' : 2,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_binning
+
+    def test_ccdbinning_bin3(self):
+        expected_value = (3, 3)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 3,
+                          'ccd_ybinning' : 3,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_binning
+
+    def test_ccdbinning_badvalue_neg(self):
+        expected_value = (1, 1)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : -3,
+                          'ccd_ybinning' : -3,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_binning
+
+    def test_ccdbinning_badvalue_nonint(self):
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : "foo",
+                          'ccd_ybinning' : "bar",
+                         }
+
+        with pytest.raises(ETCError) as execinfo:
+            inst = Instrument(**inst_options)
+
+    def test_ccdbinning_badvalue_nonint_y(self):
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 1,
+                          'ccd_ybinning' : "bar",
+                         }
+
+        with pytest.raises(ETCError) as execinfo:
+            inst = Instrument(**inst_options)
+
+    def test_ccdnumpixels_defaults(self):
+        expected_value = (8120, 8120)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_numpixels
+
+    def test_ccdnumpixels_bin1(self):
+        expected_value = (8120, 8120)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 1,
+                          'ccd_ybinning' : 1,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_numpixels
+
+    def test_ccdnumpixels_bin2(self):
+        expected_value = (4060, 4060)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 2,
+                          'ccd_ybinning' : 2,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_numpixels
+
+    def test_ccdnumpixels_bin3(self):
+        expected_value = (2706, 2706)
+
+        inst_options =  {
+                          'ccd_pixsize' : 10,
+                          'ccd_pixsize_units' : "um",
+                          'focal_scale' : 10.12,
+                          'focal_scale_units' : "arcsec/mm",
+                          'ccd_xpixels' : 8120,
+                          'ccd_ypixels' : 8120,
+                          'ccd_xbinning' : 3,
+                          'ccd_ybinning' : 3,
+                         }
+
+        inst = Instrument(**inst_options)
+
+        assert expected_value == inst.ccd_numpixels
+
     def test_vignette_imager(self):
         expected_vign = 1.0
 
@@ -935,7 +1148,7 @@ class TestInstrument:
 
         assert_quantity_allclose(expected_vign, vign)
 
-    def test_vignette_fwhm1pt4_fiber2pt0(self):
+    def test_vignette_fwhm1pt4_fiber2pt0_slit1pt0(self):
 
         inst_options = {
                          'inst_type' : 'spectrograph',

@@ -460,6 +460,20 @@ class Instrument:
             pixscales = pixscales[0]
         return pixscales
 
+    @property
+    def ccd_binning(self):
+        binning = [(c.ccd_xbinning, c.ccd_xbinning) for c in self.channelset.values()]
+        if len(binning) == 1:
+            binning = binning[0]
+        return binning
+
+    @property
+    def ccd_numpixels(self):
+        numpixels = [(int(c.ccd_xpixels / c.ccd_xbinning), int(c.ccd_ypixels / c.ccd_ybinning)) for c in self.channelset.values()]
+        if len(numpixels) == 1:
+            numpixels = numpixels[0]
+        return numpixels
+
     def ccd_fov(self, fov_units=u.arcsec):
         """Computes the CCD's field of view and returns a tuple of Quantity's
         Uses `self.ccd_pixsize`, `self.focal_scale` and `self.ccd_x/ypixels`
@@ -684,7 +698,21 @@ class Camera:
         self.ccd_xpixels = kwargs.get('ccd_xpixels', 0)
         self.ccd_ypixels = kwargs.get('ccd_ypixels', 0)
         self.ccd_xbinning = kwargs.get('ccd_xbinning', 1)
+        try:
+            self.ccd_xbinning = int(self.ccd_xbinning)
+        except ValueError:
+            raise ETCError(f"Invalid X binning: {self.ccd_xbinning}")
         self.ccd_ybinning = kwargs.get('ccd_ybinning', 1)
+        try:
+            self.ccd_ybinning = int(self.ccd_ybinning)
+        except ValueError:
+            raise ETCError(f"Invalid Y binning: {self.ccd_ybinning}")
+        if self.ccd_xbinning < 1:
+            print(f"Invalid X binning ({self.ccd_xbinning:}) - setting to 1")
+            self.ccd_xbinning = 1
+        if self.ccd_ybinning < 1:
+            print(f"Invalid Y binning ({self.ccd_ybinning:}) - setting to 1")
+            self.ccd_ybinning = 1
         if self.ccd_xbinning != self.ccd_ybinning:
             raise ETCError(f"Non-equal binnings (X={self.ccd_xbinning:}, Y={self.ccd_ybinning:}) are not supported at this time")
         # Check if a fov_xsize and fov_ysize and corresponding units to limit
