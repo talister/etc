@@ -1,0 +1,47 @@
+[site]
+name = "Maui, HI"
+altitude = 3065
+altitude_units = "m"
+latitude = +20.7069
+longitude = -156.258
+transmission = "${CDBS_PATH}/atmos/FTN_a12_pwv035.fits"
+[site.sky_mag]
+    U = 22.0
+    B = 22.7
+    V = 21.9
+    R = 21.0
+    I = 20.0
+    Z = 18.8
+    gp = 21.9
+    rp = 20.8
+    ip = 19.8
+    zp = 19.2
+    w = 20.6
+
+[telescope]
+name = 'DeltaRho 0.35m/17"'
+size = 0.35
+area = 0.22768937       # m^2 Based on M1=350mm, M2+baffle=196.0mm diameters (from 56% M1 diameter obstruction value)
+num_mirrors = 2
+reflectivity = "comp/Enhanced_Al_mirror.dat"
+
+[instrument]
+name = "QHY600Pro"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 3
+inst_ar_coating_refl = 0.995                                # assuming 0.5% reflectance AR coating
+fwhm = 1.17                                                 # Median seeing from Liu et al. 2019
+fwhm_units = "arcsec"
+focal_scale =  196.44285714285715                           # From Planewave quoted focal length and diameter.
+focal_scale_units = "arcsec/mm"
+filterlist = ['LCO::U','LCO::B','LCO::V','LCO::R','LCO::I','up','gp','rp','ip','zs','w', 'Stromgren::u', 'Stromgren::b', 'Stromgren::v', 'Stromgren::y', 'LCO::Hbeta']
+ccd_qe = "comp/Sony_IMX455ALK_CMOS_qe.dat"
+ccd_readnoise = 3.7 # electrons
+ccd_gain = 1.4 # electrons/ADU
+ccd_xpixels = 9576
+ccd_ypixels = 6388
+ccd_pixsize = 3.76                                          # microns
+ccd_darkcurrent = 0.0022
+ccd_darkcurrent_units = "ph/pixel/s"
+ccd_fullwell = 150e3                                         # electrons
