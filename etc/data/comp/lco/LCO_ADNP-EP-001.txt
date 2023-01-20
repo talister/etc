@@ -1,0 +1,18 @@
+# Wavelength[nm] Transmittance[0..100.0]
+# Transmittance curve for Astrodon ExoPlanet-BB (Blue-Blocking) filter
+# From Astrodon website: https://astrodon.com/products/astrodon-exo-planet-filter/
+# Hand digitized by TAL 2023/1/20
+300.0   0.0
+450.0   0.0
+485.0   0.0
+515.0   90.0
+520.0   94.0
+525.0   95.5
+530.0   96.75
+535.0   97.75
+540.0   98.5
+545.0   98.75
+550.0   99.0
+640.0   99.0
+700.0   98.0
+1000.0  93.0

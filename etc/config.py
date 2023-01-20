@@ -57,6 +57,7 @@ class Conf(ConfigNamespace):
     lco_fli_r_file = lco_r_file
     lco_fli_i_file = lco_i_file
     lco_fli_zs_file = lco_zs_file
+    lco_exop_file = ConfigItem("comp/lco/LCO_ADNP-EP-001.txt", "Astrodon Exoplanet BB")
 
     lco_UV_file = ConfigItem('http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=LasCumbres/LasCumbres.UV', 'LCO Astrodon UV')
     lco_U_file = ConfigItem('comp/lco/bssl-ux.txt', 'LCO Bessell U')
@@ -191,6 +192,7 @@ class Conf(ConfigNamespace):
                 'LCO::Halpha' : lco_Halpha_file,
                 'LCO::Hbeta' : lco_Hbeta_file,
                 'LCO::solar' : lco_solar_file,
+                'LCO::exo' : lco_exop_file,
                 'LCO::FLI::clear' : lco_fli_clear_file,
                 'LCO::FLI::U' : lco_fli_U_file,
                 'LCO::FLI::B' : lco_fli_B_file,
