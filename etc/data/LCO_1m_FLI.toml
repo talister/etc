@@ -4,7 +4,7 @@ altitude = 2201
 altitude_units = "m"
 latitude = -30.1673833333
 longitude = -70.8047888889
-transmission = "${CDBS_PATH}/atmos/skytable_LaSilla_z1.2_pwv7.5_new_moon_R48000.fits"
+transmission = "comp/atmos/skytable_LaSilla_z1.2_pwv7.5_new_moon_R48000.fits"
 [site.sky_mag]
     U = 22.0
     B = 22.7
