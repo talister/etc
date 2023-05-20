@@ -2,6 +2,7 @@
 # QE curve for SBIG STL-1603ME (Kodak/On Semi KAF-1603) 1536x1024x9um CCD
 # (From datasheet copy: https://www.onsemi.com/pdf/datasheet/kaf-1603-d.pdf)
 # LCO "2.0m SBIG" autoguiders (kb31-46)
+# Hand digitized by TAL 2023/5/19
 400.0	0.440
 410.0 0.460
 420.0 0.440
