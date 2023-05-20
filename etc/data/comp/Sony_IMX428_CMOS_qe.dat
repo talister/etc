@@ -1,0 +1,27 @@
+# Wavelength[nm] QE[0..1.0]
+# QE curve for Sony IMX428M (Monochrome) 3216x2208x4.5um CMOS sensor
+# From https://www.lumenera.com/media/wysiwyg/support/pdf/Teledyne_Lumenera_Lt_Series_Board-Level_User_Manual.pdf
+# Hand digitized by TAL 2023/5/19
+300  0.0
+400  0.52
+450  0.73
+500  0.845
+525  0.91
+550  0.96
+575  1.0
+600  0.995
+630  0.99
+650  0.965
+700  0.86
+750  0.72
+765  0.68
+775  0.665
+800  0.56
+820  0.525
+840  0.43
+850  0.41
+900  0.28
+940  0.175
+950  0.155
+1000 0.075
+1075 0
