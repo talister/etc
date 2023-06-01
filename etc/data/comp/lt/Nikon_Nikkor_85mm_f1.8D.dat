@@ -1,0 +1,25 @@
+# Wavelength[nm] Transmission[0..1.0] Loss_factor[0..1.0]
+# From https://ui.adsabs.harvard.edu/abs/2014SPIE.9147E..8HP/abstract
+# Converted to transmission by 1-loss_factor.
+# Extrapolated beyond 800nm based on similar lenses in https://www.dpreview.com/forums/post/60990312?image=8
+# Hand digitized by TAL 2023/05/31
+400     0.965   0.035
+440     0.715   0.285
+445     0.7025  0.2975
+450     0.70    0.30
+455     0.7025  0.2975
+460     0.715   0.285
+500     0.88    0.12
+510     0.9075  0.0925
+520     0.925   0.075
+525     0.9275  0.0725
+550     0.925   0.075
+600     0.935   0.065
+650     0.925   0.075
+700     0.92    0.08
+750     0.915   0.085
+800     0.915   0.085
+810     0.91
+825     0.88
+850     0.81
+1050    0
