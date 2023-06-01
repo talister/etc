@@ -1,37 +1,39 @@
-# Wavelength[nm] QE[0..1.0]
+# Wavelength[nm] Absolute QE[0..1.0] Relative QE[0..1.0]
+# Absolute QE curve from https://www.qhyccd.com/scientific-camera-qhy411-qhy461/
 # *Relative* QE curve for Sony IMX411 (Industry grade) 14304x10748x3.76um CMOS sensor
 # From QHY411 website: https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=138&id=49&cut=1
 # A rough absolute scaling could be achieved through info in
 # https://www.qhyccd.com/index.php?m=content&c=index&a=show&catid=23&id=261
 # which indicates an absolute QE of 94.5% at OIII (500.7nm) and 74% at Ha (656.7nm)
-325		0.0
-400     0.71	0.60
-425     0.86	0.745
-450     0.91	0.86
-460		0.92
-475     0.90	0.93
-490		0.885
-500     0.90	0.96
-525     0.855	0.995
-550     0.83	0.98
-575     0.775	0.945
-600     0.71	0.92
-625     0.66	0.88
-650     0.58	0.82
-675     0.535	0.765
-700     0.46	0.58
-800		0.28
-810		0.2775
-827		0.24
-840		0.24
-850		0.21
-860		0.19
-870		0.19
-890		0.15
-900		0.15
-905		0.15
-950		0.095
-960		0.07
-975		0.065
-1000	0.04
-1030	0.0
+# Updated by TAL 2023/05/31
+325     0.0
+400     0.71    0.60
+425     0.86    0.745
+450     0.91    0.86
+460     0.92
+475     0.90    0.93
+490     0.885
+500     0.90    0.96
+525     0.855   0.995
+550     0.83    0.98
+575     0.775   0.945
+600     0.71    0.92
+625     0.66    0.88
+650     0.58    0.82
+675     0.535   0.765
+700     0.46    0.58
+800     0.28
+810     0.2775
+827     0.24
+840     0.24
+850     0.21
+860     0.19
+870     0.19
+890     0.15
+900     0.15
+905     0.15
+950     0.095
+960     0.07
+975     0.065
+1000    0.04
+1030    0.0
