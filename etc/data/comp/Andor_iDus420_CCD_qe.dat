@@ -1,0 +1,24 @@
+# QE curve for Andor iDus 420 1024 x 255x26um CCD detector and BVF and BU coatings
+# From https://andor.oxinst.com/products/idus-spectroscopy-cameras/idus-420
+# Hand digitized by TAL 2023/05/22
+#Wavelength[nm] BV_QE [%] BU_QE[%]
+200  6  52
+225  22 27
+250  15 24
+275  8  22
+300  10 50
+350  23 77
+400  59 92
+410  64 93.5
+450  77 92
+500  95 87
+550  97 84
+600  96 82
+700  91.5 76
+725  89 73.5
+800  76 61
+900  46 37
+1000 14 12
+1050 3  3
+1075 1  1
+1100 0  0
