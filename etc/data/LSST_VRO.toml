@@ -4,7 +4,7 @@ altitude = 2647
 altitude_units = "m"
 latitude = -30.24463333
 longitude = -70.74941667
-transmission = "$CDBS_PATH/comp/lsst/atmos_std.dat"
+transmission = "comp/atmos/lsst_atmos_std.dat"
 [site.sky_mag]
 # From https://smtn-002.lsst.io/#sky-counts
     u = 22.95
@@ -19,7 +19,7 @@ name = "LSST 8.4m"
 size = 8.4
 area = 32.40154547 # m^2 Based on https://www.lsst.org/scientists/keynumbers of effective diam=6.423m
 num_mirrors = 3
-reflectivity = ["$CDBS_PATH/comp/lsst/m1.dat", "$CDBS_PATH/comp/lsst/m2.dat", "$CDBS_PATH/comp/lsst/m3.dat"]
+reflectivity = ["comp/lsst/m1.dat", "comp/lsst/m2.dat", "comp/lsst/m3.dat"]
 
 [instrument]
 name = "LSSTCam"
@@ -29,13 +29,13 @@ num_inst_lenses = 3                                         # three lenses
 num_ar_coatings = 2
 inst_lens_trans = 0.94                                    # Average combination of 0.99 (BAK2/FK5) & 0.935 (silica/CaF2)
 inst_ar_coating_refl = 0.90                                 #
-trans_components = "$CDBS_PATH/comp/lsst/lens1.dat,$CDBS_PATH/comp/lsst/lens2.dat,$CDBS_PATH/comp/lsst/lens3.dat"
+trans_components = "comp/lsst/lens1.dat,comp/lsst/lens2.dat,comp/lsst/lens3.dat"
 fwhm = 0.83                                                 #
 fwhm_units = "arcsec"
 focal_scale = 20                                            # from 0.2"/pixel and pixel size
 focal_scale_units = "arcsec/mm"
 filterlist = ['LSST::u', 'LSST::g', 'LSST::r', 'LSST::i', 'LSST::z', 'LSST::y']
-ccd_qe = "$CDBS_PATH/comp/lsst/detector.dat"
+ccd_qe = "comp/lsst/detector.dat"
 ccd_readnoise = 9.0                                         # electrons
 ccd_gain = 2.3                                              # electrons/ADU
 ccd_xpixels = 4096
