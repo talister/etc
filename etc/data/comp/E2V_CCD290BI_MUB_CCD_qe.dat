@@ -1,0 +1,26 @@
+# Wavelength(nm) QE_MUB(0..1.0)
+# QE curve for e2v Teledyne CCD290-99 NIMO back illuminated, standard silicon 9216x9232x10um CCD for multiband-2 coating
+# Hand digitized by TAL 2023/06/30
+275   0.0
+300   0.19
+325   0.34
+350   0.47
+375   0.62
+400   0.89
+410   0.93
+425   0.93
+450   0.91
+500   0.885
+525   0.875
+550   0.88
+600   0.895
+660   0.90
+700   0.875
+750   0.80
+800   0.67
+850   0.49
+900   0.32
+950   0.16
+1000  0.06
+1050  0.02
+1100  0.0
