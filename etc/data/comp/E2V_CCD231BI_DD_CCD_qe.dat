@@ -1,0 +1,29 @@
+# QE curve for SOPHIA 4096B-154A deep depletion CCD (e2v ccd231-84) 4k x 4k x 15um CCD for the deep depletion & dual-AR coating (BEX2-DD in Andor's spec sheet)
+# Hand digitized by TAL from https://www.princetoninstruments.com/wp-content/uploads/2020/07/Sophia-4096B-Rev-A2-10092021t.pdf
+# Wavelength(nm) QE_bex2-dd(0..1.0)
+250   0.0
+275   0.01
+300   0.12 
+350   0.48
+400   0.87
+410   0.905
+420   0.915
+425   0.915
+450   0.91 
+500   0.88
+510   0.8725
+525   0.87 
+550   0.88 
+600   0.90
+650   0.92
+700   0.93 
+750   0.93
+775   0.915
+800   0.89
+850   0.77 
+900   0.60 
+950   0.37 
+1000  0.13
+1025  0.05
+1050  0.02
+1100  0.00
