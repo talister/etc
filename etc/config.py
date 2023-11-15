@@ -46,6 +46,7 @@ class Conf(ConfigNamespace):
     lco_cn_file = ConfigItem("comp/lco/LCO_ESA_CN.csv", "LCO ESA CN")
     lco_nh2_file = ConfigItem("comp/lco/LCO_ESA_NH2.csv", "LCO ESA NH2")
     lco_cr_file = ConfigItem("comp/lco/LCO_ESA_CR.csv", "LCO ESA CR")
+    lco_asahi_cn_file = ConfigItem("comp/lco/Asahi_CN.csv", "LCO Asahi CN")
 
     lco_fli_clear_file = ConfigItem("comp/lco/LCO_ADNP-P1-002.csv", "LCO Astrodon clear")
     lco_fli_U_file = ConfigItem("comp/lco/LCO_ADNP-UV-001.csv", "LCO Astrodon U")
@@ -183,6 +184,7 @@ class Conf(ConfigNamespace):
                 'CN' : lco_cn_file,
                 'NH2': lco_nh2_file,
                 'CR' : lco_cr_file,
+                'LCO::CN' : lco_asahi_cn_file,
                 'LCO::UV' : lco_UV_file,
                 'LCO::U' : lco_U_file,
                 'LCO::B' : lco_B_file,
