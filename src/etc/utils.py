@@ -60,10 +60,14 @@ def read_element(
     else:
         filename = filename()
         element_type = "spectral_element"
-    if "LCO_" in filename.upper() and ".csv" in filename.lower():
-        file_path = pkg_resources.files("etc.data").joinpath(os.path.expandvars(filename))
-        source = "LCO iLab format"
-        header, wavelengths, throughput = read_lco_filter_csv(file_path)
+    if ".csv" in filename.lower():
+        if "LCO_" in filename.upper():
+            file_path = pkg_resources.files("etc.data").joinpath(os.path.expandvars(filename))
+            source = "LCO iLab format"
+            header, wavelengths, throughput = read_lco_filter_csv(file_path)
+        else:
+            header, wavelengths, throughput = specio.read_ascii_spec(filename, wave_unit='nm', flux_unit='%', format='csv', comment='#')
+            source = "CSV file"
     elif "http://svo" in filename.lower():
         source = "SVO filter service"
         header, wavelengths, throughput = specio.read_remote_spec(
