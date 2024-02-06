@@ -1,8 +1,8 @@
-astropy
+astropy<5.3
 jedi==0.17.2
 ipython
 toml
-synphot==1.0.1
+synphot==1.1.1
 pytest
 matplotlib
 importlib_resources; python_version < '3.8'
