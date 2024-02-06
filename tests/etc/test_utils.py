@@ -165,9 +165,7 @@ class TestReadElement:
 class TestReadESOSpectra:
     @classmethod
     def setup_class(cls):
-        cls.test_fits_fp = os.path.abspath(
-            os.path.join(__package__, "etc", "tests", "data", "test_spectrum.fits")
-        )
+        cls.test_fits_fp = files("tests.etc.data").joinpath("test_spectrum.fits").as_posix()
         cls.funit = u.erg / (u.cm**2 * u.s * u.AA)
 
     def test_spectra(self):
