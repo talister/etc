@@ -66,7 +66,9 @@ def read_element(
             source = "LCO iLab format"
             header, wavelengths, throughput = read_lco_filter_csv(file_path)
         else:
-            header, wavelengths, throughput = specio.read_ascii_spec(filename, wave_unit='nm', flux_unit='%', format='csv', comment='#')
+            header, wavelengths, throughput = specio.read_ascii_spec(
+                filename, wave_unit="nm", flux_unit="%", format="csv", comment="#"
+            )
             source = "CSV file"
     elif "http://svo" in filename.lower():
         source = "SVO filter service"
@@ -89,10 +91,16 @@ def read_element(
                     file_path, wave_col=wave_col, flux_col=flux_col, wave_unit=u.nm, flux_unit=flux_units
                 )
             except KeyError:
-                # ESO-SM01 format; different column name for transmission and micron vs nm
-                header, wavelengths, throughput = specio.read_spec(
-                    file_path, wave_col="lam", flux_col="flux", wave_unit=u.micron, flux_unit=flux_units
-                )
+                try:
+                    # ESO-SM01 format; different column name for transmission and micron vs nm
+                    header, wavelengths, throughput = specio.read_spec(
+                        file_path, wave_col="lam", flux_col="flux", wave_unit=u.micron, flux_unit=flux_units
+                    )
+                except KeyError:
+                    # HST/SYNPHOT format ?
+                    header, wavelengths, throughput = specio.read_spec(
+                        file_path, wave_col="WAVELENGTH", flux_col="THROUGHPUT"
+                    )
         else:
             header, wavelengths, throughput = specio.read_ascii_spec(
                 file_path, wave_unit=wave_units, flux_unit=flux_units

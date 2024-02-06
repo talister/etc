@@ -126,6 +126,21 @@ class TestReadElement:
         assert_quantity_allclose(element(element.waveset[0]), 0.03626, rtol=1e-3)
         assert_quantity_allclose(element(element.waveset[-1]), 0.971, rtol=1e-3)
 
+    def test_read_hst_fits_as_element(self):
+        test_fp = files("tests.etc.data").joinpath("test_ota.fits").as_posix()
+
+        element = read_element(test_fp, element_type="spectral_element")
+
+        assert isinstance(element, SpectralElement)
+        assert element.waveset[0].unit == u.AA
+        assert element(element.waveset[0]).unit == units.THROUGHPUT
+        assert_quantity_allclose(element.waveset[0], 500 * u.AA)
+        assert_quantity_allclose(element.waveset[1], 1000 * u.AA)
+        assert_quantity_allclose(element.waveset[-2], 30000 * u.AA)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[1]), 0.023, rtol=1e-3)
+        assert_quantity_allclose(element(element.waveset[-2]), 0.731268, rtol=1e-3)
+
     def test_read_fudge_greater_than_one(self):
         """ESO Omegacam has an optics throughput fudge which goes fro, 0.93 to 3.2
         with a mean of 1.4024. This incorrectly triggers the divide by 100 logic
