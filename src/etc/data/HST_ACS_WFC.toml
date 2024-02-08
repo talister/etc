@@ -1,0 +1,36 @@
+[site]
+name = "Orbit"
+altitude = 525
+altitude_units = "km"
+transmission = 1.0
+[site.sky_mag]
+    U = 22.3
+    B = 22.50
+    V = 21.66
+    R = 21.19
+    I = 20.79
+
+[telescope]
+name = "HST"
+size = 2.4
+area =  4.52389342
+num_mirrors = 1 # file below includes whole OTA
+reflectivity = "$PYSYN_CDBS/comp/ota/hst_ota_007_syn.fits"
+
+[instrument]
+name = "ACS"
+inst_type = "Imager"
+trans_components = "$PYSYN_CDBS/comp/acs/acs_wfc_im123_004_syn.fits,$PYSYN_CDBS/comp/acs/acs_wfc_ebe_win12f_005_syn.fits"
+fwhm = 0.2                                                  #
+fwhm_units = "arcsec"
+focal_scale = 3.26666667                      #
+focal_scale_units = "arcsec/mm"
+filterlist = ['HST::ACS::WFC::F555W', 'HST::ACS::WFC::F606W']
+ccd_qe = "$PYSYN_CDBS/comp/acs/acs_wfc_ccd1_028_syn.fits"
+ccd_readnoise = 4.7                                         # electrons (SITe chips)
+ccd_gain = 2.0                                              # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 4096
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 0.0161
+ccd_darkcurrent_units = "ph/pixel/s"

@@ -115,10 +115,10 @@ class Conf(ConfigNamespace):
     lco_fli_V_file = ConfigItem("comp/lco/LCO_ADNP-VX-001.csv", "LCO Astrodon V")
     lco_fli_R_file = ConfigItem("comp/lco/LCO_ADNP-RS-001.csv", "LCO Astrodon R")
     lco_fli_I_file = ConfigItem("comp/lco/LCO_ADNP-IC-001.csv", "LCO Astrodon I")
-    lco_fli_g_file = lco_g_file
-    lco_fli_r_file = lco_r_file
-    lco_fli_i_file = lco_i_file
-    lco_fli_zs_file = lco_zs_file
+    lco_fli_g_file = ConfigItem("comp/lco/SDSS.gp.txt", "LCO SDSS g")
+    lco_fli_r_file = ConfigItem("comp/lco/SDSS.rp.txt", "LCO SDSS r")
+    lco_fli_i_file = ConfigItem("comp/lco/SDSS.ip.txt", "LCO SDSS i")
+    lco_fli_zs_file = ConfigItem("comp/lco/PSTR-ZS-avg.txt", "LCO SDSS/PanSTARRS zs")
     lco_exop_file = ConfigItem("comp/lco/LCO_ADNP-EP-001.txt", "Astrodon Exoplanet BB")
 
     lco_UV_file = ConfigItem(
@@ -288,6 +288,16 @@ class Conf(ConfigNamespace):
         "Gemini/GMOS-N ri",
     )
 
+    hst_acs_wcs_f555w_file = ConfigItem(
+        "$PYSYN_CDBS/comp/acs/acs_f555w_wfc_006_syn.fits",
+        "HST ACS WFC F555W (V)",
+    )
+
+    hst_acs_wcs_f606w_file = ConfigItem(
+        "$PYSYN_CDBS/comp/acs/acs_f606w_wfc_008_syn.fits",
+        "HST ACS WFC F606W (I)",
+    )
+
     optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
@@ -405,6 +415,8 @@ class Conf(ConfigNamespace):
         "Gemini::GMOS-N::i": gemini_gmosn_i_file,
         "Gemini::GMOS-N::z": gemini_gmosn_z_file,
         "Gemini::GMOS-N::ri": gemini_gmosn_ri_file,
+        "HST::ACS::WFC::F555W": hst_acs_wcs_f555w_file,
+        "HST::ACS::WFC::F606W": hst_acs_wcs_f606w_file,
         "NaCl": optics_NaCl_file,
         "UVFS": optics_UVFS_file,
         "CaF2": optics_CaF2_file,
