@@ -162,7 +162,8 @@ class ETC(object):
         standard_filter = self._convert_filtername(filtername)
         band = self._map_filter_to_standard(mag_filter)
         print(band.meta.get("expr", "Unknown"), type(source_spec))
-        source_spec = source_spec or self._vega
+        if source_spec is None:
+            source_spec = self._vega
         if type(source_spec) != SourceSpectrum:
             raise ETCError("Invalid sourcespec; must be a SourceSpectrum")
 
