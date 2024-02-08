@@ -599,32 +599,12 @@ class Instrument:
         filename = conf.mapping.get(filtername, None)
         if filename is None:
             raise ETCError("Filter name {0} is invalid.".format(filtername))
-        if "LCO_" in filename().upper() and ".csv" in filename().lower():
-            file_path = pkg_resources.files("etc.data").joinpath(os.path.expandvars(filename()))
-            source = "LCO iLab format"
-            header, wavelengths, throughput = self._read_lco_filter_csv(file_path)
-        elif "http://svo" in filename().lower():
-            source = "SVO filter service"
-            header, wavelengths, throughput = specio.read_remote_spec(
-                filename(), wave_unit=u.AA, flux_unit=units.THROUGHPUT
-            )
-        else:
-            source = "local file"
-            file_path = pkg_resources.files("etc.data").joinpath(os.path.expandvars(filename()))
-            warnings.simplefilter("ignore", category=AstropyUserWarning)
-            header, wavelengths, throughput = specio.read_ascii_spec(
-                file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT
-            )
-            if throughput.mean() > 1.0:
-                throughput /= 100.0
-                header["notes"] = "Divided by 100.0 to convert from percentage"
-        print("Reading from {} for {}".format(source, filtername))
 
-        header["filename"] = filename
-        header["descrip"] = filename.description
-        meta = {"header": header, "expr": filtername}
+        bandpass = read_element(filtername, "spectral_element")
+        bandpass.meta["expr"] = filtername
+        bandpass.meta["header"]["descrip"] = filename.description
 
-        return SpectralElement(Empirical1D, points=wavelengths, lookup_table=throughput, meta=meta)
+        return bandpass
 
     def slit_vignette(self, slit_width=1 * u.arcsec):
         """Compute the fraction of light entering the slit of width <slit_width>
@@ -768,9 +748,12 @@ class Camera:
             file_path = os.path.expandvars(ccd_qe)
             if not os.path.exists(file_path):
                 file_path = str(pkg_resources.files("etc.data").joinpath(ccd_qe))
-            header, wavelengths, throughput = specio.read_ascii_spec(
-                file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT
-            )
+            if file_path.lower().endswith("fits") or file_path.lower().endswith("fit"):
+                header, wavelengths, throughput = specio.read_fits_spec(file_path, flux_col="THROUGHPUT")
+            else:
+                header, wavelengths, throughput = specio.read_ascii_spec(
+                    file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT
+                )
             if throughput.mean() > 1.0:
                 throughput /= 100.0
                 header["notes"] = "Divided by 100.0 to convert from percentage"

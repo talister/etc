@@ -99,7 +99,7 @@ def read_element(
                 except KeyError:
                     # HST/SYNPHOT format ?
                     header, wavelengths, throughput = specio.read_spec(
-                        file_path, wave_col="WAVELENGTH", flux_col="THROUGHPUT"
+                        file_path, wave_col="WAVELENGTH", flux_col="THROUGHPUT", flux_unit=flux_units
                     )
         else:
             header, wavelengths, throughput = specio.read_ascii_spec(
@@ -117,6 +117,7 @@ def read_element(
             # which goes to 3.2 and averages out to ~1.4
             throughput /= 100.0
             header["notes"] = "Divided by 100.0 to convert from percentage"
+    # print("Reading from {} for {}".format(source, filtername))
     header["source"] = source
     header["filename"] = filename
     if element_type == "spectrum" or element_type == "radiance":
