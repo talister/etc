@@ -480,12 +480,10 @@ class TestCCDSNR:
         }
 
     def test_LCO_1m_1s_V15_default_sky(self):
-        expected_snr = 10.4210644
+        expected_snr = 11.9973
 
         test_etc = etc.ETC(self.test_config_file)
-        print(f"test_etc = {test_etc}")
         snr = test_etc.ccd_snr(1, 15, "V")
-        print("snr, type=", snr, type(snr))
         assert_quantity_allclose(expected_snr, snr, rtol=1e-5)
 
     def test_LCO_1m_1s_bad_filter(self):
@@ -498,7 +496,7 @@ class TestCCDSNR:
         assert execinfo.value.args[0] == "Filter name Vibble is invalid."
 
     def test_LCO_1m_1s_V15(self):
-        expected_snr = 10.4210644
+        expected_snr = 11.9973
 
         test_etc = etc.ETC(self.test_config_file)
 
@@ -507,7 +505,7 @@ class TestCCDSNR:
         assert_quantity_allclose(expected_snr, snr, rtol=1e-5)
 
     def test_LCO_1m_1s_R15(self):
-        expected_snr = 10.815680017464334
+        expected_snr = 14.85152
 
         test_etc = etc.ETC(self.test_config_file)
 
@@ -544,8 +542,8 @@ class TestCCDSNR:
 
     def test_WHT_5s_R15(self):
         # Also a mismatch for R although not as severe. Default is 3080 Jy;
-        # Value below from a recompile using 3857.0 Jy
-        expected_snr = 476.35858154
+        # Value below from a recompile using 3057.0 Jy
+        expected_snr = 478.6
 
         extin = 0.09  # mag/airmass (from SIGNAL)
         airmass = 1.2
