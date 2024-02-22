@@ -1,5 +1,5 @@
 # QE curve for SCD Cardinal 640 LOON 640 x 512x15um InGaAs PIN diode SWIR detector
-# Data from Raptor Photonics Ninox-640-II dataheet: https://www.raptorphotonics.com/wp-content/uploads/2022/03/Ninox-640-II-US-Letter.pdf
+# Data from Raptor Photonics Ninox-640-II datasheet: https://www.raptorphotonics.com/wp-content/uploads/2022/03/Ninox-640-II-US-Letter.pdf
 #Wavelength[nm] QE[%]
 599  0
 600  40
