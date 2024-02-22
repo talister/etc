@@ -1,0 +1,45 @@
+[site]
+name = "La Silla"
+altitude = 2375
+altitude_units = "m"
+latitude = -29.25512222
+longitude = -70.73174222
+transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.txt"
+[site.sky_mag]
+# From https://www.eso.org/gen-fac/pubs/astclim/lasilla/l-vanzi-poster/sld011.htm
+    U = 22.0
+    B = 22.7
+    V = 21.72
+    R = 20.93
+    I = 19.58
+
+[telescope]
+name = "ESO NTT 3.6m"
+size = 3.6
+area = 8.56429573 # m^2 Based on M1=3500mm (stop size), central obstruction 1.16m diameters (http://www.eso.org/sci/facilities/lasilla/telescopes/ntt/overview/techdetails.html)
+num_mirrors = 3
+reflectivity = ["comp/eso/nttM1.dat", "comp/eso/nttM1.dat", "comp/eso/nttM3.dat"]
+
+[instrument]
+name = "EFOSC2"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 10                                        # Ten elements (doublet, doublet, doublet, triplet, singlet) of Schott FK54
+num_ar_coatings = 2
+inst_lens_trans = 1.0                                       # Average combination of 0.994 (FK51/FK5) fluorine crown glass
+inst_ar_coating_refl = 1.00                                 #
+trans_components = "comp/eso/ESO_EFOSC2_optics.dat"         # Actual transmission of combined optics
+fwhm = 1.0                                                  #
+fwhm_units = "arcsec"
+focal_scale = 8.6666666460525                       # converted from native NTT 5.35905 by focal ratio
+
+focal_scale_units = "arcsec/mm"
+filterlist = ['ESO::EFOSC2::U', 'ESO::EFOSC2::B', 'ESO::EFOSC2::V', 'ESO::EFOSC2::R',]
+ccd_qe = "comp/eso/ESO_EFOSC2_CCD40.dat"
+ccd_readnoise = 9.15                                         # electrons
+ccd_gain = 1.33                                              # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 2048
+ccd_pixsize = 15.0                                          # microns
+ccd_darkcurrent = 7.0
+ccd_darkcurrent_units = "ph/pixel/hour"
