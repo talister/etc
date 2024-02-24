@@ -4,7 +4,9 @@ altitude = 2375
 altitude_units = "m"
 latitude = -29.25512222
 longitude = -70.73174222
-transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.txt"
+#transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.txt"
+transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.fits"
+radiance = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.fits"
 [site.sky_mag]
 # From https://www.eso.org/gen-fac/pubs/astclim/lasilla/l-vanzi-poster/sld011.htm
     U = 22.0

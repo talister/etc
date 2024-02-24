@@ -38,6 +38,7 @@ class Site:
         self.latitude = latitude * u.deg if latitude is not None else latitude
         self.longitude = longitude * u.deg if longitude is not None else longitude
         if "transmission" in kwargs:
+            print(kwargs)
             modelclass = Empirical1D
             try:
                 transmission = float(kwargs["transmission"])
