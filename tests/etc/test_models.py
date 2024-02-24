@@ -134,6 +134,35 @@ class TestSite:
         # 1000x bigger due to micron->nm
         assert_quantity_allclose(radiance(radiance.waveset[1]), 371148 * self.eso_rad_unit)
 
+    def test_combined_fits_file(self):
+        test_config = {
+            "name": "Cerro Armazones",
+            "altitude": 3060,
+            "latitude": -24.58916667,
+            "longitude": -70.19166667,
+            "transmission": files("tests.etc.data").joinpath("test_skytable.fits").as_posix(),
+            "radiance": files("tests.etc.data").joinpath("test_skytable.fits").as_posix(),
+        }
+        site = Site(**test_config)
+
+        assert site.name == "Cerro Armazones"
+        assert site.altitude == 3060 * u.m
+        assert site.latitude == -24.58916667 * u.deg
+        assert site.longitude == -70.19166667 * u.deg
+        radiance = site.radiance
+        assert isinstance(radiance, SourceSpectrum)
+        assert_quantity_allclose(radiance.waveset[1], 301 * u.nm)
+        assert_quantity_allclose(radiance(radiance.waveset[1]), 19.590763 * self.eso_rad_unit)
+        assert_quantity_allclose(radiance.waveset[-1], 1200 * u.nm)
+        assert_quantity_allclose(radiance(radiance.waveset[-1]), 3499.220563645434 * self.eso_rad_unit)
+
+        transmission = site.transmission
+        assert isinstance(transmission, BaseUnitlessSpectrum)
+        assert_quantity_allclose(transmission.waveset[1], 301 * u.nm)
+        assert_quantity_allclose(transmission(transmission.waveset[1]), 0.049302936211493 * units.THROUGHPUT)
+        assert_quantity_allclose(transmission.waveset[-1], 1200 * u.nm)
+        assert_quantity_allclose(transmission(transmission.waveset[-1]), 0.971025959063257 * units.THROUGHPUT)
+
     def test_sky_spectrum_default(self):
         test_config = {
             "name": "Cerro Armazones",
