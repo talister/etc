@@ -17,6 +17,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.wcs import FITSFixedWarning
 from astropy.table import QTable
+from astropy.units import UnitsWarning
 from astropy.utils.exceptions import AstropyUserWarning
 import numpy as np
 from synphot import units, SourceSpectrum, SpectralElement, specio
@@ -81,6 +82,7 @@ def read_element(
         if not os.path.exists(file_path):
             file_path = str(pkg_resources.files("etc.data").joinpath(filename))
         warnings.simplefilter("ignore", category=AstropyUserWarning)
+        warnings.simplefilter("ignore", category=UnitsWarning) # Squash warnings about multiple slashes in ESO SM output
         if filename.lower().endswith("fits") or filename.lower().endswith("fit"):
             wave_col = "lam"
             flux_col = "trans"
