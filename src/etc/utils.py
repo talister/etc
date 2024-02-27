@@ -82,9 +82,8 @@ def read_element(
         if not os.path.exists(file_path):
             file_path = str(pkg_resources.files("etc.data").joinpath(filename))
         warnings.simplefilter("ignore", category=AstropyUserWarning)
-        warnings.simplefilter(
-            "ignore", category=UnitsWarning
-        )  # Squash warnings about multiple slashes in ESO SM output
+        # Squash warnings about multiple slashes in ESO SM output
+        warnings.simplefilter("ignore", category=UnitsWarning)
         if filename.lower().endswith("fits") or filename.lower().endswith("fit"):
             wave_col = "lam"
             flux_col = "trans"
