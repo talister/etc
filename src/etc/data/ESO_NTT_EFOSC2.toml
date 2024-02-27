@@ -7,13 +7,16 @@ longitude = -70.73174222
 #transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.txt"
 transmission = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.fits"
 radiance = "comp/atmos/skytable_LaSilla_z12_pwv50_new_moon_R03000.fits"
-[site.sky_mag]
+# The sky brightness is computed from the radiance file above so the values
+# below are just for reference (and are very close but not exactly the same as
+# the calculated values)
+#[site.sky_mag]
 # From https://www.eso.org/gen-fac/pubs/astclim/lasilla/l-vanzi-poster/sld011.htm
-    U = 22.0
-    B = 22.7
-    V = 21.72
-    R = 20.93
-    I = 19.58
+#    U = 22.0
+#    B = 22.7
+#    V = 21.72
+#    R = 20.93
+#    I = 19.58
 
 [telescope]
 name = "ESO NTT 3.6m"
@@ -36,7 +39,7 @@ fwhm_units = "arcsec"
 focal_scale = 8.6666666460525                       # converted from native NTT 5.35905 by focal ratio
 
 focal_scale_units = "arcsec/mm"
-filterlist = ['ESO::EFOSC2::U', 'ESO::EFOSC2::B', 'ESO::EFOSC2::V', 'ESO::EFOSC2::R',]
+filterlist = ['ESO::EFOSC2::U', 'ESO::EFOSC2::B', 'ESO::EFOSC2::V', 'ESO::EFOSC2::R', 'ESO::EFOSC2::g', 'ESO::EFOSC2::r', 'ESO::EFOSC2::i', 'ESO::EFOSC2::z',]
 ccd_qe = "comp/eso/ESO_EFOSC2_CCD40.dat"
 ccd_readnoise = 9.15                                         # electrons
 ccd_gain = 1.33                                              # electrons/ADU

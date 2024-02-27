@@ -245,10 +245,16 @@ class Conf(ConfigNamespace):
         "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0784", "ESO/EFOSC2 r"
     )
     eso_EFOSC2_i_file = ConfigItem(
-        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0705", "ESO/EFOSC2 i"
+        "comp/eso/ESO_EFOSC2_i.dat",
+        "ESO/EFOSC2 i"
+        # The file below has duplicate entries, which breaks synphot
+        #        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0705", "ESO/EFOSC2 i"
     )
     eso_EFOSC2_z_file = ConfigItem(
-        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0623", "ESO/EFOSC2 z"
+        "comp/eso/ESO_EFOSC2_z.dat",
+        "ESO/EFOSC2 z"
+        # The file below has duplicate entries, which breaks synphot
+        #        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0623", "ESO/EFOSC2 z"
     )
 
     eso_uHIGH_file = ConfigItem(
@@ -411,6 +417,10 @@ class Conf(ConfigNamespace):
         "ESO::EFOSC2::B": eso_EFOSC2_B_file,
         "ESO::EFOSC2::V": eso_EFOSC2_V_file,
         "ESO::EFOSC2::R": eso_EFOSC2_R_file,
+        "ESO::EFOSC2::g": eso_EFOSC2_g_file,
+        "ESO::EFOSC2::r": eso_EFOSC2_r_file,
+        "ESO::EFOSC2::i": eso_EFOSC2_i_file,
+        "ESO::EFOSC2::z": eso_EFOSC2_z_file,
         "ESO::Omegacam::up": eso_vst_uprime_file,
         "ESO::Omegacam::gp": eso_vst_gprime_file,
         "ESO::Omegacam::rp": eso_vst_rprime_file,
