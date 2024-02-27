@@ -82,7 +82,9 @@ def read_element(
         if not os.path.exists(file_path):
             file_path = str(pkg_resources.files("etc.data").joinpath(filename))
         warnings.simplefilter("ignore", category=AstropyUserWarning)
-        warnings.simplefilter("ignore", category=UnitsWarning) # Squash warnings about multiple slashes in ESO SM output
+        warnings.simplefilter(
+            "ignore", category=UnitsWarning
+        )  # Squash warnings about multiple slashes in ESO SM output
         if filename.lower().endswith("fits") or filename.lower().endswith("fit"):
             wave_col = "lam"
             flux_col = "trans"
@@ -92,6 +94,10 @@ def read_element(
                 header, wavelengths, throughput = specio.read_spec(
                     file_path, wave_col=wave_col, flux_col=flux_col, wave_unit=u.nm, flux_unit=flux_units
                 )
+                # read_fits_spec *always* reads the units from TUNIT2 irrespective
+                # of what number column wave_col is - reset it here for ESO SkyModel output
+                if flux_col == "trans" and throughput.unit == "ph / (micron s arcsec2 m2)":
+                    throughput = throughput.value * flux_units
             except KeyError:
                 try:
                     # ESO-SM01 format; different column name for transmission and micron vs nm
@@ -126,7 +132,7 @@ def read_element(
         # SourceSpectrum can't use the default units.THROUGHPUT so we need to
         # change to an assumed units.PHOTLAM (u.photon / (u.cm**2 * u.s * u.AA))
         # if nothing was passed by the user
-        if flux_units == units.THROUGHPUT:
+        if flux_units == units.THROUGHPUT or throughput.unit == "ph / (micron s arcsec2 m2)":
             if element_type == "radiance":
                 # Default units for ESO skycalc output (minus the arcsec^2)
                 throughput = throughput.value * u.photon / u.s / u.m**2 / u.um

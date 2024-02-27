@@ -181,9 +181,9 @@ class TestSite:
         radiance = site.radiance
         assert isinstance(radiance, SourceSpectrum)
         assert_quantity_allclose(radiance.waveset[1], 301 * u.nm)
-        assert_quantity_allclose(radiance(radiance.waveset[1]), 19.590763 * self.eso_rad_unit)
+        assert_quantity_allclose(radiance(radiance.waveset[1]), 19.303108 * self.eso_rad_unit)
         assert_quantity_allclose(radiance.waveset[-1], 1200 * u.nm)
-        assert_quantity_allclose(radiance(radiance.waveset[-1]), 3499.220563645434 * self.eso_rad_unit)
+        assert_quantity_allclose(radiance(radiance.waveset[-1]), 3502.8305668 * self.eso_rad_unit)
 
         transmission = site.transmission
         assert isinstance(transmission, BaseUnitlessSpectrum)
