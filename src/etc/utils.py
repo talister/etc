@@ -94,7 +94,7 @@ def read_element(
                     file_path, wave_col=wave_col, flux_col=flux_col, wave_unit=u.nm, flux_unit=flux_units
                 )
                 # read_fits_spec *always* reads the units from TUNIT2 irrespective
-                # of what number column wave_col is - reset it here for ESO SkyModel output
+                # of what number column flux_col is - reset it here for ESO SkyModel output
                 if flux_col == "trans" and throughput.unit == "ph / (micron s arcsec2 m2)":
                     throughput = throughput.value * flux_units
             except KeyError:
