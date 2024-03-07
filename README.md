@@ -28,7 +28,7 @@ following to create and activate a new environment:
 >> C:\> C:\path\to\myenv\Scripts\activate.bat (cmd.exe)
 or
 >> PS C:\> C:\path\to\myenv\Scripts\Activate.ps1 (PowerShell)
-```)
+```
 
 If you have conda installed locally, you can run the following to
 create and activate a new environment.
