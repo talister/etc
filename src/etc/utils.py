@@ -68,8 +68,11 @@ def read_element(
             source = "LCO iLab format"
             header, wavelengths, throughput = read_lco_filter_csv(file_path)
         else:
+            final_wave_units = "nm"
+            if wave_units != u.nm:
+                final_wave_units = wave_units
             header, wavelengths, throughput = specio.read_ascii_spec(
-                file_path, wave_unit="nm", flux_unit="%", format="csv", comment="#"
+                file_path, wave_unit=final_wave_units, flux_unit="%", format="csv", comment="#"
             )
             source = "CSV file"
     elif "http://svo" in filename.lower():

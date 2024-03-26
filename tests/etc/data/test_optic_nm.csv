@@ -1,0 +1,5 @@
+# ThorLabs 400nm longpass cutoff filter
+Wavelength [nm], Transmission[%]
+200,0.000301121
+201,0.000290997
+2200,85.98
