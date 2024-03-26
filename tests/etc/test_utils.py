@@ -66,6 +66,50 @@ class TestReadElement:
         assert_quantity_allclose(element.waveset[0], 3200 * u.AA)
         assert_quantity_allclose(element(element.waveset[0]), 0.306, rtol=1e-3)
 
+    def test_read_optic(self):
+        test_fp = files("tests.etc.data").joinpath("test_optic_nm.csv").as_posix()
+
+        element = read_element(test_fp)
+
+        assert_quantity_allclose(element.waveset[0], 200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 0.000301121 * u.percent)
+        assert_quantity_allclose(element.waveset[-1], 2200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[-1]), 85.98 * u.percent)
+
+    def test_read_optic_passed_waveunit(self):
+        test_fp = files("tests.etc.data").joinpath("test_optic_nm.csv").as_posix()
+
+        element = read_element(test_fp, wave_units=u.nm)
+
+        assert_quantity_allclose(element.waveset[0], 200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[0]), 0.000301121 * u.percent)
+        assert_quantity_allclose(element.waveset[-1], 2200 * u.nm)
+        assert_quantity_allclose(element(element.waveset[-1]), 85.98 * u.percent)
+
+    def test_read_optic_microns(self):
+        test_fp = files("tests.etc.data").joinpath("test_optic_microns.csv").as_posix()
+
+        element = read_element(test_fp)
+
+        assert_quantity_allclose(element.waveset[0], 6 * u.AA)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0)
+        assert_quantity_allclose(element.waveset[1], 6.08 * u.AA)
+        assert_quantity_allclose(element(element.waveset[1]), 20 * u.percent)
+        assert_quantity_allclose(element.waveset[-1], 130 * u.AA)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0)
+
+    def test_read_optic_microns_passed_waveunit(self):
+        test_fp = files("tests.etc.data").joinpath("test_optic_microns.csv").as_posix()
+
+        element = read_element(test_fp, wave_units=u.micron)
+
+        assert_quantity_allclose(element.waveset[0], 0.6 * u.micron)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0)
+        assert_quantity_allclose(element.waveset[1], 0.608 * u.micron)
+        assert_quantity_allclose(element(element.waveset[1]), 20 * u.percent)
+        assert_quantity_allclose(element.waveset[-1], 13 * u.micron)
+        assert_quantity_allclose(element(element.waveset[0]), 0.0)
+
     def test_read_element_as_sourcespectrum(self):
         test_fp = files("tests.etc.data").joinpath("test_radiance.dat").as_posix()
 

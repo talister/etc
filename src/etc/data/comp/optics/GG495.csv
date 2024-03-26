@@ -1,7 +1,7 @@
 # 495 nm Longpass Colored Glass Filter (GG495)
 # Data from Item # FGL495, FGL495S & FGL495M at ThorLabs
 # Measurements Made at Normal Incidence
-# Wavelength (nm),% Transmission
+Wavelength [nm],Transmission [%]
 200,0.004609
 205,0.004537
 210,0.002461
