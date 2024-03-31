@@ -577,9 +577,6 @@ class ETC(object):
 
         Parameters
         ----------
-        waves, thru : `~astropy.units.quantity.Quantity`
-            Wavelength and throughput to plot.
-
         filterlist : list, str or None
             Filter name(s) to plot
 

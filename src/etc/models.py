@@ -41,7 +41,7 @@ class Site:
             modelclass = Empirical1D
             try:
                 transmission = float(kwargs["transmission"])
-                wavelengths = np.arange(300, 1501, 1) * u.nm
+                wavelengths = np.arange(300, 2501, 1) * u.nm
                 throughput = len(wavelengths) * [
                     transmission,
                 ]
@@ -273,7 +273,7 @@ class Telescope:
         reflectivity = kwargs.get("reflectivity", 0.85)
         try:
             reflectivity = float(reflectivity)
-            wavelengths = np.arange(300, 1501, 1) * u.nm
+            wavelengths = np.arange(300, 2501, 1) * u.nm
             refl = len(wavelengths) * [
                 reflectivity,
             ]
@@ -382,7 +382,7 @@ class Instrument:
 
         # Read common components first
         trans_components = kwargs.get("trans_components", None)
-        wavelengths = np.arange(300, 1501, 1) * u.nm
+        wavelengths = np.arange(300, 2501, 1) * u.nm
         if trans_components:
             trans = len(wavelengths) * [
                 1.0,
@@ -722,7 +722,7 @@ class Camera:
 
         # Read common components first
         trans_components = kwargs.get("trans_components", None)
-        wavelengths = np.arange(300, 1501, 1) * u.nm
+        wavelengths = np.arange(300, 2501, 1) * u.nm
         if trans_components:
             print("Computing channel transmission from components")
             trans = len(wavelengths) * [
@@ -754,6 +754,12 @@ class Camera:
                 header, wavelengths, throughput = specio.read_ascii_spec(
                     file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT
                 )
+            if wavelengths[0].value < 100.0:
+                # Small values seen, Convert to microns
+                wavelengths = wavelengths.value * u.micron
+            elif wavelengths[0].value > 3000.0:
+                # Large values seen, Convert to angstroms
+                wavelengths = wavelengths.value * u.AA
             if throughput.mean() > 1.0:
                 throughput /= 100.0
                 header["notes"] = "Divided by 100.0 to convert from percentage"
