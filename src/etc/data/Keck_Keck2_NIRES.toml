@@ -1,0 +1,48 @@
+[site]
+name = "Mauna Kea"
+altitude = 4213
+altitude_units = "m"
+latitude = 19.82380145
+longitude = -155.46904675
+transmission = "comp/gemini/mktrans_zm_16_10.dat"
+radiance = "comp/gemini/mk_skybg_zm_16_10_ph.dat"
+radiance_units = 'ph / (m2 nm s)'
+
+
+[telescope]
+name = "Keck2 10m"
+size = 10.95
+area = 77.91275445 # m^2 Based on 9.96m effective diameter in https://www2.keck.hawaii.edu/observing/kecktelgde/ktelinstupdate.pdf
+num_mirrors = 3
+reflectivity = "comp/eso/nttM1.dat"
+
+[instrument]
+name = "NIRES"
+inst_type = "Spectrograph"
+#trans_components = ["comp/gemini/Gemini_GMOSN_optics.dat",]
+grating_linespermm = 110.5
+grating_blaze = 22
+grating_gamma = 30
+cam_focallength = 262.4
+num_ar_coatings = 22
+num_inst_lenses = 7
+num_inst_mirrors = 5
+inst_lens_trans = 0.93
+inst_mirror_refl = 0.9813 # Average of Ag mirror reflectivity between 0.9--2.7um
+inst_ar_coating_refl = 0.994
+fwhm = 0.5
+fwhm_units = "arcsec"
+focal_scale = 9.44444444                           # From NIRES webpage converted by pixel size
+focal_scale_units = "arcsec/mm"
+filterlist = ['Keck::NIRES:110.5l/mm', ]
+ccd_qe = "comp/HAWAII_NIR_qe.dat"
+ccd_readnoise = 14.5                                        # electrons
+ccd_gain = 3.80                                             # electrons/ADU
+ccd_xpixels = 2048
+ccd_ypixels = 1024
+ccd_pixsize = 18.0                                          # microns
+ccd_xbinning = 1
+ccd_ybinning = 1
+ccd_fullwell = 150000
+ccd_darkcurrent = 0.13
+ccd_darkcurrent_units = "ph/pixel/sec"

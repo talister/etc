@@ -288,6 +288,8 @@ class Conf(ConfigNamespace):
         "Gemini/GMOS-N ri",
     )
 
+    keck_nires_grating_file = ConfigItem("comp/optics/Richardson_138R_grating_unpol.csv")
+
     hst_acs_wcs_f555w_file = ConfigItem(
         "$PYSYN_CDBS/comp/acs/acs_f555w_wfc_006_syn.fits",
         "HST ACS WFC F555W (V)",
@@ -415,6 +417,7 @@ class Conf(ConfigNamespace):
         "Gemini::GMOS-N::i": gemini_gmosn_i_file,
         "Gemini::GMOS-N::z": gemini_gmosn_z_file,
         "Gemini::GMOS-N::ri": gemini_gmosn_ri_file,
+        "Keck::NIRES:110.5l/mm": keck_nires_grating_file,
         "HST::ACS::WFC::F555W": hst_acs_wcs_f555w_file,
         "HST::ACS::WFC::F606W": hst_acs_wcs_f606w_file,
         "NaCl": optics_NaCl_file,
