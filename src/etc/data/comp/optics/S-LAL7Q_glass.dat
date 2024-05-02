@@ -1,0 +1,36 @@
+# Wavelength [nm]	Transmittance [0..1]
+# Transmission for Ohara S-LAL7Q and 10mm thickness
+# From: https://www.ohara-gmbh.com/fileadmin/user_upload/export-data/pdf/product_datasheets/S-LAL7Q_English_.pdf
+275     0
+280     0.01
+290     0.03
+300     0.08
+310     0.19
+320     0.34
+330     0.51
+340     0.67
+350     0.79
+360     0.88
+370     0.930
+380     0.960
+390     0.974
+400     0.983
+420     0.990
+440     0.994
+460     0.995
+480     0.997
+500     0.998
+550     0.998
+600     0.997
+650     0.997
+700     0.998
+800     0.998
+900     0.998
+1000    0.998
+1200    0.998
+1400    0.984
+1600    0.989
+1800    0.977
+2000    0.948
+2200    0.83
+2400    0.59
