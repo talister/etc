@@ -58,6 +58,7 @@ testpaths = [
 ]
 addopts = [
     "--import-mode=importlib",
+    "consider_namespace_packages=True"
 ]
 
 [tool.black]
