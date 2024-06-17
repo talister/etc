@@ -17,9 +17,9 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "ipykernel", # Support for Jupyter notebooks
-    "astropy>=4.0",
+    "astropy>=4.0, <6.0",
     "toml",
-    "synphot>=0.3"
+    "synphot>=0.3, <1.4.0"
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
