@@ -1,0 +1,41 @@
+[site]
+name = "Kitt Peak, Arizona"
+altitude = 2090
+altitude_units = "m"
+latitude = 31.958
+longitude = -111.5997
+transmission = 0.60256 #{ 'U' : 0.60256,
+#                 'B' : 0.79433,
+#                 'V' : 0.87902,
+#                 'R' : 0.91201,
+#                 'I' : 0.95499
+#                }
+
+[telescope]
+name = "WIYN 0.9m"
+size = 0.91
+area =  0.5153    # m^2 Based on 0.81m clear diameter in kpno.dat
+num_mirrors = 2
+reflectivity = 0.85 #"comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "TK1A"
+inst_type = "Imager"
+num_inst_mirrors = 0
+num_inst_lenses = 3          # 
+num_ar_coatings = 0
+inst_lens_trans = 0.96                                      # 
+inst_ar_coating_refl = 0.99                                 # solgel
+fwhm = 1.2                                                  #
+fwhm_units = "arcsec"
+focal_scale = 30.2                                          # from IRAF ccdtime kpno.dat
+focal_scale_units = "arcsec/mm"
+filterlist = ['KPNO::WIYN::U', 'KPNO::WIYN::B', 'KPNO::WIYN::V', 'KPNO::WIYN::R', 'KPNO::WIYN::I', ]
+ccd_qe = { 'U' : 0.24, 'B' : 0.44, 'V' : 0.70, 'R' : 0.79, 'I' : 0.59 }
+ccd_readnoise = 3.5                                        # electrons
+ccd_gain = 1.0                                            # electrons/ADU
+ccd_xpixels = 1024
+ccd_ypixels = 1024
+ccd_pixsize = 24.0                                          # microns
+ccd_darkcurrent = 0.001
+ccd_darkcurrent_units = "ph/pixel/s"

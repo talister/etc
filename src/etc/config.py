@@ -298,6 +298,23 @@ class Conf(ConfigNamespace):
         "HST ACS WFC F606W (I)",
     )
 
+    kpno_wiyn_U = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WIYN/S2KB.UHarrisSld",
+        "KPNO WIYN U",
+    )
+    kpno_wiyn_B = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WIYN/S2KB.BHarris", "KPNO WIYN B"
+    )
+    kpno_wiyn_V = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WIYN/S2KB.VHarris", "KPNO WIYN V"
+    )
+    kpno_wiyn_R = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WIYN/S2KB.RHarris", "KPNO WIYN R"
+    )
+    kpno_wiyn_I = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=WIYN/S2KB.IHarris", "KPNO WIYN I"
+    )
+
     optics_NaCl_file = ConfigItem("comp/optics/NaCl.dat", "NaCl")
     optics_BAK2_file = ConfigItem("comp/optics/BAK2_glass.dat", "BAK2 glass")
     optics_CaF2_file = ConfigItem("comp/optics/CaF2_glass.dat", "CaF2 glass")
@@ -417,6 +434,11 @@ class Conf(ConfigNamespace):
         "Gemini::GMOS-N::ri": gemini_gmosn_ri_file,
         "HST::ACS::WFC::F555W": hst_acs_wcs_f555w_file,
         "HST::ACS::WFC::F606W": hst_acs_wcs_f606w_file,
+        "KPNO::WIYN:U": kpno_wiyn_U,
+        "KPNO::WIYN:B": kpno_wiyn_B,
+        "KPNO::WIYN:V": kpno_wiyn_V,
+        "KPNO::WIYN:R": kpno_wiyn_R,
+        "KPNO::WIYN:I": kpno_wiyn_I,
         "NaCl": optics_NaCl_file,
         "UVFS": optics_UVFS_file,
         "CaF2": optics_CaF2_file,
