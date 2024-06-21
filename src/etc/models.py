@@ -744,7 +744,13 @@ class Camera:
         )
 
         ccd_qe = kwargs.get("ccd_qe", 0.9)
-        if not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
+        if isinstance(ccd_qe, dict):
+            self.ccd_qe_per_filter = ccd_qe.copy()
+            # Take first item in dict as the QE to use XXX do better and allow
+            # switching
+            band = next(iter(self.ccd_qe_per_filter))
+            self.ccd_qe = self.ccd_qe_per_filter[band]
+        elif not isinstance(ccd_qe, (u.Quantity, numbers.Number)):
             file_path = os.path.expandvars(ccd_qe)
             if not os.path.exists(file_path):
                 file_path = str(pkg_resources.files("etc.data").joinpath(ccd_qe))

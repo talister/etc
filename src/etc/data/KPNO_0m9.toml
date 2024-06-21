@@ -31,7 +31,6 @@ fwhm_units = "arcsec"
 focal_scale = 30.2                                          # from IRAF ccdtime kpno.dat
 focal_scale_units = "arcsec/mm"
 filterlist = ['KPNO::WIYN::U', 'KPNO::WIYN::B', 'KPNO::WIYN::V', 'KPNO::WIYN::R', 'KPNO::WIYN::I', ]
-ccd_qe = { 'U' : 0.24, 'B' : 0.44, 'V' : 0.70, 'R' : 0.79, 'I' : 0.59 }
 ccd_readnoise = 3.5                                        # electrons
 ccd_gain = 1.0                                            # electrons/ADU
 ccd_xpixels = 1024
@@ -39,3 +38,12 @@ ccd_ypixels = 1024
 ccd_pixsize = 24.0                                          # microns
 ccd_darkcurrent = 0.001
 ccd_darkcurrent_units = "ph/pixel/s"
+# If the CCD QE is going to be specified per-band as below, it must be last
+# in the [instrument] section otherwise the other parameters will end up part
+# of ccd_qe dictionary...
+[instrument.ccd_qe]
+    U = 0.24
+    B = 0.44
+    V = 0.70
+    R = 0.79
+    I = 0.59

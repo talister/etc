@@ -507,6 +507,22 @@ class TestInstrument:
         assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
         assert_quantity_allclose(inst.throughput("r").tpeak(), 0.8856121333333334, 1e-5)
 
+    def test_throughput_ccd_qe_dict(self):
+        optics_options = {
+            "filterlist": ["U", "B", "V", "R", "I"],
+            "ccd_qe": {"U": 0.24, "B": 0.44, "V": 0.7, "R": 0.79, "I": 0.59},
+        }
+
+        inst = Instrument(**optics_options)
+
+        assert len(inst.filterset) == 5
+        assert inst.filterlist == ["U", "B", "V", "R", "I"]
+        assert isinstance(inst.filterset["U"], SpectralElement)
+        assert isinstance(inst.throughput("U"), SpectralElement)
+        assert_quantity_allclose(
+            inst.throughput("U").tpeak(), 1 * 0.93 * 0.99**2 * optics_options["ccd_qe"]["U"], 1e-5
+        )
+
     def test_ccd_parameters(self):
         expected_gain = 0.9 * (u.electron / u.adu)
         expected_noise = 4.0 * (u.electron / u.pix)
