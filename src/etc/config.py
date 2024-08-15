@@ -287,7 +287,46 @@ class Conf(ConfigNamespace):
         "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Gemini/GMOS-N.ri",
         "Gemini/GMOS-N ri",
     )
-
+    keck_lris_dichroic_460_file = ConfigItem("comp/keck/lris_dichroic_460_t.dat", "Keck/LRIS 460nm dichroic")
+    keck_lris_dichroic_500_file = ConfigItem("comp/keck/lris_dichroic_500_t.dat", "Keck/LRIS 500nm dichroic")
+    keck_lris_dichroic_560_file = ConfigItem("comp/keck/lris_dichroic_560_t.dat", "Keck/LRIS 560nm dichroic")
+    keck_lris_dichroic_680_file = ConfigItem("comp/keck/lris_dichroic_680_t.dat", "Keck/LRIS 680nm dichroic")
+    keck_lris_grism_300B_file = ConfigItem(
+        "comp/keck/lris_blue_300_mirr_eff.dat", "Keck/LRIS 300l/mm Blue Grism "
+    )
+    keck_lris_grism_400B_file = ConfigItem(
+        "comp/keck/lris_blue_400_mirr_eff.dat", "Keck/LRIS 400l/mm Blue Grism "
+    )
+    keck_lris_grism_600B_file = ConfigItem(
+        "comp/keck/lris_blue_600_mirr_eff.dat", "Keck/LRIS 600l/mm Blue Grism "
+    )
+    keck_lris_grism_1200B_file = ConfigItem(
+        "comp/keck/lris_blue_1200_mirr_eff.dat", "Keck/LRIS 1200l/mm Blue Grism "
+    )
+    keck_lris_g_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.g",
+        "Keck/LRIS g",
+    )
+    keck_lris_B_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.B",
+        "Keck/LRIS B",
+    )
+    keck_lris_V_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.V",
+        "Keck/LRIS V",
+    )
+    keck_lris_R_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.R",
+        "Keck/LRIS R",
+    )
+    keck_lris_Rs_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.Rs",
+        "Keck/LRIS Rs",
+    )
+    keck_lris_I_file = ConfigItem(
+        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=Keck/LRIS.I",
+        "Keck/LRIS I",
+    )
     hst_acs_wcs_f555w_file = ConfigItem(
         "$PYSYN_CDBS/comp/acs/acs_f555w_wfc_006_syn.fits",
         "HST ACS WFC F555W (V)",
@@ -415,6 +454,20 @@ class Conf(ConfigNamespace):
         "Gemini::GMOS-N::i": gemini_gmosn_i_file,
         "Gemini::GMOS-N::z": gemini_gmosn_z_file,
         "Gemini::GMOS-N::ri": gemini_gmosn_ri_file,
+        "Keck::LRIS::g": keck_lris_g_file,
+        "Keck::LRIS::B": keck_lris_B_file,
+        "Keck::LRIS::V": keck_lris_V_file,
+        "Keck::LRIS::R": keck_lris_R_file,
+        "Keck::LRIS::Rs": keck_lris_Rs_file,
+        "Keck::LRIS::I": keck_lris_I_file,
+        "Keck::LRIS::460dichroic": keck_lris_dichroic_460_file,
+        "Keck::LRIS::500dichroic": keck_lris_dichroic_500_file,
+        "Keck::LRIS::560dichroic": keck_lris_dichroic_560_file,
+        "Keck::LRIS::680dichroic": keck_lris_dichroic_680_file,
+        "Keck::LRIS::300Bgrism": keck_lris_grism_300B_file,
+        "Keck::LRIS::400Bgrism": keck_lris_grism_400B_file,
+        "Keck::LRIS::600Bgrism": keck_lris_grism_600B_file,
+        "Keck::LRIS::1200Bgrism": keck_lris_grism_1200B_file,
         "HST::ACS::WFC::F555W": hst_acs_wcs_f555w_file,
         "HST::ACS::WFC::F606W": hst_acs_wcs_f606w_file,
         "NaCl": optics_NaCl_file,
