@@ -1,0 +1,53 @@
+[site]
+name = "Mauna Kea"
+altitude = 4206
+altitude_units = "m"
+latitude = 19.82666
+longitude = -155.4733
+transmission = "comp/gemini/mk_am15_pwv50.dat"
+#transmission = "comp/gemini/skycalc_cli_gemini_z20_pwv025.fits"
+#radiance = "comp/gemini/skycalc_cli_gemini_z20_pwv025.fits"
+#radiance_units =  'ph / (m2 nm s)'
+[site.sky_mag]
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 20%ile
+#    U = 21.3
+#    B = 22.1
+#    V = 21.3
+#    R = 20.5
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 50%ile
+#    U = 19.2
+#    B = 20.9
+#    V = 20.7
+#    R = 19.9
+# From https://www.gemini.edu/observing/telescopes-and-sites/sites#OptSky for 80%ile
+    U = 17.3
+    B = 19.5
+    V = 19.5
+    R = 19.1
+
+[telescope]
+name = "Keck I 10m"
+size = 9.96
+area = 76.37337405# m^2 Based on M1=9.96m, M2 baffle (optical mode) diam=1400mm
+num_mirrors = 2 # file below includes both mirrors
+reflectivity = "comp/Protected_Al_mirror.dat"
+
+[instrument]
+name = "LRIS"
+inst_type = "Imager"
+trans_components = "comp/gemini/Gemini_GMOSN_optics.dat"
+fwhm = 1.0                                                  #
+fwhm_units = "arcsec"
+focal_scale = 1.37931                            # From https://www2.keck.hawaii.edu/observing/kecktelgde/ktelinstupdate.pdf
+focal_scale_units = "arcsec/mm"
+filterlist = ['Keck::LRIS::g', 'Keck::LRIS::B', 'Keck::LRIS::V', 'Keck::LRIS::R', 'Keck::LRIS::I', ]
+ccd_qe = "comp/LBNL_4kx4kx10um_500um_CCD_qe.csv"
+ccd_readnoise = 3.565                                       # electrons (LBNL chip, average of 4 amps)
+ccd_gain = 1.6575                                           # electrons/ADU (average of 4 amps)
+ccd_xpixels = 4096
+ccd_ypixels = 4096
+ccd_pixsize = 15.0                                          # microns
+ccd_xbinning = 1
+ccd_ybinning = 1
+ccd_darkcurrent = 3.0
+ccd_darkcurrent_units = "ph/pixel/hour"
