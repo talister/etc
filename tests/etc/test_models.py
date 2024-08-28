@@ -523,6 +523,25 @@ class TestInstrument:
         assert_quantity_allclose(inst.ccd_gain, expected_gain)
         assert_quantity_allclose(inst.ccd_readnoise, expected_noise)
 
+    def test_ccd_parameters_csv_file(self):
+        expected_gain = 0.9 * (u.electron / u.adu)
+        expected_noise = 4.0 * (u.electron / u.pix)
+
+        ccd_options = {
+            "ccd_readnoise": 4.0,
+            "ccd_gain": 0.9,
+            "ccd_qe": files("tests.etc.data").joinpath("test_ccd_qe.csv"),
+        }
+
+        inst = Instrument(**ccd_options)
+
+        assert isinstance(inst.ccd_qe, BaseUnitlessSpectrum)
+        assert_quantity_allclose(inst.ccd_gain, expected_gain)
+        assert_quantity_allclose(inst.ccd_readnoise, expected_noise)
+
+        assert_quantity_allclose(inst.ccd_qe(380 * u.nm), 0)
+        assert_quantity_allclose(inst.ccd_qe(4135 * u.AA), 32.44 * u.percent)
+
     def test_ccdpixsize_default(self):
         expected_value = 17.5 * u.micron
 

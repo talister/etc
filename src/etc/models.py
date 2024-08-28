@@ -751,8 +751,13 @@ class Camera:
             if file_path.lower().endswith("fits") or file_path.lower().endswith("fit"):
                 header, wavelengths, throughput = specio.read_fits_spec(file_path, flux_col="THROUGHPUT")
             else:
+                spec_kwargs = {}
+                if file_path.lower().endswith("csv"):
+                    spec_kwargs["format"] = "csv"
+                    spec_kwargs["comment"] = "#"
+                    spec_kwargs["data_start"] = 0
                 header, wavelengths, throughput = specio.read_ascii_spec(
-                    file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT
+                    file_path, wave_unit=u.nm, flux_unit=units.THROUGHPUT, **spec_kwargs
                 )
             if throughput.mean() > 1.0:
                 throughput /= 100.0
