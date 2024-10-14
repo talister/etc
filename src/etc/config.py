@@ -466,9 +466,17 @@ class Conf(ConfigNamespace):
     }
 
     # STANDARD STARS
-    vega_file = ConfigItem("https://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits", "Vega")
+    # Switched to local files to prevent remote fetch issues triggering synphot bug
+    # vega_file = ConfigItem("https://ssb.stsci.edu/cdbs/calspec/alpha_lyr_stis_010.fits", "Vega")
+    vega_file = ConfigItem(
+        os.path.join(os.path.dirname(__file__), "data", "spectra", "alpha_lyr_stis_010.fits"), "Vega"
+    )
+    # sun_file = ConfigItem(
+    # "https://ssb.stsci.edu/cdbs/calspec/sun_reference_stis_002.fits",
+    # "Solar reference spectrum from https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec.html",
+    # )
     sun_file = ConfigItem(
-        "https://ssb.stsci.edu/cdbs/calspec/sun_reference_stis_002.fits",
+        os.path.join(os.path.dirname(__file__), "data", "spectra", "sun_reference_stis_002.fits"),
         "Solar reference spectrum from https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec.html",
     )
 

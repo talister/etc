@@ -1,0 +1,35 @@
+# Wavelength [nm]	Transmittance [0..1]
+# Transmission for Ohara BAL15Y and 10mm thickness
+# From: https://www.ohara-gmbh.com/fileadmin/user_upload/export-data/pdf/product_datasheets/BAL15Y_English_.pdf
+290     0
+300     0.17
+310     0.59
+320     0.840
+330     0.937
+340     0.971
+350     0.985
+360     0.992
+365     0.994
+370     0.995
+380     0.996
+390     0.997
+400     0.998
+420     0.998
+440     0.998
+460     0.998
+480     0.998
+500     0.999
+550     0.999
+600     0.999
+650     0.998
+700     0.999
+800     0.999
+900     0.998
+1000    0.996
+1200    0.995
+1400    0.989
+1600    0.992
+1800    0.984
+2000    0.972
+2200    0.927
+2400    0.890
