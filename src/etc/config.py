@@ -246,13 +246,13 @@ class Conf(ConfigNamespace):
     )
     eso_EFOSC2_i_file = ConfigItem(
         "comp/eso/ESO_EFOSC2_i.dat",
-        "ESO/EFOSC2 i"
+        "ESO/EFOSC2 i",
         # The file below has duplicate entries, which breaks synphot
         #        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0705", "ESO/EFOSC2 i"
     )
     eso_EFOSC2_z_file = ConfigItem(
         "comp/eso/ESO_EFOSC2_z.dat",
-        "ESO/EFOSC2 z"
+        "ESO/EFOSC2 z",
         # The file below has duplicate entries, which breaks synphot
         #        "http://svo2.cab.inta-csic.es/theory/fps/getdata.php?format=ascii&id=ESO/ESO.0623", "ESO/EFOSC2 z"
     )
