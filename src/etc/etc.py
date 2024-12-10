@@ -34,7 +34,7 @@ class ETC(object):
     _V_band = SpectralElement.from_filter("johnson_v")
 
     def __init__(self, config_file=None, components=None):
-        PRESET_MODELS = toml.loads(pkg_resources.read_text(data, "FTN_FLOYDS.toml"))
+        PRESET_MODELS = toml.load(pkg_resources.open_text(data, "FTN_FLOYDS.toml"))
         self.components = components if components is not None else []
         if config_file is None and len(self.components) == 0:
             component_config = PRESET_MODELS
