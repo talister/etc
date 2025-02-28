@@ -1,7 +1,7 @@
 numpy<2.0
 astropy<6.0
 jedi==0.17.2
-ipython
+ipython<9.0
 toml
 synphot==1.2.1
 pytest
