@@ -1,6 +1,7 @@
 # Reflectance curve for protected aluminium mirrors
 # Source: https://www.edmundoptics.com/resources/application-notes/optics/metallic-mirror-coatings/
 # Wavelength (nm) Reflectance (%)
+230     00.0
 275     64.0
 300     87.5
 325     88.1

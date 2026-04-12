@@ -2,6 +2,7 @@
 # QE curve for Fairchild CCD486 4096x4096x15um CCD with broadband coating
 # From LCO Imaging Lab
 # (Also compared to datasheet copy http://linmax.sao.arizona.edu/FLWO/48/CCD486DataSheetRevB.pdf)
+280 0.0
 300 0.179
 350 0.635
 400 0.640
