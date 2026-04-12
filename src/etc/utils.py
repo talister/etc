@@ -76,7 +76,7 @@ def read_element(
                 file_path, wave_unit=final_wave_units, flux_unit="%", format="csv", comment="#"
             )
             source = "CSV file"
-    elif "http://svo" in filename.lower():
+    elif "http://svo" in filename.lower() or "https://svo" in filename.lower():
         source = "SVO filter service"
         header, wavelengths, throughput = specio.read_remote_spec(
             filename, wave_unit=u.AA, flux_unit=units.THROUGHPUT
