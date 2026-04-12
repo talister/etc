@@ -513,5 +513,14 @@ class Conf(ConfigNamespace):
 
     moon_image = ConfigItem("phase_full.3492_print.jpg", "Full Moon image")
 
+    # Wavelength range to consider when integrating over filter curves and spectra.
+    min_wavelength = ConfigItem(
+        300, "Minimum wavelength to consider in nm"
+    )  # pyright: ignore[reportArgumentType]
+    max_wavelength = ConfigItem(1501, "Maximum wavelength to consider in nm")
+    # Visible only range
+
+
+#    max_wavelength = ConfigItem(1201, "Maximum wavelength to consider in nm") # pyright: ignore[reportArgumentType]
 
 conf = Conf()
